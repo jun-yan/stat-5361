@@ -19,6 +19,9 @@ We assume that students can use R/Rstudio comfortably. If you are new to R, an e
 - <https://github.com/wenjie2wang/2018-01-19-siam>
 - <https://github.com/wenjie2wang/2018-04-06-siam>
 
+The Advanced R Programming book by Hadley Wickham is available at.
+
+
 The homework, exam, and project will be completed by __R Markdown__. Following the step by step the instructions in Yihui Xie's online book on __bookdown__ at <https://bookdown.org/yihui/bookdown/>, you will be amazed how quickly you can learn to produce cool-looking documents and even book manuscripts. If you are a keener, you may as well following Yihui's __blogdown__, see online book <https://bookdown.org/yihui/blogdown/>, to build your own website using R Markdown.
 
 
