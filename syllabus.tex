@@ -1,0 +1,183 @@
+\documentclass[twocolumn]{article}
+\usepackage[hmargin={0.5in, 0.5in}, vmargin={0.8in, 0.8in}]{geometry}
+\usepackage{booktabs}
+\usepackage{hyperref}
+\usepackage[anythingbreaks]{breakurl}
+
+
+\usepackage{enumitem}
+% \setlist{nolistsep}
+
+\usepackage{fancyhdr}
+\pagestyle{fancy}
+\renewcommand{\headrulewidth}{0.4pt}
+\renewcommand{\footrulewidth}{0.4pt}
+
+\lhead{\sf STAT 5361}
+\rhead{Fall 2018}
+\lfoot{\sf jun.yan@uconn.edu}
+\rfoot{\url{http://www.stat.uconn.edu/~jyan/}}
+
+
+\begin{document}
+% \maketitle
+
+
+%% to save space; otherwise, would have used \maketitle
+\twocolumn[%
+\centerline{\Large \bf 
+  STAT 5361: Statistical Computing, Fall 2018}
+ \medskip
+ \centerline{\bf August 27, 2018}
+ \bigskip
+ ]
+
+\thispagestyle{fancy}
+
+
+\begin{description}
+\item[Instructor:] Jun Yan\\ 
+  Department of Statistics\\
+  Austin 328\\
+  860/486-3416\\
+  jun.yan@uconn.edu
+
+\item[Lectures:] 
+  TuTh 11:00am -- 12:15 @  GENT 430
+
+\item[Office Hours:] 
+  TuTh: 12:30pm -- 1:30pm
+
+
+\item[Course Description:] From Graduate Catalog:
+\begin{quote}
+Use of computing for statistical problems; obtaining features of
+distributions, fitting models and implementing inference. Basic numerical
+methods, nonlinear statistical methods, numerical integration, modern
+simulation methods.
+\end{quote}
+
+\item[Prerequisite:]
+  STAT 3025Q, 3445 or 5685 and/or consent of instructor.  Please check
+  the Department's course web page for more information.
+ 
+
+\item[Textbook:] 
+Most materials will come from 
+\begin{itemize}
+\item Geof H. Givens and Jennifer A. Hoeting,
+  \emph{Computational Statistics\/}, Second Edition, John
+  Wiley and Sons, 2013.
+\end{itemize}
+
+Some materials will come from
+\begin{itemize}
+\item Paul Glasserman, \emph{Monte Carlo Methods in
+      Financial Engineering\/}, Springer, 2004.
+\end{itemize}
+
+\item[Course Material:]
+Topics include
+\begin{enumerate}[noitemsep]
+\item Optimization
+% , including nonstochastic methods, simulated
+%   annealing, genetic algorithms
+\item EM algorithms
+\item Random sampling
+\item Monte Carlo integration and variance reductions, with financial applications
+\item Other computing topics of interest
+\end{enumerate}
+
+Announcements, lecture notes, homework assignment, and other course
+information will be posted on HuskyCT (\url{lms.uconn.edu}). 
+You are expected to read the sections of the textbook that will be covered.
+
+\item[Programming Language]
+Students are required to use \texttt{RMarkdown}/\texttt{bookdown} and
+\texttt{GitHub} for homework assignments, exam, and project.
+
+% Other programming languages or software, such as SAS,
+% Excel, C, Fortran, are \ink{0,0,1}{\emph{not\/}} allowed.
+
+A quick introduction to R programming language at
+\url{https://cran.r-project.org/doc/manuals/r-release/R-intro.pdf}
+
+For an even shorter introduction see
+\url{https://cran.r-project.org/doc/contrib/Torfs+Brauer-Short-R-Intro.pdf}
+
+Write cool homework or project report with \texttt{bookdown} of Yihui Xie:
+\url{https://bookdown.org/yihui/bookdown/}
+
+% Learn \texttt{RMarkdown} at
+% \url{rmarkdown.rstudio.com/}
+
+Happy git with R of Jenny Bryan:
+\url{http://happygitwithr.com/}
+
+Build your own website with \texttt{blogdown}:
+\url{https://bookdown.org/yihui/blogdown/}
+
+
+\item[Grading:] Assessment of the subject will be based on 
+the following four components with weights shown in parenthesis:
+
+\begin{description}
+\item[Homework (40\%)]
+Collaborations are allowed for homework assignments, but each group
+should have at most 2 members. No collaborations between groups are
+allowed. On the front page of solutions, the members of a group must be
+clearly listed. Late homework will \emph{not} be accepted for \emph{any}
+reason. 
+
+\item[Exam (30\%)]
+There will be one midterm take-home exam. The rule on collaborations for the
+midterm exam is the same as for homework assignments.
+
+\item[Project (30\%)]
+Each group is expected to complete a class project on a topic of your choice
+about statistical computation. There are many possibilities. For example, you
+may review an important topic about statistical computation, you may solve a
+real problem using comprehensive computation methods, you may investigate
+properties of a computational algorithm/strategy, and you may compare several
+computation methods on a variety of problems.
+
+A final paper/report of your project using my template should be 6~pages in
+length, excluding any appendices you wish to attach. In any case, the project
+should present new work, not something you have done for another course.
+If you use any reference, you must cite and credit your sources.
+Outstanding report will be recommended for publication at the project showcases
+of the Data Science Lab (\url{https://statds.org}).
+
+% Your project
+% will be shared with the class through the class website on HuskyCT.
+
+\end{description}
+
+% Grading scale will be close to (but may be slightly adjusted): 
+% A (87--100), B (73--86), C (60--72), D (50--59), and F (0-50).
+% Final grades will include $+/-$.
+
+Grades for the course are assigned totally at the instructor's discretion. A \textbf{rough} guide:
+\begin{center}
+  \begin{tabular}{lllll}
+    A: 91--100\% & A$-$: 89--90\% & B$+$: 87--88\% & B: 81--86\%\\
+    B$-$: 79--80\%  & C$+$: 77--78\% & C: 71--76\% &  C$-$: 69--70\%\\
+    D$+$: 67--68\% &  D: 61--66\%  & D$-$: 59--60\% & F: $<$ 59\%
+  \end{tabular}
+\end{center}
+
+\item[Notes:]\hspace{0pt}
+\small
+  \begin{itemize}
+  \item Pick up and sharpen computing skills on the fly.
+  \item Work on the problems in the textbook.
+  \item International students please consider English as part of your training.
+  \item Academic integrity is seriously regarded and academic misconduct
+    has severe consequences; students from different cultures beware.
+  \item Learn etiquette in academia and practice it when emailing your
+    professors.
+  \end{itemize}
+
+\end{description}
+
+\end{document}
