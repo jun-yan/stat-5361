@@ -34,16 +34,37 @@ All your source code will be version controlled by __git__ and archived on __Git
 
 In mathematical statistics, we have learned that, under certain regularity conditions, the maximum likelihood estimator (MLE) is consistent, asymtotically normal, and most efficient. The asymptotic variance of the estimator if the inverse of the Fisher information matrix. Speficially, let $X_1, \ldots, X_n$ be a random sample from a distribution with density $f(x; \theta)$, where $\theta$ is a parameter. How do we obtain the MLE?
 
-```{r mle}
+```{r data}
 set.seed(123)
 n <- 100
 x <- rgamma(n, scale = 2, shape = 4)
 hist(x)
 ```
 
+Package **MASS** provides a function `fitdistr()` to obtain the MLE for univaraite distributions with a random sample. We can learn two things from this function. First, an objective function representing the negative loglikelihood is formed, depending on the input of the density function, and fed to the optimizer function `optim`. Second, the variance estimator of the MLE is obtained by inverting the Hessian matrix of the objective function, which is an estimator of the Fisher information matrix. For commonly used distributions, starting values are not necessary. The function computes moment estimator and use them as starting values.
+```{r fitdistr}
+MASS::fitdistr(x, densfun = "gamma")
+```
 
+For distributions not in the provided list, the `densfun` needs to be a function returning a density evaluated at its first arguments, in which case, the `start` argument needs to be a named list to feed to the optimizer. For example, pretend that someone has a fancy distribution which is just a rename of the gamma distribution. Its density function is defined based on the gamma density `dgamma`.
+```{r fancy}
+dfancy <- function(x, shape, scale, log = FALSE) {
+  dgamma(x, shape = shape, scale = scale, log = log)
+}
+
+MASS::fitdistr(x, densfun = dfancy, start = list(shape = 10, scale = 20))
+```
+
+
+The **stats4**  package provides MLE using S4 classes.
+```{r mle}
+nll <- function(shape, scale) -sum(dfancy(x, shape, scale, TRUE))
+(fit <- stats4::mle(nll, start = list(shape = 10, scale = 10)))
+summary(fit)
+```
 ## Exercise
-1. Use git to clone the source of Hadley Wickham's **Advanced R Programming** from his GitHub repository to a local space on your own computer. Build the book using RStudio. During the building process, you may see error messages due to missing tools on your computer. Read the error messages carefully and fix them, until you get the book built. You may need to install some R packages, some fonts, and some developmental tools. On Windows, some codes for parallel computing may not work and need to be commented out.
+1. Use git to clone the source of Hadley Wickham's **Advanced R Programming** from his GitHub repository to a local space on your own computer. Build the book using RStudio. During the building process, you may see error messages due to missing tools on your computer. Read the error messages carefully and fix them, until you get the book built. You may need to install some R packages, some fonts, some latex packages, and some building tools for R packages. On Windows, some codes for parallel computing may not work and need to be commented out.
+
 
 2. Use **bookdown** or **rmarkdown** to produce a report for the following task. Consider approximation of the distribution function of $N(0, 1)$,
 \begin{equation}
@@ -59,4 +80,4 @@ Experiment with the approximation at $n \in \{10^2, 10^3, 10^4\}$
 at $t \in \{0.0, 0.67, 0.84, 1.28, 1.65, 2.32, 2.58, 3.09, 3.72\}$ to form a table.
 The table should include the true value for comparison.
 Further, repeat the experiment 100 times. Draw box plots of the bias at all $t$.
-The report should look like a manuscript, with a title, an abstract, and multiple sections. It should contain at least one math equation, one table, one figure, and one chunk of R code. The template of our Data Science Lab can be helpful: <https://statds.org/template/>.
+The report should look like a manuscript, with a title, an abstract, and multiple sections. It should contain at least one math equation, one table, one figure, and one chunk of R code. The template of our Data Science Lab can be helpful: <https://statds.org/template/>, the source of which is at <https://github.com/statds/dslab-templates>.
