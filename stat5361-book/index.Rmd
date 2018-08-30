@@ -14,12 +14,15 @@ Statisticl Computing, at UConn."
 
 # Prerequisites
 
-We assume that students can use R/Rstudio comfortably. If you are new to R, an extra amount of hard work should be devoted to make it up. In addition to the official documentations from the R-project, the presentations at a [local SIAM workshop] (https://siam.math.uconn.edu/events/) given by Wenjie Wang, a PhD student in Statistics, can be enlighting:
+We assume that students can use R/Rstudio comfortably. If you are new to R, an extra amount of hard work should be devoted to make it up. In addition to the official documentations from the R-project, the presentations at a [local SIAM workshop in Spring 2018] (https://siam.math.uconn.edu/events/) given by Wenjie Wang, a PhD student in Statistics at the time, can be enlighting:
 
 - <https://github.com/wenjie2wang/2018-01-19-siam>
 - <https://github.com/wenjie2wang/2018-04-06-siam>
 
-The Advanced R Programming book by Hadley Wickham is available at.
+If you have used R, but never paid attention to R programming styles, a style clinic would be a necessary step. A good place to start is Google's R style guide at <https://google.github.io/styleguide/Rguide.xml>. From my experience, the two most commonly overlooked styles for beginners are spacing and indentation. Appropriate spacing and indentation would immediately make crowdly piled code much more eye-friendly. Such styles can be automatically enforced by R packages such as **formatr** or **lintr**. Tow important styles that cannot be automatically corrected are naming and documentation. As in any programming languate, naming of R objects (variables, functions, files, etc.) shoud be informative, concise, and consistent with certain naming convention. Documentation needs to be sufficient, concise, and kept close to the code; tools like R package **roxygen2** can be very helpful. See Hadley Wichham's online book <http://style.tidyverse.org/> for more detailed tips.
+
+
+For intermediate R users who want a skill lift, The __Advanced R Programming__ book by Hadley Wickham is available at <https://adv-r.hadley.nz/>. The source that generated the book is kindly made available at GitHub: <https://github.com/hadley/adv-r>. It is a great learning experience to complile the book from the source, during which you may pick up many necessary skills.
 
 
 The homework, exam, and project will be completed by __R Markdown__. Following the step by step the instructions in Yihui Xie's online book on __bookdown__ at <https://bookdown.org/yihui/bookdown/>, you will be amazed how quickly you can learn to produce cool-looking documents and even book manuscripts. If you are a keener, you may as well following Yihui's __blogdown__, see online book <https://bookdown.org/yihui/blogdown/>, to build your own website using R Markdown.
@@ -27,7 +30,7 @@ The homework, exam, and project will be completed by __R Markdown__. Following t
 
 All your source code will be version controlled by __git__ and archived on __GitHub__. RStudio has made using git quite straightforward. The online tutorial by Jenny Bryan, Happy Git and GitHub for the useR, is a very useful tool to get started
 
-## A Likelihood Estimation Example
+## A Teaser Example: Likelihood Estimation
 
 In mathematical statistics, we have learned that, under certain regularity conditions, the maximum likelihood estimator (MLE) is consistent, asymtotically normal, and most efficient. The asymptotic variance of the estimator if the inverse of the Fisher information matrix. Speficially, let $X_1, \ldots, X_n$ be a random sample from a distribution with density $f(x; \theta)$, where $\theta$ is a parameter. How do we obtain the MLE?
 
@@ -37,3 +40,23 @@ n <- 100
 x <- rgamma(n, scale = 2, shape = 4)
 hist(x)
 ```
+
+
+## Exercise
+1. Use git to clone the source of Hadley Wickham's **Advanced R Programming** from his GitHub repository to a local space on your own computer. Build the book using RStudio. During the building process, you may see error messages due to missing tools on your computer. Read the error messages carefully and fix them, until you get the book built. You may need to install some R packages, some fonts, and some developmental tools. On Windows, some codes for parallel computing may not work and need to be commented out.
+
+2. Use **bookdown** or **rmarkdown** to produce a report for the following task. Consider approximation of the distribution function of $N(0, 1)$,
+\begin{equation}
+\Phi(t) = \int_{-\infty}^t \frac{1}{\sqrt{2\pi}} e^{-y^2 / 2} dy,
+(\#eq:cdf)
+\end{equation}
+by the Monte Carlo methods:
+\begin{equation}
+\hat\Phi(t) = \frac{1}{n} \sum_{i=1}^n I(X_i \le t),
+\end{equation}
+where $X_i$'s are iid $N(0, 1)$ variables.
+Experiment with the approximation at $n \in \{10^2, 10^3, 10^4\}$
+at $t \in \{0.0, 0.67, 0.84, 1.28, 1.65, 2.32, 2.58, 3.09, 3.72\}$ to form a table.
+The table should include the true value for comparison.
+Further, repeat the experiment 100 times. Draw box plots of the bias at all $t$.
+The report should look like a manuscript, with a title, an abstract, and multiple sections. It should contain at least one math equation, one table, one figure, and one chunk of R code. The template of our Data Science Lab can be helpful: <https://statds.org/template/>.
