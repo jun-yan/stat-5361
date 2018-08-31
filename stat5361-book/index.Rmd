@@ -32,16 +32,16 @@ All your source code will be version controlled by __git__ and archived on __Git
 
 ## A Teaser Example: Likelihood Estimation
 
-In mathematical statistics, we have learned that, under certain regularity conditions, the maximum likelihood estimator (MLE) is consistent, asymtotically normal, and most efficient. The asymptotic variance of the estimator if the inverse of the Fisher information matrix. Speficially, let $X_1, \ldots, X_n$ be a random sample from a distribution with density $f(x; \theta)$, where $\theta$ is a parameter. How do we obtain the MLE?
+In mathematical statistics, we have learned that, under certain regularity conditions, the maximum likelihood estimator (MLE) is consistent, asymptotically normal, and most efficient. The asymptotic variance of the estimator if the inverse of the Fisher information matrix. Specifically, let $X_1, \ldots, X_n$ be a random sample from a distribution with density $f(x; \theta)$, where $\theta$ is a parameter. How do we obtain the MLE?
 
 ```{r data}
 set.seed(123)
 n <- 100
-x <- rgamma(n, scale = 2, shape = 4)
+x <- rgamma(n, shape = 2, scale = 4)
 hist(x)
 ```
 
-Package **MASS** provides a function `fitdistr()` to obtain the MLE for univaraite distributions with a random sample. We can learn two things from this function. First, an objective function representing the negative loglikelihood is formed, depending on the input of the density function, and fed to the optimizer function `optim`. Second, the variance estimator of the MLE is obtained by inverting the Hessian matrix of the objective function, which is an estimator of the Fisher information matrix. For commonly used distributions, starting values are not necessary. The function computes moment estimator and use them as starting values.
+Package **MASS** provides a function `fitdistr()` to obtain the MLE for univariate distributions with a random sample. We can learn two things from this function. First, an objective function representing the negative loglikelihood is formed, depending on the input of the density function, and fed to the optimizer function `optim`. Second, the variance estimator of the MLE is obtained by inverting the Hessian matrix of the objective function, which is an estimator of the Fisher information matrix. For commonly used distributions, starting values are not necessary. The function computes moment estimator and use them as starting values.
 ```{r fitdistr}
 MASS::fitdistr(x, densfun = "gamma")
 ```
@@ -52,17 +52,17 @@ dfancy <- function(x, shape, scale, log = FALSE) {
   dgamma(x, shape = shape, scale = scale, log = log)
 }
 
-MASS::fitdistr(x, densfun = dfancy, start = list(shape = 10, scale = 20))
+suppressWarnings(MASS::fitdistr(x, densfun = dfancy, start = list(shape = 10, scale = 20)))
 ```
 
 
 The **stats4**  package provides MLE using S4 classes.
 ```{r mle}
 nll <- function(shape, scale) -sum(dfancy(x, shape, scale, TRUE))
-(fit <- stats4::mle(nll, start = list(shape = 10, scale = 10)))
-summary(fit)
+suppressWarnings(fit <- stats4::mle(nll, start = list(shape = 10, scale = 10)))
+stats4::summary(fit)
 ```
-## Exercise
+## Exercises
 1. Use git to clone the source of Hadley Wickham's **Advanced R Programming** from his GitHub repository to a local space on your own computer. Build the book using RStudio. During the building process, you may see error messages due to missing tools on your computer. Read the error messages carefully and fix them, until you get the book built. You may need to install some R packages, some fonts, some latex packages, and some building tools for R packages. On Windows, some codes for parallel computing may not work and need to be commented out.
 
 
