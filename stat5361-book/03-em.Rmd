@@ -1,0 +1,3 @@
+# EM Algorithm
+
+EM has its own chapter for its importance in statistics.
