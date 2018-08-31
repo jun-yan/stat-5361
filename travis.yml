@@ -4,6 +4,12 @@ pandoc_version: 1.19.2.1
 
 before_script:
 
+before_script:
+  - chmod +x ./_build.sh
+  - chmod +x ./_deploy.sh
+
 script:
-  - ./make
+  - ./_build.sh
+  - ./_deploy.sh
+
 
