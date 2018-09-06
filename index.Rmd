@@ -160,8 +160,23 @@ where $x_0 \in \{0, 1\}$, $x_i \in \{0, 1, \ldots, \beta - 1\}$, $i = 1, \ldots,
 
 
 Let $f(x)$ be the floating point representation of $x$.
-The relative error of $f(x)$ is $\delta_x = [f(x) - x] / x$.
+The relative error of $f(x)$ is $\delta_x = [f(x) - x] / x$. The basic formula for error analysis is
+\[
+f(x \circ y) = (1+ \epsilon_m) (x \circ y) 
+\]
+where $\circ$ is an operator (e.g., add, subtract, multiple, divide, etc.), $(x \circ y)$ is the exact result, and $\epsilon_m$ is the smallest positive floating-point number $z$ such that $1 + z \ne 1$. __Add demonstration from Section 1.3 of @gray2001advanced; see also [notes] (https://people.eecs.berkeley.edu/~demmel/cs267/lecture21/lecture21.html) __
 
+
+
+(Section 1.4 from Gray)
+Consider computing $x + y$, where $x$ and $y$ have the same sign. Let $\delta_x$ and $\delta_y$ be the relative error in the floating point representation of $x$ and $y$, respectively (e.g., $\delta_x = [f(x) − x]/x$, so $f(x) = x(1 + \delta_x)$). What the computer actually calculates is the sum of the floating point representations $f (x) + f (y)$, which may not have an exact floating point representation, in which case it is rounded to the nearest representable number $f(f(x) + f(y))$. Let $\delta_s$ be the relative error of the $f(f(x) + f(y))$. Then,
+\begin{align*}
+|f(f(x)+f(y))−(x+y)| &= |f(f(x)+f(y))−f(x)−f(y)+f(x)−x+f(y)−y| \\
+&≤ |\delta_s[f(x) + f(y)]| + |\delta_x x| + |\delta_y y|\\
+&≤ |x+y|(\epsilon_m + \epsilon^2_m) + |x+y| \epsilon_m \\
+&\approx 2\epsilon_m |x+y|,
+\end{align*}
+where the higher order terms in εm have been dropped, since they are usually negligible. Thus $2\epsilon_m$ is an (approximate) bound on the relative error in a single addition of two numbers with the same sign.
 
 Subtracting one number from another number of similar 
 magnitude can lead to large relative error. This is more easily illustrated using a decimal system ($\beta = 10$);
@@ -195,39 +210,23 @@ fexp <- function(x) {
 
 
 options(digits = 10)
-c(exp(  1), fexp(  1))
-c(exp( 10), fexp( 10))
-c(exp( -1), fexp( -1))
-c(exp(-10), fexp(-10))
-c(exp(-20), fexp(-20))
-c(exp(-30), fexp(-30))
+x <- c(10, 20, 30)
+cbind(exp( x), sapply( x, fexp))
+cbind(exp(-x), sapply(-x, fexp))
 ```
 
 The accuracy is poor for $x < 0$. The problem in accuracy occurs because the terms alternate in sign, and some of the terms are much greater than the final answer. It can be fixed by noting that $\exp(-x) = 1 / \exp(x)$.
 
 
 ```{r fexp2}
-fexp <- function(x) {
-  xa <- abs(x)
-  i <- 0
-  expx <- 1
-  u <- 1
-  while (abs(u) > 1.e-8 * abs(expx)) {
-    i <- i + 1
-    u <- u * xa / i
-    expx <- expx + u
-  }
-  if (x >= 0) expx else 1 / expx
+fexp2 <- function(x) {
+  if (x >= 0) fexp(x) else 1 / fexp(-x)
 }
 
-
-options(digits = 10)
-c(exp( -1), fexp( -1))
-c(exp(-10), fexp(-10))
-c(exp(-20), fexp(-20))
-c(exp(-30), fexp(-30))
+cbind(exp(-x), sapply(-x, fexp2))
 ```
 
+### Condition Number
 (Wiki)
 In numerical analysis, the condition number of a function with respect to an argument measures how much the output value of the function can change for a small change in the input argument. This is used to measure how sensitive a function is to changes or errors in the input, and how much error in the output results from an error in the input. 
 
@@ -235,10 +234,26 @@ In numerical analysis, the condition number of a function with respect to an arg
 The condition number is an application of the derivative, and is formally defined as the value of the asymptotic worst-case relative change in output for a relative change in input. The ``function'' is the solution of a problem and the ``arguments'' are the data in the problem. The condition number is frequently applied to questions in linear algebra, in which case the derivative is straightforward but the error could be in many different directions, and is thus computed from the geometry of the matrix. More generally, condition numbers can be defined for non-linear functions in several variables.
 
 
-A problem with a low condition number is said to be well-conditioned, while a problem with a high condition number is said to be ill-conditioned. The condition number is a property of the problem. Paired with the problem are any number of algorithms that can be used to solve the problem, that is, to calculate the solution. Some algorithms have a property called backward stability. In general, a backward stable algorithm can be expected to accurately solve well-conditioned problems. Numerical analysis textbooks give formulas for the condition numbers of problems and identify the backward stable algorithms.
+A problem with a low condition number is said to be well-conditioned, while a problem with a high condition number is said to be ill-conditioned. The condition number is a property of the problem. Paired with the problem are any number of algorithms that can be used to solve the problem, that is, to calculate the solution. Some algorithms have a property called backward stability. In general, a backward stable algorithm can be expected to accurately solve well-conditioned problems. Numerical analysis textbooks give formulas for the condition numbers of problems and identify the backward stable algorithms. In the exponential function example, the first implementation is unstable for large negative $x$ while the second is stable.
 
 
-In the exponential function example, the first implementation is unstable for large negative $x$ while the second is stable.
+It is important in likelihood maximization to work on the log scale. Use argument `log` in `dpq` functions instead of taking logs. This can be important in probalistic networks and MC(MC) where $P = P_1 · P_2 \cdots  · P_n$ quickly underflows to zero. 
+
+
+It is also important to use `log1p` and `expm1` alike when caculating $\log(1 + x)$ and $\exp(x)- 1$  when $|x| \ll 1$. One example is the evaluation of distribution and density function of the generalized extreme value (GEV) distribution. The GEV distribution has distribution function
+\begin{equation*}
+F(x; \mu, \sigma, \xi) = 
+\begin{cases}
+\exp[- \left[ 1 + \left(\frac{x - \mu}{\sigma}\right) \xi\right]^{-1 / \xi} & \xi \ne 0, \quad (1 + \xi (x - \mu) / \sigma) > 0,\\
+\exp[e^{ -(x - \mu) / \sigma}] & \xi = 0,
+\end{cases}
+\end{equation*}
+for $\mu \in R$, $\sigma > 0$, $\xi \in R$.
+```{r gev}
+curve(evir::pgev(1, xi = x),    1e-20, .01, log="x", n = 1025)
+curve(texmex::pgev(1, 0, 1, x), 1e-20, .01, log="x", n = 1025)
+```
+
 
 
 ## Exercises
@@ -262,7 +277,7 @@ Further, repeat the experiment 100 times. Draw box plots of the bias at all $t$.
 The report should look like a manuscript, with a title, an abstract, and multiple sections. It should contain at least one math equation, one table, one figure, and one chunk of R code. The template of our Data Science Lab can be helpful: <https://statds.org/template/>, the source of which is at <https://github.com/statds/dslab-templates>.
 
 
-3. Explain how `.Machine$double.xmax`, `.Machine$double.xmin`, `.Machine$double.eps`, and `.Machine@double.neg.eps` are defined using the 64-bit double precision floating point arithmetic. Repeat using 32-bit sinble precision.
+3. Explain how `.Machine$double.xmax`, `.Machine$double.xmin`, `.Machine$double.eps`, and `.Machine@double.neg.eps` are defined using the 64-bit double precision floating point arithmetic.
 
 ```{r include=FALSE}
 # automatically create a bib database for R packages
