@@ -65,6 +65,22 @@ stats4::summary(fit)
 
 ## Computer Arithmetics
 
+@burns2012r summarizes many traps beginners may fall into. The first one is the floating number trap. Are you surprised by what you see in the following?
+```{r trap}
+## floating point traps
+.1 == .3 / 3
+
+seq(0, 1, by = .1) == 0.3
+seq(0, 1, by = .1)
+
+unique(c(.3, .4 - .1, .5 - .2, .6 - .3, .7 - .4))
+c(.3, .4 - .1, .5 - .2, .6 - .3, .7 - .4)
+
+options(digits = 20)
+.1
+.3 / 3
+```
+
 How does a computer represent a number? Computers use switches, which has only two states, on and off, to represent numbers. That is, it uses the binary number system. With a finite (though large) number switches on a computer, not all real numbers are representable. Binary numbers are made of bits, each of which represent a switch. A byte is 8 bits, which represents one character.
 
 ### Integers
@@ -111,25 +127,13 @@ A standard double precision representation uses 8 bytes or 64 bits: a sign bit, 
 The IEEE standard for floating point arithmetic calls for basic arithmetic operations to be performed to higher precision, and then rounded to the nearest representable floating point number. 
 
 
-Arithmetic underflow occurs where the result of a calculation is a smaller number than what the computer can actually represent. Arithmetic overflow occurs when a calculation produces a result that is greater in magnitude than what the computer can represent.
-
+Arithmetic underflow occurs where the result of a calculation is a smaller number than what the computer can actually represent. Arithmetic overflow occurs when a calculation produces a result that is greater in magnitude than what the computer can represent. Here is a demonstration [@gray2001advanced].
 ```{r float}
 options(digits = 20)
 .Machine$double.eps
 .Machine$double.base ^ .Machine$double.ulp.digits
 1 + .Machine$double.eps == 1
 1 + .Machine$double.base ^ (.Machine$double.ulp.digits - 1L) == 1
-
-
-## floating point traps
-.1 == .3 / 3
-.3 / 3
-
-seq(0, 1, by = .1) == 0.3
-seq(0, 1, by = .1)
-
-unique(c(.3, .4 - .1, .5 - .2, .6 - .3, .7 - .4))
-c(.3, .4 - .1, .5 - .2, .6 - .3, .7 - .4)
 
 ## largest possible significand
 u <- 0
@@ -162,7 +166,9 @@ The relative error of $f(x)$ is $\delta_x = [f(x) - x] / x$.
 
 
 Subtracting one number from another number of similar 
-magnitude can lead to large relative error.
+magnitude can lead to large relative error. This is more easily illustrated using a decimal system ($\beta = 10$);
+see Section~1.4 of @srivastava2009computational. For simplicity, consider the case with $t = 4$. Let $x = 122.9572$ and $y = 123.1498$. Their floating point representations are `(1230, 3)` and `(1231, 3)`. The resulting difference is $−0.1$ while the actual answer is $−0.1926$. The idea is the same on a binary system. 
+
 Consider an extreme case:
 \begin{align*}
 f(x) &= 1 / 2 + \sum_{i=2}^{t-1} x_i / 2^i + 1 / 2^t,\\
@@ -173,8 +179,8 @@ The true difference $x - y$ could be anywhere in $(0, 1 / 2^{t-1})$
 The computed subtraction is $f(x) - f(y) = 1 / 2^t$.
 So the relative error can be arbitrarily large.
 
-For example, consider an implementation of the exponential function
-with the Taylor series
+
+The error from subtraction operation also explains why approximating $e^{x}$ by partial sums does not work well for negative $x$ with a large magnitude. Consider an implementation of the exponential function with the Taylor series
 $\exp(x) = \sum_{i=0}^{\infty} x^i / i!$.
 ```{r fexp}
 fexp <- function(x) {
@@ -199,10 +205,7 @@ c(exp(-20), fexp(-20))
 c(exp(-30), fexp(-30))
 ```
 
-The accuracy is poor for $x < 0$.
-The problem in accuracy occurs because the terms alternate in sign,
-and some of the terms are much greater than the final answer.
-It can be fixed by noting that $\exp(-x) = 1 / \exp(x)$.
+The accuracy is poor for $x < 0$. The problem in accuracy occurs because the terms alternate in sign, and some of the terms are much greater than the final answer. It can be fixed by noting that $\exp(-x) = 1 / \exp(x)$.
 
 
 ```{r fexp2}
@@ -228,12 +231,7 @@ c(exp(-30), fexp(-30))
 ```
 
 (Wiki)
-In numerical analysis, the condition number of a function with respect 
-to an argument measures how much the output value of the function can
-change for a small change in the input argument. 
-This is used to measure how sensitive a function is to changes or 
-errors in the input, and how much error in the output results from 
-an error in the input. 
+In numerical analysis, the condition number of a function with respect to an argument measures how much the output value of the function can change for a small change in the input argument. This is used to measure how sensitive a function is to changes or errors in the input, and how much error in the output results from an error in the input. 
 
 
 The condition number is an application of the derivative, and is formally defined as the value of the asymptotic worst-case relative change in output for a relative change in input. The ``function'' is the solution of a problem and the ``arguments'' are the data in the problem. The condition number is frequently applied to questions in linear algebra, in which case the derivative is straightforward but the error could be in many different directions, and is thus computed from the geometry of the matrix. More generally, condition numbers can be defined for non-linear functions in several variables.
@@ -242,12 +240,11 @@ The condition number is an application of the derivative, and is formally define
 A problem with a low condition number is said to be well-conditioned, while a problem with a high condition number is said to be ill-conditioned. The condition number is a property of the problem. Paired with the problem are any number of algorithms that can be used to solve the problem, that is, to calculate the solution. Some algorithms have a property called backward stability. In general, a backward stable algorithm can be expected to accurately solve well-conditioned problems. Numerical analysis textbooks give formulas for the condition numbers of problems and identify the backward stable algorithms.
 
 
-In the exponential function example, the first implementation
-is unstable for large negative $x$ while the second is stable.
+In the exponential function example, the first implementation is unstable for large negative $x$ while the second is stable.
 
 
 ## Exercises
-1. Use git to clone the source of Hadley Wickham's **Advanced R Programming** from his GitHub repository to a local space on your own computer. Build the book using RStudio. During the building process, you may see error messages due to missing tools on your computer. Read the error messages carefully and fix them, until you get the book built. You may need to install some R packages, some fonts, some latex packages, and some building tools for R packages. On Windows, some codes for parallel computing may not work and need to be commented out.
+1. Use git to clone the source of Hadley Wickham's **Advanced R Programming** from his GitHub repository to a local space on your own computer. Build the book using RStudio. During the building process, you may see error messages due to missing tools on your computer. Read the error messages carefully and fix them, until you get the book built. You may need to install some R packages, some fonts, some latex packages, and some building tools for R packages. On Windows, some codes for parallel computing may not work and need to be swapped out. Document the problems you encountered and how you solved them in an R Markdown file named `README-mybuild.Rmd`. Push it to your homework GitHub repository so that it can help other students to build the book.
 
 
 2. Use **bookdown** or **rmarkdown** to produce a report for the following task. Consider approximation of the distribution function of $N(0, 1)$,
@@ -266,11 +263,13 @@ The table should include the true value for comparison.
 Further, repeat the experiment 100 times. Draw box plots of the bias at all $t$.
 The report should look like a manuscript, with a title, an abstract, and multiple sections. It should contain at least one math equation, one table, one figure, and one chunk of R code. The template of our Data Science Lab can be helpful: <https://statds.org/template/>, the source of which is at <https://github.com/statds/dslab-templates>.
 
+
+3. Explain how `.Machine$double.xmax`, `.Machine$double.xmin`, `.Machine$double.eps`, and `.Machine@double.neg.eps` are defined using the 64-bit double precision floating point arithmetic. Repeat using 32-bit sinble precision.
+
 ```{r include=FALSE}
 # automatically create a bib database for R packages
 knitr::write_bib(c(
-  .packages(), 'bookdown', 'knitr', 'rmarkdown'
+  .packages(), 'bookdown', 'knitr', 'rmarkdown',
+  "MASS"
 ), 'packages.bib')
 ```
-
-3. Explain how `.Machine$double.xmax`, `.Machine$double.xmin`, `.Machine$double.eps`, and `.Machine@double.neg.eps` are defined using the 64-bit double precision floating point arithmetic. Repeat using 32-bit sinble precision.
