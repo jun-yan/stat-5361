@@ -7,9 +7,7 @@ documentclass: book
 bibliography: [book.bib, packages.bib]
 biblio-style: chicago
 link-citations: yes
-description: "This is a series of notes
-for the students of STAT 5361,
-Statisticl Computing, at UConn."
+description: "This is a series of notes for the students of STAT 5361, Statisticl Computing, at UConn."
 ---
 
 # Prerequisites
@@ -158,7 +156,7 @@ More generally, a floating point number with base $\beta$ can be represented as
 \[
 (-1)^{x_0}\left(\sum_{i=1}^t x_i \beta^{-i}\right) \beta^{k},
 \]
-where $x_0 \in \{0, 1\}$, $x_i \in \{0, 1, \ldots, \beta - 1\}$, $i = 1, \ldots, t$, and $E_\min \le k \le E_\max$ for some $E_\min$ and $E_\max$. For a binary system $\beta = 2 while for the decimal system $\beta = 10$. To avoid multiple representations, a normalized representation is defined by forcing the first significant digit ($x_1$) to be non-zero. The numbers $\{x: |x| < \beta E_\min −1\}$ (called subnormals) can not be normalized and, are sometimes excluded from the system. If an operation results in a subnormal number underflow is said to have occurred. Similarly if an operation results in a number with the exponent $k > E\max$, overflow is said to have occurred.
+where $x_0 \in \{0, 1\}$, $x_i \in \{0, 1, \ldots, \beta - 1\}$, $i = 1, \ldots, t$, and $E_{\min} \le k \le E_{\max}$ for some $E_{\min}$ and $E_{\max}$. For a binary system $\beta = 2$ while for the decimal system $\beta = 10$. To avoid multiple representations, a normalized representation is defined by forcing the first significant digit ($x_1$) to be non-zero. The numbers $\{x: |x| < \beta E_{\min} −1\}$ (called subnormals) can not be normalized and, are sometimes excluded from the system. If an operation results in a subnormal number underflow is said to have occurred. Similarly if an operation results in a number with the exponent $k > E_{\max}$, overflow is said to have occurred.
 
 
 Let $f(x)$ be the floating point representation of $x$.
