@@ -249,7 +249,7 @@ F(x; \mu, \sigma, \xi) =
 \end{cases}
 \end{equation*}
 for $\mu \in R$, $\sigma > 0$, $\xi \in R$.
-```{r gev, out.width='50%', fig.show='hold', fig.cap='Two implementations of GEV distribution function when $\\xi$ is close to zero.'}
+```{r gev, fig.asp = 1, out.width='50%', fig.show='hold', fig.cap='Two implementations of GEV distribution function when $\\xi$ is close to zero.'}
 curve(evir::pgev(1, xi = x),    1e-20, .01, log="x", n = 1025)
 curve(texmex::pgev(1, 0, 1, x), 1e-20, .01, log="x", n = 1025)
 ```
