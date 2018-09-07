@@ -111,7 +111,7 @@ u
 ### Floating Point
 A floating point number is represented by 
 \[
-(-1)^{x_0}\left(\sum_{i=1}^t x_i 2^{-i}\right) 2^{k}
+(-1)^{x_0}\left(1 + \sum_{i=1}^t x_i 2^{-i}\right) 2^{k}
 \]
 for $x_i \in \{0, 1\}$,
 where $k$ is an integer called the exponent,
@@ -119,7 +119,7 @@ $x_0$ is the sign bit.
 The fractional part $\sum_{i=1}^t x_i 2^{-i}$ is the significand. By convention (for unique representation), the exponent is chosen so that the fist digit of the significand is 1, unless it would result in the exponent being out of range.
 
 
-A standard double precision representation uses 8 bytes or 64 bits: a sign bit, an 11 bit exponent, and 52 bits for the significand. With 11 bits there are $2^{11} = 2048$ possible values for the exponent, which are usually shifted so that the allowed values range from $-1022$ to 1024, again with one special sign value.
+A standard double precision representation uses 8 bytes or 64 bits: a sign bit, an 11 bit exponent, and $t = 52$ bits for the significand. With 11 bits there are $2^{11} = 2048$ possible values for the exponent, which are usually shifted so that the allowed values range from $-1022$ to 1023, again with one special sign value.
 
 
 The IEEE standard for floating point arithmetic calls for basic arithmetic operations to be performed to higher precision, and then rounded to the nearest representable floating point number. 
@@ -249,15 +249,15 @@ F(x; \mu, \sigma, \xi) =
 \end{cases}
 \end{equation*}
 for $\mu \in R$, $\sigma > 0$, $\xi \in R$.
-```{r gev}
+```{r gev, out.width='50%', fig.show='hold', fig.cap='Two implementations of GEV distribution function when $\\xi$ is close to zero.'}
 curve(evir::pgev(1, xi = x),    1e-20, .01, log="x", n = 1025)
 curve(texmex::pgev(1, 0, 1, x), 1e-20, .01, log="x", n = 1025)
 ```
-
+Figure \@ref(fig:gev) shows a comparison of evaluating the GEV distribution function at $x = 1$ for $\mu = 0$, $\sigma = 1$, and a sequence of $\xi$ values near zero using two implementations.
 
 
 ## Exercises
-1. Use git to clone the source of Hadley Wickham's **Advanced R Programming** from his GitHub repository to a local space on your own computer. Build the book using RStudio. During the building process, you may see error messages due to missing tools on your computer. Read the error messages carefully and fix them, until you get the book built. You may need to install some R packages, some fonts, some latex packages, and some building tools for R packages. On Windows, some codes for parallel computing may not work and need to be swapped out. Document the problems you encountered and how you solved them in an R Markdown file named `README-mybuild.Rmd`. Push it to your homework GitHub repository so that it can help other students to build the book.
+1. Use git to clone the source of Hadley Wickham's **Advanced R Programming** from his GitHub repository to a local space on your own computer. Build the book using RStudio. During the building process, you may see error messages due to missing tools on your computer. Read the error messages carefully and fix them, until you get the book built. You may need to install some R packages, some fonts, some latex packages, and some building tools for R packages. On Windows, some codes for parallel computing may not work and need to be swapped out. Document the problems you encountered and how you solved them in an R Markdown file named `README.Rmd`. Push it to your homework GitHub repository so that it can help other students to build the book.
 
 
 2. Use **bookdown** or **rmarkdown** to produce a report for the following task. Consider approximation of the distribution function of $N(0, 1)$,
