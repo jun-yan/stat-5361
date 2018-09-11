@@ -1,3 +1,15 @@
 # Optimization {#optim}
 
-This chapter is on optimization.
+Recall the MLE example in Chapter \@ref{prelim}.
+Consider a random sample $X_1, \ldots, X_n$ of size $n$ coming from a
+univariate distribution with density function $f(x| \theta)$, where
+$\theta$ is a parameter vector. The MLE $\hat\theta$ of the unknown
+parameter $\theta$ is obtained by maximizing the loglikelihood
+function
+\[
+L(\theta) = \sum_{i=1}^n \log f(X_i | \theta)
+\]
+with respect to $\theta$.
+Typically, $\hat\theta$ is obtained by solving the score equation, the
+derivative of the loglikelihood function equated to zero.
+
