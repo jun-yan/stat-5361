@@ -18,7 +18,6 @@ extra amount of hard work should be devoted to make it up. In addition to the
 official documentations from the R-project, the presentations at a [local SIAM
 workshop in Spring 2018] (https://siam.math.uconn.edu/events/) given by Wenjie
 Wang, a PhD student in Statistics at the time, can be enlighting:
-
 - <https://github.com/wenjie2wang/2018-01-19-siam>
 - <https://github.com/wenjie2wang/2018-04-06-siam>
 
@@ -161,7 +160,7 @@ More generally, a floating point number with base $\beta$ can be represented as
 \[
 (-1)^{x_0}\left(\sum_{i=1}^t x_i \beta^{-i}\right) \beta^{k},
 \]
-where $x_0 \in \{0, 1\}$, $x_i \in \{0, 1, \ldots, \beta - 1\}$, $i = 1, \ldots, t$, and $E_{\min} \le k \le E_{\max}$ for some $E_{\min}$ and $E_{\max}$. For a binary system $\beta = 2$ while for the decimal system $\beta = 10$. To avoid multiple representations, a normalized representation is defined by forcing the first significant digit ($x_1$) to be non-zero. The numbers $\{x: |x| < \beta^{E_{\min} - −1}\}$ (called subnormals) can not be normalized and, are sometimes excluded from the system. If an operation results in a subnormal number underflow is said to have occurred. Similarly if an operation results in a number with the exponent $k > E_{\max}$, overflow is said to have occurred.
+where $x_0 \in \{0, 1\}$, $x_i \in \{0, 1, \ldots, \beta - 1\}$, $i = 1, \ldots, t$, and $E_{\min} \le k \le E_{\max}$ for some $E_{\min}$ and $E_{\max}$. For a binary system $\beta = 2$ while for the decimal system $\beta = 10$. To avoid multiple representations, a normalized representation is defined by forcing the first significant digit ($x_1$) to be non-zero. The numbers $\{x: |x| < \beta^{E_{\min} - 1}\}$ (called subnormals) can not be normalized and, are sometimes excluded from the system. If an operation results in a subnormal number underflow is said to have occurred. Similarly if an operation results in a number with the exponent $k > E_{\max}$, overflow is said to have occurred.
 
 
 Let $f(x)$ be the floating point representation of $x$.
@@ -174,12 +173,12 @@ where $\circ$ is an operator (e.g., add, subtract, multiple, divide, etc.), $(x 
 
 
 (Section 1.4 from Gray)
-Consider computing $x + y$, where $x$ and $y$ have the same sign. Let $\delta_x$ and $\delta_y$ be the relative error in the floating point representation of $x$ and $y$, respectively (e.g., $\delta_x = [f(x) − x]/x$, so $f(x) = x(1 + \delta_x)$). What the computer actually calculates is the sum of the floating point representations $f (x) + f (y)$, which may not have an exact floating point representation, in which case it is rounded to the nearest representable number $f(f(x) + f(y))$. Let $\delta_s$ be the relative error of the $f(f(x) + f(y))$. Then,
+Consider computing $x + y$, where $x$ and $y$ have the same sign. Let $\delta_x$ and $\delta_y$ be the relative error in the floating point representation of $x$ and $y$, respectively (e.g., $\delta_x = [f(x) - x]/x$, so $f(x) = x(1 + \delta_x)$). What the computer actually calculates is the sum of the floating point representations $f (x) + f (y)$, which may not have an exact floating point representation, in which case it is rounded to the nearest representable number $f(f(x) + f(y))$. Let $\delta_s$ be the relative error of the $f(f(x) + f(y))$. Then,
 \begin{align*}
-&\,\, |f(f(x)+f(y))−(x+y)| \\ 
-&= |f(f(x)+f(y))−f(x)−f(y)+f(x)−x+f(y)−y| \\
-&≤ |\delta_s[f(x) + f(y)]| + |\delta_x x| + |\delta_y y|\\
-&≤ |x+y|(\epsilon_m + \epsilon^2_m) + |x+y| \epsilon_m \\
+&\,\, |f(f(x)+f(y)) - x+y)| \\ 
+&= |f(f(x)+f(y)) - f(x) - f(y) + f(x)-x+f(y)-y| \\
+&\le |\delta_s[f(x) + f(y)]| + |\delta_x x| + |\delta_y y|\\
+&\le |x+y|(\epsilon_m + \epsilon^2_m) + |x+y| \epsilon_m \\
 &\approx 2\epsilon_m |x+y|,
 \end{align*}
 where the higher order terms in $\epsilon_m$ have been dropped, since they are usually negligible. Thus $2\epsilon_m$ is an (approximate) bound on the relative error in a single addition of two numbers with the same sign.
@@ -212,7 +211,7 @@ __Todo: design a decimal system with limited precision to demonstrate the error 
 
 Subtracting one number from another number of similar magnitude can lead to
 large relative error. This is more easily illustrated using a decimal system
-($\beta = 10$); see Section~1.4 of @srivastava2009computational. For simplicity, consider the case with $t = 4$. Let $x = 122.9572$ and $y = 123.1498$. Their floating point representations are `(1230, 3)` and `(1231, 3)`. The resulting difference is $−0.1$ while the actual answer is $−0.1926$. The idea is the same on a binary system. 
+($\beta = 10$); see Section~1.4 of @srivastava2009computational. For simplicity, consider the case with $t = 4$. Let $x = 122.9572$ and $y = 123.1498$. Their floating point representations are `(1230, 3)` and `(1231, 3)`. The resulting difference is $-0.1$ while the actual answer is $-0.1926$. The idea is the same on a binary system. 
 
 Consider an extreme case:
 \begin{align*}
@@ -319,4 +318,3 @@ knitr::write_bib(c(
   "MASS"
 ), 'packages.bib')
 ```
-
