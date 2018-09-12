@@ -19,9 +19,10 @@ i.e., the derivative of the loglikelihood function equated to zero.
 From mathematical statistics, it is known that, under certain regularity
 conditions,
 \begin{align*}
-E \frac{\partial}{\partial \theta} \log f(X; \theta) &= 0,\\
-E \frac{\partial}{\partial \theta} \log f(X; \theta)
-\left[\frac{\partial}{\partial \theta}\ log f(X; \theta) \right]^{\top} &= - E
+\E \frac{\partial}{\partial \theta} \log f(X; \theta) &= 0,\\
+\E \frac{\partial}{\partial \theta} \log f(X; \theta)
+\left[\frac{\partial}{\partial \theta}\ log f(X; \theta) \right]^{\top} 
+&= - \E
 \frac{\partial^2}{\partial \theta \partial \theta^{\top}} \log f(X; \theta).
 \end{align*}
 The expectation in the second equation is known as the Fisher information

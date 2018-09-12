@@ -11,7 +11,11 @@ description: "This is a series of notes for the students of
   STAT 5361, Statisticl Computing, at UConn."
 ---
 
+\newcommand{\E}{\mathbb{E}}
+
 # Prerequisites {#prelim}
+
+$\E \log X = 4$
 
 We assume that students can use R/Rstudio comfortably. If you are new to R, an
 extra amount of hard work should be devoted to make it up. In addition to the
