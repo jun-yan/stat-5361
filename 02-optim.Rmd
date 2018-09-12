@@ -1,15 +1,43 @@
 # Optimization {#optim}
 
-Recall the MLE example in Chapter \@ref{prelim}.
+Recall the MLE example in Chapter \@ref(prelim).
 Consider a random sample $X_1, \ldots, X_n$ of size $n$ coming from a
 univariate distribution with density function $f(x| \theta)$, where
-$\theta$ is a parameter vector. The MLE $\hat\theta$ of the unknown
+$\theta$ is a parameter vector. The MLE $\hat\theta_n$ of the unknown
 parameter $\theta$ is obtained by maximizing the loglikelihood
 function
 \[
-L(\theta) = \sum_{i=1}^n \log f(X_i | \theta)
+l(\theta) = \sum_{i=1}^n \log f(X_i | \theta)
 \]
 with respect to $\theta$.
-Typically, $\hat\theta$ is obtained by solving the score equation, the
-derivative of the loglikelihood function equated to zero.
+Typically, $\hat\theta$ is obtained by solving the score equation
+\[
+l'(\theta) = \sum_{i=1}^n \frac{\partial}{\partial \theta}
+\log f(X_i; \theta) = 0,
+\]
+i.e., the derivative of the loglikelihood function equated to zero.
+From mathematical statistics, it is known that, under certain regularity
+conditions,
+\begin{align*}
+E \frac{\partial}{\partial \theta} \log f(X; \theta) &= 0,\\
+E \frac{\partial}{\partial \theta} \log f(X; \theta)
+\left[\frac{\partial}{\partial \theta}\ log f(X; \theta) \right]^{\top} &= - E
+\frac{\partial^2}{\partial \theta \partial \theta^{\top}} \log f(X; \theta).
+\end{align*}
+The expectation in the second equation is known as the Fisher information
+$I(\theta)$, a nonnegative definite matrix. Large sample results state that,
+as $n \to \infty$, $\hat\theta_n$ is consistent for $\theta$ and
+$\sqrt{n} (\hat\theta_n - \theta)$ converges in distribution to
+$N(0, I^{-1}(\theta))$. The asymptotic variance of $\hat\theta$ can be estimated by inverting the observed Fisher information matrix $l''(\hat\theta_n)$.
 
+
+More generally in Statistics, M-estimators are a broad class of extremum estimators obtained by maximizing an data dependent objective function. Both non-linear least squares and maximum likelihood estimation are special cases of M-estimators. The definition of M-estimators was motivated by robust statistics, which contributed new types of M-estimators. When the objective function is smooth, the M-estimator can be obtained by solving the corresponding "score" equation. Clearly, optimization or roo-finding are very important in Statistics.
+
+
+## Univariate Optimizations
+
+```{r, g}
+g <- function(x) 0.5 * x ^ 0.5 +  0.1 * (x - 5)^2 * sin(5 * x)
+
+curve(g(x), 0, 10)
+```
