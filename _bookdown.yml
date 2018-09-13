@@ -4,3 +4,7 @@ language:
   ui:
     chapter_name: "Chapter "
 output_dir: "book_output"
+output:
+  bookdown::pdf_book:
+    includes:
+      in_header: preamble.tex

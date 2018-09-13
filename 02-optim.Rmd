@@ -37,8 +37,106 @@ More generally in Statistics, M-estimators are a broad class of extremum estimat
 
 ## Univariate Optimizations
 
-```{r, g}
-g <- function(x) 0.5 * x ^ 0.5 +  0.1 * (x - 5)^2 * sin(5 * x)
+Optimization and root finding are closely related. Consider maximization of a smooth and differentiable function $g(x)$. A necessary condition at the maximum is $f(x) = g'(x) = 0$. Univariate illustrations help to gain insights about the ideas.
 
-curve(g(x), 0, 10)
+### Bisection Method
+
+The bisection method repeatedly bisects an interval and then selects a subinterval in which a root must lie for further processing. It is a very simple and robust method, but relatively slow. 
+
+
+The method is applicable for solving the equation $f(x) = 0$ for the real variable $x$, where $f$ is a continuous function defined on an interval $[a, b]$ and $f(a)$ and $f(b)$ have opposite signs. This method is illustrated with an animation using the package **animation**.
+
+```{r bisection}
+animation::bisection.method()
 ```
+
+### Newton's Method
+A fast approach to find roots of a differentiable function $f(x)$. The methods starts from some initial value $x_0$, and for $t = 0, 1, \ldots$, compute 
+\begin{align*}
+  x_{t+1} = x_t  - \frac{f(x_t)}{f'(x_t)}
+\end{align*}
+until $x_t$ converges. The method is based on a linear expansion of $f(x)$. The method is also known as Newton--Raphson iteration. It needs an initial value $x_0$. If $f(x) = 0$ has multiple solutions, the end result depends on $x_0$.
+
+Applied to optimization of $g$, this method requires the Hessian $g''$,
+which can be difficult to obtain, especially for multivariate functions.
+Many variants of Newton's method avoid the computation of the Hessian.
+
+
+For example, to obtain MLE with likelihood $l(\theta)$, Fisher scoring replaces $-l''(\theta_t)$ with $I(\theta_t)$. Generally, one uses Fisher scoring in the beginning to make rapid improvements, and Newton's method for refinement near the end.
+
+
+The secant method approximates $f'(x_t)$ by
+\begin{align*}
+  \frac{f(x_t) - f(x_{t-1})}{x_t - x_{t-1}}.
+\end{align*}
+Given initial values $x_0$ and $x_1$, the iteration is
+\begin{align*}
+  x_{t+1} = x_t - \frac{f(x_t)(x_t- x_{t-1})}{f(x_t) - f(x_{t-1})}.
+\end{align*}
+
+### Fixed Point Iteration
+
+A fixed point of a function is a point whose evaluation by that 
+function equals to itself, i.e., $x=G(x)$.
+
+Fixed point iteration: the natural way of hunting for a fixed point 
+is to use $x_{t+1}=G(x_t)$.
+
+```{definition contractive}
+A function $G$ is contractive on $[a,b]$ if
+\begin{align*}
+  (1).\,\, & G(x)\in [a,b] \mbox{ whenever } x\in [a,b],\\
+  (2).\,\, & |G(x_1) - G(x_2)| \leq \lambda |x_1-x_2| \mbox{ for all } x_1,x_2\in [a,b] \mbox{ and some } \lambda\in [0,1).
+\end{align*}
+```
+
+```{theorem fixedPoint}
+If $G$ is contractive on $[a,b]$, then there is a unique fixed point $x^*\in [a,b]$, and the fixed point iteration convergence to it when starting inside the interval.
+```
+
+Convergence: $|x_{t+1}-x_{t}|=|G(x_t)-G(x_{t-1})|\leq \lambda |x_t - x_{t-1}|\leq \lambda^{t}|x_1-x_0| \rightarrow 0$, as $t\rightarrow \infty$. It follows that $\{x_t\}$ convergent to a limit $x^*$.
+
+
+Application in root finding: for solving $f(x)=0$, we can simply let $G(x) = x + \alpha f(x)$, where $\alpha \neq 0$ is a constant.
+
+Required Lipschitz condition: $|x - y + \alpha [f(x) - f(y)]| \le \lambda|x-y|$, for some $\lambda \in [0,1)$ and for all $x,y\in [a,b]$. This holds if $|G'(x)|\leq \lambda$ for some $\lambda \in [0,1)$ and for all $x\in [a,b]$, i.e., $|1+\alpha f'(x)|\leq\lambda$. (use mean value theorem.)
+
+
+Newton's methods: $G(x) = x - f(x)/f'(x)$. So it is as if $\alpha_t$ is chosen adaptively as $\alpha_t=-1/f'(x_t)$. This leads to a faster convergence order (quadratic).
+
+
+## Exercises
+
+1. Consider estimating the location parameter of a Cauchy distribution with a known scale parameter. The density function is
+\begin{align*}
+  f(x; \theta) = \frac{1}{\pi[1 + (x - \theta)^2]}, 
+  \quad x \in R, \quad \theta \in R.
+\end{align*}
+Let $X_1, \ldots, X_n$ be a random sample of size $n$ and $\ell(\theta)$ the log-likelihood function of $\theta$ based on the sample.
+
+- Show that
+\begin{align*}
+  \ell(\theta)
+  &= -n\ln \pi - \sum_{i=1}^n \ln [1+(\theta-X_i)^2], \\
+  \ell'(\theta)
+  &= -2 \sum_{i=1}^n \frac{\theta-X_i}{1+(\theta-X_i)^2}, \\
+  \ell''(\theta)
+  &= -2 \sum_{i=1}^n \frac{1-(\theta-X_i)^2}{[1+(\theta-X_i)^2]^2},
+  \\
+  I_n(\theta) &= \frac{4n}{\pi}
+  \int_{-\infty}^\infty \frac{x^2\,\dd x}{(1+x^2)^3}
+  = n/2,
+\end{align*}
+where $I_n$ is the Fisher information of this sample.
+
+- Set the random seed as $20180909$ and generate a random sample of size $n = 10$ with $\theta = 5$. Implement a loglikelihood function and plot against $\theta$.
+- Find the MLE of $\theta$ using the Newton--Raphson method with initial values on a grid starting from $-10$ to $20$ with increment $0.5$. Summarize the results.
+- Apply fixed-point iterations using
+$G(\theta)=\alpha \ell'(\theta) + \theta$,
+with scaling choices of $\alpha \in \{1, 0.64, 0.25\}$ and the same initial values as above. 
+- First use Fisher scoring to find the MLE for $\theta$, then refine the estimate by running Newton-Raphson method. 
+Try the same starting points as above.
+- Comment on the results from different methods (speed, stability, etc.).
+
+
+
