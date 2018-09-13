@@ -44,7 +44,7 @@ Optimization and root finding are closely related. Consider maximization of a sm
 The bisection method repeatedly bisects an interval and then selects a subinterval in which a root must lie for further processing. It is a very simple and robust method, but relatively slow. 
 
 
-The method is applicable for solving the equation $f(x) = 0$ for the real variable $x$, where $f$ is a continuous function defined on an interval $[a, b]$ and $f(a)$ and $f(b)$ have opposite signs. This method is illustrated with an animation using the package **animation**.
+The method is applicable for solving the equation $f(x) = 0$ for the real variable $x$, where $f$ is a continuous function defined on an interval $[a, b]$ and $f(a)$ and $f(b)$ have opposite signs. This method is illustrated with an animation using the package **animation** [@R-animation].
 
 ```{r bisection}
 animation::bisection.method()

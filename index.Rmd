@@ -315,10 +315,26 @@ The report should look like a manuscript, with a title, an abstract, and multipl
 
 3. Explain how `.Machine$double.xmax`, `.Machine$double.xmin`, `.Machine$double.eps`, and `.Machine@double.neg.eps` are defined using the 64-bit double precision floating point arithmetic.
 
+
+## Course Project
+
+Each student is required to work independently on a class project on a topic of your choice that involves computing. Examples are an investigation of the properties of a methodology you find interesting, a comparison of several methods on a variety of problems, a comprehensive analysis of a real data with methodologies from the course, or an R package. The project should represent new work, not something you have done for another course or as part of your thesis. I have a collection of small problems that might be suitable. Projects from [Kaggle data science competitions](http://www.kaggle.com/competitions)
+may be good choices too.
+
+
+- Project proposal is due in week 7, the middle of the semester. This is a detailed, one-page description of what you plan to do, including question(s) to be addressed and models/methods to be used. 
+- Project interim report is due in week 12. This informal report will indicate that your project is ``on track''. The report includes results obtained thus far and a brief summary of what they mean and what remains to be done. Students often start working on this too late.
+Your do not want to make the same mistake.
+- Final project report is due in the exam week. The final form of the report should use the Data Science Lab template, of no more than 6 pages (single spaced, font no smaller than 11pt, 1 inch margin, with references, graphics and tables included).
+- With more effort, a good project can turn into
+a paper and be submitted to ENAR student paper competition
+(Oct. 15) and ASA student paper competition (Dec. 15).
+
+
 ```{r include=FALSE}
 # automatically create a bib database for R packages
 knitr::write_bib(c(
   .packages(), 'bookdown', 'knitr', 'rmarkdown',
-  "MASS"
+  'MASS', 'animation'
 ), 'packages.bib')
 ```
