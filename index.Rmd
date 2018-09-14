@@ -309,8 +309,7 @@ Experiment with the approximation at $n \in \{10^2, 10^3, 10^4\}$ at $t \in \{0.
 
 
 The table should include the true value for comparison.
-Further, repeat the experiment 100 times. Draw box plots of the bias at all $t$.
-The report should look like a manuscript, with a title, an abstract, and multiple sections. It should contain at least one math equation, one table, one figure, and one chunk of R code. The template of our Data Science Lab can be helpful: <https://statds.org/template/>, the source of which is at <https://github.com/statds/dslab-templates>.
+Further, repeat the experiment 100 times. Draw box plots of the 100 approximation errors at each $t$ using **ggplot2** [@R-gglot2] for each $n$. The report should look like a manuscript, with a title, an abstract, and multiple sections. It should contain at least one math equation, one table, one figure, and one chunk of R code. The template of our Data Science Lab can be helpful: <https://statds.org/template/>, the source of which is at <https://github.com/statds/dslab-templates>.
 
 
 3. Explain how `.Machine$double.xmax`, `.Machine$double.xmin`, `.Machine$double.eps`, and `.Machine@double.neg.eps` are defined using the 64-bit double precision floating point arithmetic.
@@ -335,6 +334,6 @@ a paper and be submitted to ENAR student paper competition
 # automatically create a bib database for R packages
 knitr::write_bib(c(
   .packages(), 'bookdown', 'knitr', 'rmarkdown',
-  'MASS', 'animation'
+  'MASS', 'animation', 'ggplot2'
 ), 'packages.bib')
 ```

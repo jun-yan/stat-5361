@@ -5,5 +5,5 @@
 *.Rproj
 
 docs/*
-book-output/*.*
-book-output
+book_output/*
+
