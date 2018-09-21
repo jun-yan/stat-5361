@@ -1,10 +1,8 @@
 # Optimization {#optim}
 
-Recall the MLE example in Chapter \@ref(prelim).
-Consider a random sample $X_1, \ldots, X_n$ of size $n$ coming from a
-univariate distribution with density function $f(x| \theta)$, where
-$\theta$ is a parameter vector. The MLE $\hat\theta_n$ of the unknown
-parameter $\theta$ is obtained by maximizing the loglikelihood
+Recall the MLE example in Chapter \@ref(prelim). Consider a random sample $X_1, \ldots, X_n$ of size $n$ coming from a
+univariate distribution with density function 
+$f(x | \theta)$, where $\theta$ is a parameter vector. The MLE $\hat\theta_n$ of the unknown parameter $\theta$ is obtained by maximizing the loglikelihood
 function
 \[
 l(\theta) = \sum_{i=1}^n \log f(X_i | \theta)
@@ -32,7 +30,7 @@ $\sqrt{n} (\hat\theta_n - \theta)$ converges in distribution to
 $N(0, I^{-1}(\theta))$. The asymptotic variance of $\hat\theta$ can be estimated by inverting the observed Fisher information matrix $l''(\hat\theta_n)$.
 
 
-More generally in Statistics, M-estimators are a broad class of extremum estimators obtained by maximizing an data dependent objective function. Both non-linear least squares and maximum likelihood estimation are special cases of M-estimators. The definition of M-estimators was motivated by robust statistics, which contributed new types of M-estimators. When the objective function is smooth, the M-estimator can be obtained by solving the corresponding "score" equation. Clearly, optimization or roo-finding are very important in Statistics.
+More generally in Statistics, M-estimators are a broad class of extremum estimators obtained by maximizing an data dependent objective function. Both non-linear least squares and maximum likelihood estimation are special cases of M-estimators. The definition of M-estimators was motivated by robust statistics, which contributed new types of M-estimators. When the objective function is smooth, the M-estimator can be obtained by solving the corresponding "score" equation. Clearly, optimization or root-finding are very important in Statistics.
 
 
 ## Univariate Optimizations
@@ -104,33 +102,101 @@ Required Lipschitz condition: $|x - y + \alpha [f(x) - f(y)]| \le \lambda|x-y|$,
 
 Newton's methods: $G(x) = x - f(x)/f'(x)$. So it is as if $\alpha_t$ is chosen adaptively as $\alpha_t=-1/f'(x_t)$. This leads to a faster convergence order (quadratic).
 
+## Multivariate Optimization
+Consider maximizing a real-valued objective function $g(x)$ of $p$-dimensional vector $x$.
+
+### Newton-Raphson Method
+
+The Newton-Raphson method is a generalization of univariate Newton's root finding algorithm to the multivariate case.
+
+### Variants of Newton-Raphson Method
+
+The motivation is to avoid the calculation of the Hessian matrix in updatings with the form
+\[
+x^{(t + 1)} = x^{(t)} - (M^{(t)})^{-1} g'(x),
+\]
+where $g'$ is the gradient of $g$ and $M$ is a substitute of $g''(x)$.
+
+#### Fisher Scoring
+
+Choose $M$ as the negative Fisher information matrix. For location-families, it can be shown that the information matrix is free of the location parameter.
+
+#### Steepest Ascent
+
+Choose $M = \alpha^{(t)} I_p$ for $\alpha^{(t)} > 0$ so the updating in the direction of he steepest ascent.
+
+#### Discrete Newton
+
+Approximate the Hessian matrix with finite-difference quotients.
+
+#### Fixed-Point Iteration
+
+Choose $M^{(t)} = M$ for all $t$. An example is $M = g''(x_0)$.
+
+#### Quasi-Newton
+
+Rank-one or rank-two update. The celebrated BFGS is a rank-two update method. Box constraints can be allowed with L-BFGS-B.
+
+#### Coordinate Ascent
+
+#### Conjugate Gradient
+
+#### Gauss-Seidel
+
+#### Gauss-Newton
+
+### Nelder-Mead (Simplex) Algorithm
+
+Not even the gradient is needed. 
+Possible moves are: reflection; expansion; outer contraction; inner contraction; shrinkage.
+
+
+
+Consider minimizing this simple function.
+```{r f}
+f1 <- function(x) {
+  x1 <- x[1]
+  x2 <- x[2]
+  x1^2 + 3*x2^2  
+}
+```
+Apparently the minimizer is $(0, 0)$. Let's track all the points at which the function is evaluated in the Nelder-Mead algorithm.
+```{r trace}
+trace(f1, exit = quote(print(c(returnValue(), x))))
+optim(c(1, 1), f1, control = list(trace = TRUE))
+untrace(f1)
+```
+
+### Optimization with R
+
+See [conversation with John Nash about r optim and r optimx](https://www.ibm.com/developerworks/library/ba-optimR-john-nash/index.html).
 
 ## Exercises
 
-1. Consider estimating the location parameter of a Cauchy distribution with a known scale parameter. The density function is
+### Cauchy with unknown location.
+Consider estimating the location parameter of a Cauchy distribution with a known scale parameter. The density function is
 \begin{align*}
   f(x; \theta) = \frac{1}{\pi[1 + (x - \theta)^2]}, 
   \quad x \in R, \quad \theta \in R.
 \end{align*}
 Let $X_1, \ldots, X_n$ be a random sample of size $n$ and $\ell(\theta)$ the log-likelihood function of $\theta$ based on the sample.
-
-- Show that
-\begin{align*}
+  - Show that
+  \begin{align*}
   \ell(\theta)
   &= -n\ln \pi - \sum_{i=1}^n \ln [1+(\theta-X_i)^2], \\
   \ell'(\theta)
-  &= -2 \sum_{i=1}^n \frac{\theta-X_i}{1+(\theta-X_i)^2}, \\
+  &= -2 \sum_{i=1}^n \frac{\theta-X_i}{1+(\theta-X_i)^2},  \\
   \ell''(\theta)
   &= -2 \sum_{i=1}^n \frac{1-(\theta-X_i)^2}{[1+(\theta-X_i)^2]^2},
   \\
   I_n(\theta) &= \frac{4n}{\pi}
   \int_{-\infty}^\infty \frac{x^2\,\dd x}{(1+x^2)^3}
   = n/2,
-\end{align*}
+  \end{align*}
 where $I_n$ is the Fisher information of this sample.
-
 - Set the random seed as $20180909$ and generate a random sample of size $n = 10$ with $\theta = 5$. Implement a loglikelihood function and plot against $\theta$.
-- Find the MLE of $\theta$ using the Newton--Raphson method with initial values on a grid starting from $-10$ to $20$ with increment $0.5$. Summarize the results.
+- Find the MLE of $\theta$ using the Newton--Raphson method with initial values on a grid starting from $-10$ to $30$ with increment $0.5$. Summarize the results. 
+- Improved the Newton--Raphson method by halving the steps if the likelihood is not improved.
 - Apply fixed-point iterations using
 $G(\theta)=\alpha \ell'(\theta) + \theta$,
 with scaling choices of $\alpha \in \{1, 0.64, 0.25\}$ and the same initial values as above. 
@@ -138,5 +204,49 @@ with scaling choices of $\alpha \in \{1, 0.64, 0.25\}$ and the same initial valu
 Try the same starting points as above.
 - Comment on the results from different methods (speed, stability, etc.).
 
+### Many local maxima
+Consider the probability density function with parameter $\theta$:
+\begin{align*}
+  f(x; \theta) = \frac{1 - \cos(x - \theta)}{2\pi},   
+  \quad 0\le x\le 2\pi, \quad \theta \in (-\pi, \pi).
+\end{align*}
+A random sample from the distribution is
+```{r p2-Obs}
+x <- c(3.91, 4.85, 2.28, 4.06, 3.70, 4.04, 5.46, 3.53, 2.28, 1.96,
+       2.53, 3.88, 2.22, 3.47, 4.82, 2.46, 2.99, 2.54, 0.52)
+```
+- Find the the log-likelihood function of $\theta$ based on the sample and plot it between $-\pi$ and $\pi$.
+- Find the method-of-moments estimator of $\theta$.  That is, the estimator $\tilde\theta_n$ is value of $\theta$ with
+\begin{align*}
+  \E (X \mid \theta) = \bar X_n,
+\end{align*}
+where $\bar X_n$ is the sample mean. This means you have to first find the expression for $\E (X \mid \theta)$.
+- Find the MLE for $\theta$ using the Newton--Raphson method initial value $\theta_0 = \tilde\theta_n$.
+- What solutions do you find when you start at 
+$\theta_0 = -2.7$ and $\theta_0 = 2.7$?
+- Repeat the above using 200 equally spaced starting values
+between $-\pi$ and $\pi$.  Partition the values into sets of attraction. That is, divide the set of starting values into separate groups, with each group corresponding to a separate unique outcome of the optimization.
 
+### Modeling beetle data
+The counts of a floor beetle at various time points (in days) are given in a dataset.
+```{r beetles}
+beetles <- data.frame(
+    days    = c(0,  8,  28,  41,  63,  69,   97, 117,  135,  154),
+    beetles = c(2, 47, 192, 256, 768, 896, 1120, 896, 1184, 1024))
+```
+A simple model for population growth is the logistic model given by
+\[
+\frac{\dd N}{\dd t} = r N(1 - \frac{N}{K}),
+\]
+where $N$ is the population size, $t$ is time, $r$ is an unknown growth rate
+parameter, and $K$ is an unknown parameter that represents the population
+carrying capacity of the environment. The solution to the differential
+equation is given by
+\[
+N_t = f(t) = \frac{K N_0}{N_0 + (K - N_0)\exp(-rt)},
+\]
+where $N_t$ denotes the population size at time $t$.
+- Fit the population growth model to the beetles data using the Gauss-Newton approach, to minimize the sum of squared errors between model predictions and observed counts.
+- Show the contour plot of the sum of squared errors.
+- In many population modeling application, an assumption of lognormality is adopted. That is , we assume that $\log N_t$ are independent and normally distributed with mean $\log f(t)$ and variance $\sigma^2$. Find the maximum likelihood estimators of $\theta = (r, K, \sigma^2)$ using any suitable method of your choice. Estimate the variance your parameter estimates.
 

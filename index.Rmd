@@ -292,7 +292,8 @@ Figure \@ref(fig:gev) shows a comparison of evaluating the GEV distribution func
 
 
 ## Exercises
-1. Use git to clone the source of Hadley Wickham's **Advanced R Programming** from his GitHub repository to a local space on your own computer. Build the book using RStudio. During the building process, you may see error messages due to missing tools on your computer. Read the error messages carefully and fix them, until you get the book built. You may need to install some R packages, some fonts, some latex packages, and some building tools for R packages. On Windows, some codes for parallel computing may not work and need to be swapped out. Document the problems you encountered and how you solved them in an R Markdown file named `README.Rmd`. Push it to your homework GitHub repository so that it can help other students to build the book. 
+1. Use git to clone the source of Hadley Wickham's **Advanced R Programming**
+from his GitHub repository to a local space on your own computer. Build the book using RStudio. During the building process, you may see error messages due to missing tools on your computer. Read the error messages carefully and fix them, until you get the book built. You may need to install some R packages, some fonts, some latex packages, and some building tools for R packages. On Windows, some codes for parallel computing may not work and need to be swapped out. Document the problems you encountered and how you solved them in an R Markdown file named `README.Rmd`. Push it to your homework GitHub repository so that it can help other students to build the book. 
 
 
 2. Use **bookdown** or **rmarkdown** to produce a report for the following task. Consider approximation of the distribution function of $N(0, 1)$,
@@ -328,6 +329,12 @@ Your do not want to make the same mistake.
 - With more effort, a good project can turn into
 a paper and be submitted to ENAR student paper competition
 (Oct. 15) and ASA student paper competition (Dec. 15).
+
+
+Project ideas:
+
+- An animated demonstration of different methods in __optimx__ with data examples.
+
 
 
 ```{r include=FALSE}
