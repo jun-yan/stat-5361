@@ -1,9 +1,6 @@
 # Optimization {#optim}
 
-Recall the MLE example in Chapter \@ref(prelim). Consider a random sample $X_1, \ldots, X_n$ of size $n$ coming from a
-univariate distribution with density function 
-$f(x | \theta)$, where $\theta$ is a parameter vector. The MLE $\hat\theta_n$ of the unknown parameter $\theta$ is obtained by maximizing the loglikelihood
-function
+Recall the MLE example in Chapter \@ref(prelim). Consider a random sample $X_1, \ldots, X_n$ of size $n$ coming from a univariate distribution with density function $f(x | \theta)$, where $\theta$ is a parameter vector. The MLE $\hat\theta_n$ of the unknown parameter $\theta$ is obtained by maximizing the loglikelihood function
 \[
 l(\theta) = \sum_{i=1}^n \log f(X_i | \theta)
 \]
@@ -44,7 +41,7 @@ The bisection method repeatedly bisects an interval and then selects a subinterv
 
 The method is applicable for solving the equation $f(x) = 0$ for the real variable $x$, where $f$ is a continuous function defined on an interval $[a, b]$ and $f(a)$ and $f(b)$ have opposite signs. This method is illustrated with an animation using the package **animation** [@R-animation].
 
-```{r bisection}
+```{r bisection, eval=FALSE}
 animation::bisection.method()
 ```
 
@@ -170,6 +167,195 @@ untrace(f1)
 ### Optimization with R
 
 See [conversation with John Nash about r optim and r optimx](https://www.ibm.com/developerworks/library/ba-optimR-john-nash/index.html).
+
+## MM Algorithm
+
+The MM algorithm may be viewed as philosophy for optimization algorithms.
+The EM algorithm is a special case.
+An MM algorithm operates by creating a surrogate function 
+that majorizes (minorizes) the objective function. 
+When the surrogate function is optimized,
+the objective function is driven downhill (uphill).
+The MM can stand for majorization-minimization or
+minorization-maximization.
+The algorithm may avoid matrix inversion, linearize an optimization problem, 
+conveniently deal with equality and inequality constraints, and solve 
+a non-differentiable problem by iteratively solving smooth problems.
+
+
+A function $g(\theta \mid \theta^s)$ is said to majorize the 
+function $f(\theta)$ at $\theta^s$ if
+\[
+f(\theta^s) =  g(\theta^s \mid \theta^s),
+\]
+and
+\[
+f(\theta) \leq  g(\theta \mid \theta^s)
+\]
+for all $\theta$.
+
+
+The descent property of the MM algorithm is easy to see.
+Let
+\[
+\theta^{s+1} = \arg\min_\theta g(\theta \mid \theta^s).
+\]
+It follows that
+\begin{align*}
+  f(\theta^{s+1}) \leq g(\theta^{s+1} \mid \theta^s) \leq g(\theta^{s} \mid \theta^s) = f(\theta^s).
+\end{align*}
+The strict inequality holds unless $g(\theta^{s+1} \mid \theta^s)=g(\theta^{s} \mid \theta^s)$ and $f(\theta^{s+1})= g(\theta^{s+1} \mid \theta^s)$.
+Therefore, by alternating between the majorization and the minimization
+steps, the objective function is monotonically decreasing and thus its 
+convergence is guaranteed.
+
+```{r}
+par(mar=c(2.5, 2.5, 0.1, 0.1), mgp=c(1.5, 0.5, 0))
+f <- function(x) abs(x - 1) + abs(x - 3) + abs(x - 4) + abs(x - 8) + abs(x - 10)
+curve(f(x), 0, 12)
+g <- function(x) (x - 5.5)^2 + 15.75
+curve(g(x), 0, 12, add = TRUE, col="blue")
+```
+
+Inequalities are used to devise MM algorithms.
+
+- Jensen's inequality: for a convex function $f(x)$,
+  \[
+  f(E(X)) \leq E(f(X)).
+  \]
+- Convexity inequality: for any $\lambda \in [0,1]$,
+  \[
+  f(\lambda x_1 + (1-\lambda)x_2) \leq \lambda f(x_1) + (1-\lambda)f(x_2).
+  \]
+- Cauchy-Schwarz inequality.
+- Supporting hyperplanes.
+- Arithmetic-Geometric Mean Inequality.
+
+
+## An Example: LASSO with Coordinate Descent
+
+Coordinate descent algorithms optimize a objective function with 
+respect to a single parameter or a block of parameters at a time, 
+iteratively cycling through all parameters until convergence is reached.
+How to determine the blocks of parameters is problem-specific.
+The method is ideal for problems that have a simple closed form 
+solution in a single/lower dimension but lack one in higher dimensions.
+% The method is also called backfitting or Gauss--Seidel iteration.
+It is very commonly used in fitting penalized regression.
+The concept also appears in many well-known estimation problems.
+The simple technique can be surprisingly efficient and scalable.
+
+
+Consider objective function
+\[
+f(\beta) = g(\beta) + \sum_{j=1}^{p}h_j(\beta_j),
+\]
+where $g$ is convex and differentiable and each $h_i$ is convex.
+The second part is usually non-smooth, but is separable.
+Coordinate descent start with some initial guess $\beta^{(0)}$, repeat 
+the following for $k=1,2,3...$:
+\begin{align*}
+  \beta_1^{(k)} & = \arg\min_{\beta_1}f(\beta_1,\beta_2^{(k-1)},\ldots,\beta_p^{(k-1)}),\\
+  \beta_2^{(k)} & = \arg\min_{\beta_2}f(\beta_1^{(k)},\beta_2, \beta_3^{(k-1)},\ldots,\beta_p^{(k-1)}),\\
+  & \ldots\\
+  \beta_p^{(k)} & = \arg\min_{\beta_p}f(\beta_1^{(k)},\ldots,\beta_{p-1}^{(k)},\beta_p).
+\end{align*}
+It can be shown that if we are at a point $\beta$ such that $f(\beta)$ 
+is minimized along each coordinate axis, we have found a global minimizer.
+
+
+Remarks:
+- Order of cycle through coordinates is arbitrary.
+- Can replace individual coordinates with blocks of coordinates.
+- Same idea has been applied to many non-convex problems.
+- As long as the objective function is monotone decreasing, the convergence is guaranteed.
+
+
+In a linear regression setting, where $Y$ is the response vector and $X$ is the design matrix. Minimize objective function
+\[
+\min_{\beta \in R^p}\{\frac{1}{2n}\|Y - X \beta\|^2 + \sum_{j = 1}^p p_{\lambda}(|\beta_j|)\},
+\]
+where $\|\cdot\|$ denotes the $L_2$-norm, and 
+$p_{\lambda}(\cdot)$ is a penalty function indexed by the 
+regularization parameter $\lambda \geq 0$.
+It is often assumed that the covariates are centered and standardized
+such that the coefficients become comparable.
+
+Common penalties:
+
+- $L_0$ penalty (subset selection) and $L_2$ penalty (ridge regression).
+- Bridge or $L_\gamma$ penalty, $\gamma >0$ 
+<!-- %\citep{Frank1993}. -->
+- $L_1$ penalty or Lasso
+<!-- %\citep{tib1996}. -->
+-  SCAD penalty 
+<!-- %\citep{fan2001}. -->
+- MCP penalty
+<!-- %\citep{zhang2010}. -->
+- Group penalties 
+<!-- %\citep{yuan2006}  -->
+- bilevel penalties
+<!-- %\citep{huang2009gb,huang2012}. -->
+
+
+LASSO stands for "least absolute shrinkage and selection operator''. 
+There are two equivalent definitions.
+
+- minimize the residual sum of squares subject to the sum of the absolute value of the coefficients being less than a constant:
+  \[\hat{\beta}=\arg\min\left\{\|Y- X \beta\|^2\right\} \text{ subject to } \sum_{j}|\beta_j| \leq t.
+  \]
+- minimize the penalized sum of squares:
+  \[\hat{\beta}=\arg\min\{\|Y- X\beta\|^2 + \lambda\sum_{j}|\beta_j|\}.
+  \]
+
+
+Because of the nature of $L_1$ penalty or constraint, Lasso can estimate 
+some coefficients as exactly $0$ and hence performs variable selection.
+It enjoys some of the favorable properties of both subset selection and 
+ridge regression, producing interpretable models and exhibiting the 
+stability of ridge regression.
+
+
+A solution path for $\lambda\in[\lambda_{\min},\lambda_{\max}]$ is
+\[
+\{\widehat{\beta}_{n}(\lambda): \lambda\in[\lambda_{\min},\lambda_{\max}]\}.
+\]
+
+
+For a given $\lambda$, the coordinate descent algorithm minimize the
+objective function with respect to $\beta_j$ given current values of
+$\tilde\beta_k$, $k \ne j$. 
+Define
+\[
+L_j(\beta_j; \lambda) = \frac{1}{2n}\sum_{i=1}^n \left(y_i - \sum_{k\ne j} x_{ik}\tilde\beta_k - x_{ij} \beta_j\right)^2 + \lambda |\beta_j|.
+\]
+Let
+$\tilde y_{ij} = \sum_{k\ne j} x_{ik}\tilde\beta_k$,
+$\tilde r_{ij} = y_i - \tilde y_{ij}$, and
+$\tilde z_j = n^{-1} \sum_{i=1}^n x_{ij} \tilde r_{ij}$.
+Note that $\tilde r_{ij}$'s are the partial residual with respect to
+the $j$th covariate.
+The standardized covariates and completion of squares lead to
+\[
+L_j(\beta_j; \lambda) = \frac{1}{2}(\beta_j - \tilde z_j)^2 + \lambda |\beta_j| + \frac{1}{n} \sum_{i=1}^n \tilde r_{ij}^2 - \frac{1}{2} \tilde z_j^2.
+\]
+This is just a univariate quadratic programming problem.
+The solution is
+\[
+\tilde \beta_j = S(\tilde z_{j}; \lambda)
+\]
+where $S(\cdot; \lambda)$ is the soft-threshold operator
+\[
+S(z; \lambda) = \sgn(z) (|z| - \lambda)_+
+= \begin{cases}
+z - \lambda, & z > \lambda,\\
+0,           & |z| \le \lambda,\\
+z + \lambda, & z < -\lambda.\\
+\end{cases}
+\]
+
+The last question is, how do we choose $\lambda$?
+Cross-validation or generalized cross-validation.
 
 ## Exercises
 
