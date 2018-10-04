@@ -432,6 +432,7 @@ equation is given by
 N_t = f(t) = \frac{K N_0}{N_0 + (K - N_0)\exp(-rt)},
 \]
 where $N_t$ denotes the population size at time $t$.
+
 - Fit the population growth model to the beetles data using the Gauss-Newton approach, to minimize the sum of squared errors between model predictions and observed counts.
 - Show the contour plot of the sum of squared errors.
 - In many population modeling application, an assumption of lognormality is adopted. That is , we assume that $\log N_t$ are independent and normally distributed with mean $\log f(t)$ and variance $\sigma^2$. Find the maximum likelihood estimators of $\theta = (r, K, \sigma^2)$ using any suitable method of your choice. Estimate the variance your parameter estimates.

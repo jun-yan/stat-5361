@@ -380,7 +380,7 @@ on previous states or observations.
 It can be characterized by
 \begin{align}
   \Pr(S_t \mid S_1, \ldots, S_{t - 1}) &= \Pr(S_t \mid S_{t-1}),\quad t = 2, 3, \ldots, \\
-  \Pr(X_t \mid S_1, \ldots, S_t; X_1, \ldots, X_{t-1}) &= \Pr(X_t \midx S_t), \quad t = 1, 2, \ldots. 
+  \Pr(X_t \mid S_1, \ldots, S_t; X_1, \ldots, X_{t-1}) &= \Pr(X_t \mid S_t), \quad t = 1, 2, \ldots. 
 \end{align}
 HMMs have a wide range of applications. 
 
