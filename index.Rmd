@@ -342,8 +342,8 @@ a paper and be submitted to ENAR student paper competition
 Project ideas:
 
 - An animated demonstration of different methods in __optimx__ with data examples.
-
-
+- Accelerated EM algorithm
+- Simulation from empirical distributions joined by copulas
 
 ```{r include=FALSE}
 # automatically create a bib database for R packages
