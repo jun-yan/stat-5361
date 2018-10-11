@@ -71,9 +71,9 @@ Missing data: let $z_{ij}$ be the indicator such that
 $z_{ij} = 1$ if observation $y_i$ is from group $j$, and zero otherwise.
 
 Complete data likelihood:
-\begin{equation*}
+\[
   \sum_{i=1}^n \sum_{j=1}^k z_{ij}[\log \pi_j + \log h_j(y_i | \theta)].
-\end{equation*}
+\]
 
 
 
@@ -483,7 +483,7 @@ homogeneous groups/components.
 
 Suppose the density of $y_i$ (conditional on $\mathbf{x}_i$), is given by
 \begin{eqnarray}
-f(y_i\mid \mathbf{x}_i,\boldsymbol{\Psi})= \sum_{j=1}^{m}\pi_{j}\phi(y_i;\mathbf{x}_i^{\top}\boldsymbol{\beta}_{j}, \sigma^2),\qquad i=1,\ldots,n,
+f(y_i\mid \mathbf{x}_i,\boldsymbol{\Psi})= \sum_{j=1}^{m} \pi_{j}\phi(y_i;\mathbf{x}_i^{\top}\boldsymbol{\beta}_{j}, \sigma^2),\qquad i=1,\ldots,n,
 (\#eq:mixregequal)
 \end{eqnarray}
 where $\pi_j$s are called mixing proportions, $\boldsymbol{\beta}_j$ is the regression coefficient vector for the $j$th group, $\phi(\cdot\:;\mu,\sigma^2)$ denotes the density function of $N(\mu,\sigma^2)$, and $\boldsymbol{\Psi}=(\pi_1,\boldsymbol{\beta}_1,\ldots,\pi_m,\boldsymbol{\beta}_m,\sigma)^T$ collects all the unknown parameters.
@@ -642,4 +642,3 @@ pois.HMM.lalphabeta <- function(x, m, lambda, gamma, delta = NULL) {
     list(la = lalpha, lb = lbeta)
 }
 ```
-
