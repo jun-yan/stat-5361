@@ -16,9 +16,9 @@ header-includes:
 \newcommand{\E}{\mathbb{E}}
 \newcommand{\dd}{\mathrm{d}}
 \newcommand{\sgn}{\mathrm{sgn}}
-\newcommand{\bx}{\mathbf{x}}
-\newcommand{\bX}{\mathbf{X}}
-\newcommand{\bz}{\mathbf{z}}
+\newcommand{\bx}{\textbf{x}}
+\newcommand{\bX}{\textbf{X}}
+\newcommand{\bz}{\textbf{z}}
 \newcommand{\bbeta}{\boldsymbol{\beta}}
 \newcommand{\bPsi}{\boldsymbol{\Psi}}
 
