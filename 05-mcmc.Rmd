@@ -1,3 +1,53 @@
 # Markov Chain Monte Carlo
 
-Someone may need this for the course project.
+## Eample: Normal mixture
+Generate some data with mixing rate $\delta$.
+```{r nmix-sim}
+delta <- 0.7 # true value to be estimated based on the data
+n <- 100
+set.seed(254)
+u <- rbinom(n, prob = delta, size = 1)
+x <- rnorm(n, ifelse(u == 1, 7, 10), 0.5)
+```
+
+Assuming that the normal distribution parameters $\mu_1$, $\sigma_1^2$, $\mu_2$, and $\sigma_2^2$ are known. The only unknown parameter is $\delta$. The likelihood function of $\delta$ is
+```{r nmix-like}
+mylike <- function(delta, x) {
+    prod(delta * dnorm(x, 7, 0.5) + (1 - delta) * dnorm(x, 10, 0.5))
+}
+```
+
+
+We impose an uninformative prior on $\delta$ and use a simple random walk proposal to construct the Metropolis--Hasting algorithm.
+```{r nmix-mcmc}
+## simple random walk chain
+myRange <- function(v, width) {
+    min(1, v + width) - max(0, v - width)
+}
+
+mymcmc <- function(niter, init, x, width) {
+    v <- double(niter)
+    for (i in 1:niter) {
+        cand <- runif(1, max(0, init - width), min(1, init + width))
+        ratio <- mylike(cand, x) / myRange(cand, width) /
+            mylike(init, x) * myRange(init, width)
+        if (runif(1) < min(ratio, 1)) {
+            v[i] <- init <- cand
+        } else v[i] <- init
+    }
+    v
+}
+```
+
+
+With initial value $\delta_0 = .2$ and stepsize $.1$ in the random walk proposal, we run the 2500 iterations and throw away the first 500 iterations.
+```{r nmix-res}
+niter <- 2500
+plot(ts(z <- mymcmc(niter, .2, x, .1)[-(1:500)]))
+hist(z)
+```
+
+## Exercises
+
+### Normal mixture revisited
+Consider again the normal mixture example, except that the parameters of the normal distributions are considered unknown. Suppose that prior for $\mu_1$ and $\mu_2$ are $N(0, 10^2)$, that the prior for $1/\sigma_1^2$ and $1/\sigma_2^2$ are $\Gamma(a, b)$ with shape $a = .5$ and scale $ b = 10$. Further, all the priors are independent. Design an MCMC using the Gibbs sampling approach to estimate all 5 parameters. You may use the __arms()__ function in package **HI**. Run your chain for sufficiently long and drop the burn-in period. Plot the histogram of the results for all the parameters.
