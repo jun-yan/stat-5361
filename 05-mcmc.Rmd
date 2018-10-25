@@ -5,7 +5,7 @@ Generate some data with mixing rate $\delta$.
 ```{r nmix-sim}
 delta <- 0.7 # true value to be estimated based on the data
 n <- 100
-set.seed(254)
+set.seed(123)
 u <- rbinom(n, prob = delta, size = 1)
 x <- rnorm(n, ifelse(u == 1, 7, 10), 0.5)
 ```
@@ -47,6 +47,70 @@ plot(ts(z <- mymcmc(niter, .2, x, .1)[-(1:500)]))
 hist(z)
 ```
 
+
+## General-Purpose Gibbs Sampling with the ARMS
+
+Consider an example of posterior inference. 
+Suppose that $(Y_i, X_i)$, $i = 1, \ldots, n$, are observed, where
+\[
+Y_i \mid X_i \sim \mbox{Poisson}(\exp(a + b X_i)).
+\]
+This is a Poisson regression model. Assume independent prior distributions on $a$ and $b$ with $N(0, \sigma^2)$ and $N(0, \tau^2)$. The posterior density of $(a, b)$ is
+\[
+q(a, b \mid \mbox{data}) \propto
+\exp\left(a \sum_i^n Y_i + b \sum_i^n X_i Y_i - e^a \sum_i^n e^{X_i b} - \frac{a^2}{2\sigma^2} - \frac{b^2}{2\tau^2}\right).
+\]
+The full conditional distributions of $a$ and $b$ can be shown to be log-concave, which allows adaptive rejection alogorithm [@robert2004monte]. One could also just use the general ARMS as a lazy man's approach.
+
+
+Let us first generate some data.
+```{r pois-gendata}
+n <- 100
+a <- 0.0; b <- 0.5
+x <- rnorm(n)
+y <- rpois(n, exp(a + b * x))
+mydata <- data.frame(y = y, x = x)
+```
+The posterior density up to an unknown normalizing constant can be easily computed.
+```{r pois-post}
+logpost <- function(theta, data, sigma2, tau2) {
+  a <- theta[1]; b <- theta[2]
+  x <- data$x; y <- data$y
+  return(a * sum(y) + b * sum(x * y) - exp(a) * sum(exp(b * x))
+         - a^2 / 2 / sigma2 - b^2 / 2 / tau2)
+}
+```
+An MCMC based the Gibbs sampler uses the ARMS algorithm from R package __HI__.
+```{r pois-mcmc}
+mymcmc <- function(niter, thetaInit, data, sigma2, tau2) {
+  p <- length(thetaInit)
+  thetaCurrent <- thetaInit
+  out <- matrix(NA, niter, p)
+  for (i in 1:niter) {
+    for (j in 1:p) {
+      logFC <- function(thj) {
+        theta <- thetaCurrent
+        theta[j] <- thj
+        logpost(theta, data, sigma2, tau2)
+      }
+      ## arms algorithm
+      out[i, j] <- thetaCurrent[j] <-
+        HI::arms(thetaCurrent[j], logFC, 
+                 function(x) ((x > -10) * (x < 10)), 1)
+    }
+  }
+  out
+}
+```
+Now give it a try with $\sigma^2 = 100$ and $\tau^2 = 100$.
+```{r rpois-run}
+niter <- 500
+thetaInit <- c(2, 2)
+sigma2 <- tau2 <- 100
+sim <- mymcmc(niter, thetaInit, mydata, sigma2, tau2)
+plot(ts(sim[,1]))
+plot(ts(sim[,2]))
+```
 ## Exercises
 
 ### Normal mixture revisited
