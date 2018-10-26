@@ -111,6 +111,7 @@ sim <- mymcmc(niter, thetaInit, mydata, sigma2, tau2)
 plot(ts(sim[,1]))
 plot(ts(sim[,2]))
 ```
+
 ## Exercises
 
 ### Normal mixture revisited
