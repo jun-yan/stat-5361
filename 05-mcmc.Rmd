@@ -82,29 +82,32 @@ logpost <- function(theta, data, sigma2, tau2) {
 ```
 An MCMC based the Gibbs sampler uses the ARMS algorithm from R package __HI__.
 ```{r pois-mcmc}
-mymcmc <- function(niter, thetaInit, data, sigma2, tau2) {
+mymcmc <- function(niter, thetaInit, data, sigma2, tau2, nburn= 100) {
   p <- length(thetaInit)
   thetaCurrent <- thetaInit
-  out <- matrix(NA, niter, p)
-  for (i in 1:niter) {
+  ## define a function for full conditional sampling  
+  logFC <- function(th, idx) {
+    theta <- thetaCurrent
+    theta[idx] <- th
+    logpost(theta, data, sigma2, tau2)
+  }
+  out <- matrix(thetaInit, niter, p, byrow = TRUE)
+  ## Gibbs sampling
+  for (i in 2:niter) {
     for (j in 1:p) {
-      logFC <- function(thj) {
-        theta <- thetaCurrent
-        theta[j] <- thj
-        logpost(theta, data, sigma2, tau2)
-      }
-      ## arms algorithm
+      ## general-purpose arms algorithm
       out[i, j] <- thetaCurrent[j] <-
-        HI::arms(thetaCurrent[j], logFC, 
-                 function(x) ((x > -10) * (x < 10)), 1)
+          HI::arms(thetaCurrent[j], logFC,
+                   function(x, idx) ((x > -10) * (x < 10)), 
+                   1, idx = j)
     }
   }
-  out
+  out[-(1:nburn), ]
 }
 ```
 Now give it a try with $\sigma^2 = 100$ and $\tau^2 = 100$.
 ```{r rpois-run}
-niter <- 500
+niter <- 600; nburn <- 100
 thetaInit <- c(2, 2)
 sigma2 <- tau2 <- 100
 sim <- mymcmc(niter, thetaInit, mydata, sigma2, tau2)
