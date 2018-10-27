@@ -306,7 +306,7 @@ from his GitHub repository to a local space on your own computer. Build the book
 
 2. Use **bookdown** or **rmarkdown** to produce a report for the following task. Consider approximation of the distribution function of $N(0, 1)$,
 \begin{equation}
-\Phi(t) = \int_{-\infty}^t \frac{1}{\sqrt{2\pi}} e^{-y^2 / 2} dy,
+\Phi(t) = \int_{-\infty}^t \frac{1}{\sqrt{2\pi}} e^{-y^2 / 2} \dd y,
 (\#eq:cdf)
 \end{equation}
 by the Monte Carlo methods:
