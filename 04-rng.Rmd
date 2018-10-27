@@ -580,14 +580,14 @@ where $\alpha > 0$, $\sigma > 0$, and $b$ are constants.
   approximate $r(t + \delta)$ by a normal random variable with mean
   $r(t) + \alpha(b - r(t)) \delta$ and standard deviation $\sigma \delta$.
   Write a function to implement this approximation with $\delta$ as one of the
-  arguments. For $\delta \in \{1, 0.5, 0.1, 0.01\}, generate a sample of size 1000
+  arguments. For $\delta \in \{1, 0.5, 0.1, 0.01\}$, generate a sample of size 1000
   for $r(1)$. Plot the kernel densities against the true density.
 
 
 ### Poisson Process
 Let $\lambda(t) = \sqrt{t} + e^{-t} \sin(2 \pi t)$
 be the intensity function of Poisson process over $t \in [0, 5]$.
-Let $N(t)$ be the number of events by time~$t$.
+Let $N(t)$ be the number of events by time $t$.
 
 1. What is the distribution of $N(5)$ and its parameter(s)?
   Use Mathematica or Maple for integration if needed.
