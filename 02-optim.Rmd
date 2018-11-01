@@ -16,7 +16,7 @@ conditions,
 \begin{align*}
 \E \frac{\partial}{\partial \theta} \log f(X; \theta) &= 0,\\
 \E \frac{\partial}{\partial \theta} \log f(X; \theta)
-\left[\frac{\partial}{\partial \theta}\ log f(X; \theta) \right]^{\top} 
+\left[\frac{\partial}{\partial \theta} \log f(X; \theta) \right]^{\top} 
 &= - \E
 \frac{\partial^2}{\partial \theta \partial \theta^{\top}} \log f(X; \theta).
 \end{align*}
