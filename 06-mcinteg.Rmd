@@ -1,0 +1,63 @@
+# Monte Carlo Integration {#mcinteg}
+
+## SIS for State Space Models
+
+Consider a simple state space model
+\begin{equation*}
+    Y_{t} \mid X_t, \theta &\sim N(X_t, \sigma^2)\\
+X_{t + 1} \mid X_t, \theta &\sim N(X_t, \tau^2)
+\end{equation*}
+where $X_0 \sim N(\mu_0, \sigma^2_0)$ and $\theta = (\sigma^2, \tau^2)$.
+This model is also known as a dynamic linear model. The observed data are $Y_1, \ldots, Y_T$. We would like to predict the hidden states $X_1, \ldots, X_T$. For this simple normal model, closed form solutions exist but we use SIS for illustration.
+
+
+First, let's generate data.
+```{r dlmSim}
+dlmSim <- function(n, sigma, tau, x0) {
+  x    <- rep(0,n)
+  y    <- rep(0,n)
+  x[1] <- rnorm(1, x0,   tau)
+  y[1] <- rnorm(1, x[1], sigma)
+  for (t in 2:n) { # loop for clarity; could be vectorized
+    x[t] <- rnorm(1, x[t-1], tau)
+    y[t] <- rnorm(1, x[t],   sigma)
+  }
+  data.frame(y = y, x = x) # save x for comparison purpose
+}
+```
+Let $\tau^2 = 0.5$ and $\sigma^2 = 2\tau^2 = 1$.
+Generate a series of length $n = 50$.
+```{r}
+n <- 50
+sigma<- 0.7; tau <- 2 * sigma
+dat <- dlmSim(n, sigma, tau, 0)
+```
+
+Now we use apply SIS to make inferences about $X_1, \ldots, X_T$.
+```{r dlmSIS}
+dlmSIS <- function(y, sigma, tau, m0, s0, N) {
+  x <- rnorm(N, m0, s0)
+  w <- rep(1/N, N)
+  xseq <- matrix(0, N, n)
+  for (t in 1:n) {
+    x <- rnorm(N, x, tau)
+    w <- w * dnorm(y[t], x, sigma)
+    w1 <- w / sum(w)
+    xseq[, t] <- sample(x, size =N, replace = TRUE, prob = w1)
+    ## wseq[i,] <- w
+  }
+  xseq
+}
+```
+We run this SIS with $\mu_0 = 0$ and $\sigma_0 = 10$ with $N = 1000$ particles. Since the true $X$ is saved, we can compare the prediction with the truth.
+```{r dlmRun}
+xseq <- dlmSIS(dat$y, sigma, tau, 0, 10, 2000)
+lower <- apply(xseq, 2, quantile, prob = 0.025)
+upper <- apply(xseq, 2, quantile, prob = 0.975)
+med <- apply(xseq, 2, median)
+plot(dat$x, type = "n", ylim = range(c(lower, upper)))
+points(dat$x)
+lines(med, lty = 1)
+lines(lower, lty = 2)
+lines(upper, lty = 2)
+```
