@@ -3,10 +3,10 @@
 ## SIS for State Space Models
 
 Consider a simple state space model
-\begin{equation*}
-    Y_{t} \mid X_t, \theta &\sim N(X_t, \sigma^2)\\
-X_{t + 1} \mid X_t, \theta &\sim N(X_t, \tau^2)
-\end{equation*}
+\begin{align*}
+Y_{t} & \mid X_t,     \theta & \sim N(X_t, \sigma^2)\\
+X_{t} & \mid X_{t-1}, \theta & \sim N(X_{t-1}, \tau^2)
+\end{align*}
 where $X_0 \sim N(\mu_0, \sigma^2_0)$ and $\theta = (\sigma^2, \tau^2)$.
 This model is also known as a dynamic linear model. The observed data are $Y_1, \ldots, Y_T$. We would like to predict the hidden states $X_1, \ldots, X_T$. For this simple normal model, closed form solutions exist but we use SIS for illustration.
 
@@ -61,3 +61,53 @@ lines(med, lty = 1)
 lines(lower, lty = 2)
 lines(upper, lty = 2)
 ```
+
+
+## Variance Reduction
+
+
+## Exercises
+
+1. Suppose $X$ has the following probability density function
+\[
+f(x) = \frac{1}{5\sqrt{2\pi}}x^2 e^{-\frac{(x-2)^2}{2}}, \qquad -\infty <x < \infty.
+\]
+Consider using the importance sampling method to estimate $\E(X^2)$.
+    a. Implement the important sampling method, with $g(x)$ being the standard
+normal density. Report your estimates using 1000, 10000 and 50000
+samples. Also estimate the variances of the estimates.
+    a. Design a better importance sampling method to estimate $\E(X^2)$ using a
+different $g(x)$. Justify your choice of $g(x)$.
+    a. Implement your method and estimate $\E(X^2)$ using using 1000, 10000 and 50000
+samples. Also estimate the variances of the importance sampling estimates.
+    a. Compare the two results from the two methods and comment.
+1. Consider a geometric Brownian motion
+\begin{align*}
+  \frac{\dd S(t)}{S(t)} = r\,\dd t + \sigma\,\dd W(t).
+\end{align*}
+Let $P_A = e^{-rT}(S_A-K)_+$, $P_E = e^{-rT}[S(T)-K]_+$, and $P_G =
+e^{-rT}[S_G-K]_+$, where
+\begin{align*}
+  S_A = \frac{1}{n} \sum_{i=1}^n S\left(\frac{iT}{n}\right),
+  \quad
+  S_G = \left[\prod_{i=1}^n S\left(\frac{iT}{n}\right)\right]^{1/n}.
+\end{align*}
+In all the questions below, $S(0)=1$, $r=0.05$, and $n=12$.
+    a. Write down and implement an algorithm to sample the path of $S(t)$.
+    a. Set $\sigma=0.5$ and $T=1$.  For each of the values of 
+$K \in \{1.1, 1.2, 1.3, 1.4, 1.5\}$, simulate 5000 sample paths of $S(t)$ to get
+MC estimates of the correlation coefficients between $P_A$ and
+$S(T)$, between $P_A$ and $P_E$, and between $P_A$ and $P_G$.  How
+do the correlation coefficients change as $K$ increases?
+    a. Set $T=1$ and $K=1.5$.  For each of the values of 
+$\sigma = \in \{0.2, 0.3, 0.4, 0.5\}$, simulate 5000 sample paths of $S(t)$ to
+get MC estimates of the correlation coefficients.  How do the correlation
+coefficients change as $\sigma$ increases?
+    a. Set $\sigma=0.5$ and $K=1.5$.  For each of the values of 
+$T \in \{0.4, 0.7, 1, 1.3, 1.6\}$, use 5000 sample paths of $S(t)$ to get MC
+estimates of the correlation coefficients.  How do the correlation
+coefficients change as $T$ increases?
+    a. Set $\sigma=0.4$, $T=1$ and $K=1.5$.  Use $P_G$ as a control
+variate to develop a control variate MC estimator for $\E(P_A)$.
+Compare its SD with the SD of the MC estimator for $\E(P_A)$ that
+has no control variate.
