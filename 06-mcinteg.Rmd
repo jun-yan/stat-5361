@@ -1,12 +1,12 @@
 # Monte Carlo Integration {#mcinteg}
 
-## SIS for State Space Models
+## Particle Filtering for State Space Models
 
 Consider a simple state space model
-\begin{align*}
-Y_{t} & \mid X_t,     \theta & \sim N(X_t, \sigma^2)\\
-X_{t} & \mid X_{t-1}, \theta & \sim N(X_{t-1}, \tau^2)
-\end{align*}
+\begin{eqnarray*}
+Y_{t} & \mid & X_t,     \theta & \sim & N(X_t, \sigma^2)\\
+X_{t} & \mid & X_{t-1}, \theta & \sim & N(X_{t-1}, \tau^2)
+\end{eqnarray*}
 where $X_0 \sim N(\mu_0, \sigma^2_0)$ and $\theta = (\sigma^2, \tau^2)$.
 This model is also known as a dynamic linear model. The observed data are $Y_1, \ldots, Y_T$. We would like to predict the hidden states $X_1, \ldots, X_T$. For this simple normal model, closed form solutions exist but we use SIS for illustration.
 
@@ -25,41 +25,88 @@ dlmSim <- function(n, sigma, tau, x0) {
   data.frame(y = y, x = x) # save x for comparison purpose
 }
 ```
-Let $\tau^2 = 0.5$ and $\sigma^2 = 2\tau^2 = 1$.
+Let $\tau^2 = 0.5$ and $\sigma^2 = 2\tau^2$.
 Generate a series of length $n = 50$.
 ```{r}
 n <- 50
-sigma<- 0.7; tau <- 2 * sigma
+tau <- sqrt(0.5); sigma <- sqrt(2) * tau
+set.seed(123456)
 dat <- dlmSim(n, sigma, tau, 0)
 ```
 
 Now we use apply SIS to make inferences about $X_1, \ldots, X_T$.
 ```{r dlmSIS}
 dlmSIS <- function(y, sigma, tau, m0, s0, N) {
+  xseq <- matrix(0, n, N)
   x <- rnorm(N, m0, s0)
   w <- rep(1/N, N)
-  xseq <- matrix(0, N, n)
   for (t in 1:n) {
     x <- rnorm(N, x, tau)
     w <- w * dnorm(y[t], x, sigma)
-    w1 <- w / sum(w)
-    xseq[, t] <- sample(x, size =N, replace = TRUE, prob = w1)
-    ## wseq[i,] <- w
+    ## w <- w / sum(w)
+    xseq[t, ] <- x<- sample(x, size = N, replace = TRUE, prob = w)
   }
   xseq
 }
 ```
-We run this SIS with $\mu_0 = 0$ and $\sigma_0 = 10$ with $N = 1000$ particles. Since the true $X$ is saved, we can compare the prediction with the truth.
-```{r dlmRun}
-xseq <- dlmSIS(dat$y, sigma, tau, 0, 10, 2000)
-lower <- apply(xseq, 2, quantile, prob = 0.025)
-upper <- apply(xseq, 2, quantile, prob = 0.975)
-med <- apply(xseq, 2, median)
-plot(dat$x, type = "n", ylim = range(c(lower, upper)))
-points(dat$x)
-lines(med, lty = 1)
-lines(lower, lty = 2)
-lines(upper, lty = 2)
+We run this SIS with $\mu_0 = 0$ and $\sigma_0 = 10$ with $N = 1000$ particles. It is easy to see that the particle sample degenerates.
+```{r dlmSIS-Run}
+xseq <- dlmSIS(dat$y, sigma, tau, 0, 10, 1000)
+summary(apply(xseq, 1, function(x) length(unique(x))))
+
+plotDlmPf <- function(xseq) {
+  lower <- apply(xseq, 1, quantile, prob = 0.025)
+  upper <- apply(xseq, 1, quantile, prob = 0.975)
+  med <- apply(xseq, 1, median)
+  plot(dat$x, type = "n", ylim = range(c(dat$x, lower, upper)))
+  points(dat$x)
+  lines(med, lty = 1)
+  lines(lower, lty = 2)
+  lines(upper, lty = 2)
+}
+plotDlmPf(xseq)
+```
+
+
+To fight for degeneracy, the sequential importance sampling resampling (SISR), the particles gets updated with uniform weight being the goal.
+```{r dlmSISR}
+dlmSISR <- function(y, sigma, tau, m0, s0, N) {
+  xseq <- matrix(0, n, N)
+  x <- rnorm(N, m0, s0)
+  for (t in 1:n) {
+    x <- rnorm(N, x, tau)
+    w <- dnorm(y[t], x, sigma)
+    xseq[t, ] <- x <- sample(x, size = N, replace = TRUE, prob = w)
+  }
+  xseq
+}
+```
+We rerun the analysis with SISR with the same data and setting.
+```{r dlmSISR-run}
+xseq <- dlmSISR(dat$y, sigma, tau, 0, 10, 1000)
+summary(apply(xseq, 1, function(x) length(unique(x))))
+plotDlmPf(xseq)
+```
+
+
+Another popular algorithm is the auxiliary particle filter algorithm (APF) of Pitt and Shephard (1999a). The APF uses importance sampling similarly to the bootstrap filter but includes an additional ``look-ahead step". At each time point t, the APF calculates first-stage weights $w^_{t|t−1}$ for particles from time $t − 1$. These weights are calculated using an estimate of the likelihood of the current data given each particle from the previous time point, $\hat p(y_t \mid x_{t-1})$. Particles with high first-stage weights correspond to values of the latent state at time $t − 1$ that are likely to generate the observed data at time $t$. The estimate $\hat p(y_t | x_{t-1})$ can be approximated by choosing an auxiliary variable $\tilde x_t | x_{t-1}$ and setting $\hat p(y_t | x_{t-1}) = g(y_t|\tilde x_{t|t−1})$. Possible methods for choosing $\tilde x_{t | t - 1}$ include simulating a value from $f(x_t|x_{t−1})$ or taking $\tilde x_{t | t - 1} = \E (x_t | x_{t−1})$.
+```{r dlmAPF}
+dlmAPF <- function(y, sigma, tau, m0, s0, N) {
+  xseq <- matrix(0, n, N)
+  x <- rnorm(N, m0, s0)
+  for (t in 1:n) {
+    w0 <- dnorm(y[t], x, sigma)
+    tilx <- sample(x, size = N, replace = TRUE, prob = w0)
+    x <- rnorm(N, tilx, tau)
+    w <- dnorm(y[t], x, sigma) / dnorm(y[t], tilx, sigma)
+    xseq[t, ] <- x <- sample(x, size = N, replace = TRUE, prob = w)
+  }
+  xseq
+}
+
+xseq <- dlmAPF(dat$y, sigma, tau, 0, 10, 1000)
+summary(apply(xseq, 1, function(x) length(unique(x))))
+plotDlmPf(xseq)
 ```
 
 
