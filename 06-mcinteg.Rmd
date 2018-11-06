@@ -4,8 +4,8 @@
 
 Consider a simple state space model
 \begin{eqnarray*}
-Y_{t} & \mid & X_t,     \theta & \sim & N(X_t, \sigma^2)\\
-X_{t} & \mid & X_{t-1}, \theta & \sim & N(X_{t-1}, \tau^2)
+Y_{t}  \mid & X_t,    & \theta & \sim & N(X_t,     & \sigma^2)\\
+X_{t}  \mid & X_{t-1},& \theta & \sim & N(X_{t-1}, & \tau^2)
 \end{eqnarray*}
 where $X_0 \sim N(\mu_0, \sigma^2_0)$ and $\theta = (\sigma^2, \tau^2)$.
 This model is also known as a dynamic linear model. The observed data are $Y_1, \ldots, Y_T$. We would like to predict the hidden states $X_1, \ldots, X_T$. For this simple normal model, closed form solutions exist but we use SIS for illustration.
@@ -14,8 +14,8 @@ This model is also known as a dynamic linear model. The observed data are $Y_1, 
 First, let's generate data.
 ```{r dlmSim}
 dlmSim <- function(n, sigma, tau, x0) {
-  x    <- rep(0,n)
-  y    <- rep(0,n)
+  x    <- rep(0, n)
+  y    <- rep(0, n)
   x[1] <- rnorm(1, x0,   tau)
   y[1] <- rnorm(1, x[1], sigma)
   for (t in 2:n) { # loop for clarity; could be vectorized
@@ -43,8 +43,7 @@ dlmSIS <- function(y, sigma, tau, m0, s0, N) {
   for (t in 1:n) {
     x <- rnorm(N, x, tau)
     w <- w * dnorm(y[t], x, sigma)
-    ## w <- w / sum(w)
-    xseq[t, ] <- x<- sample(x, size = N, replace = TRUE, prob = w)
+    xseq[t, ] <- x <- sample(x, size = N, replace = TRUE, prob = w)
   }
   xseq
 }
@@ -111,6 +110,62 @@ plotDlmPf(xseq)
 
 
 ## Variance Reduction
+
+### Importance Sampling
+
+An integral $\int_a^b H(x) \dd x$ is expressed as
+\[
+  \mu = \int_a^b h(x) f(x) \dd x
+\]
+where $f(x)$ is a density with support $(a, b)$ and $h(x) = H(x) / f(x)$.
+An ordinary MC estimator of $\mu$ is
+\[
+  \hat\mu = \frac{1}{n} \sum_{i=1}^n h(Z_i)
+\]
+where $Z_1, \ldots, Z_n$ are a random sample from $f$.
+
+
+An importance sampling estimator is 
+\[
+  \hat\mu = \frac{1}{n} \sum_{i=1}^n \frac{h(X_i)}{g(X_i)}
+\]
+where $X_1, \ldots, X_n$ are a random sample from a density $g$ whose support is the same as $f$. This estimator is unbiased with $\E(\hat\mu) = \mu$, the optimal choice of $g$ should minimize the variance $\hat\mu$ or equivalently the second moment of $\hat\mu$. From Jensen's inequality
+\[
+  \E (\hat\mu^2) \ge \E^2 (\hat\mu) = \mu^2.
+\]
+When the equality holds, we have $\Var(\hat\mu) = 0$. That is the density $g$ should be chosen such that $g(x) \propto |h(x)| f(x) = |H(x)|$. The result is slightly irrelevant since $\int_a^b H(x) \dif x$ is exactly what we need to find out the first place. Nonetheless, it implies that the variance of the weighted estimator is lower if $g(z)$ resembles $|h(z)| f(z)$, in which case, random points are sampled where they are needed most for accuracy.
+
+
+For illustration, Consider MC integration of $\E[ h(X)]$, where
+$h(x) = x^\alpha$ and $X$ is an exponential random variable with mean $\beta$.
+The optimal sampler $g$ should be $\Gamma(\alpha + 1, \beta)$.
+```{r impExp}
+isAppr <- function(n, h, df, dg, rg, ...) {
+  x <- rg(n, ...)
+  mean( h(x) * df(x) / dg(x, ...) )
+}
+
+alpha <- 3
+h <- function(x) x^alpha
+beta <- 2
+df <- function(x) dexp(x, rate = 1 / beta)
+
+mySummary <- function(nrep, n, h, df, dg, rg) {
+##    browser()
+    sim <- replicate(nrep, isAppr(n, h, df, dg, rg))
+    c(mean = mean(sim), sd = sd(sim))
+}
+
+sapply(1:6, 
+       function(shp) {
+           rg <- function(n) rgamma(n, shape = shp, scale = beta)
+           dg <- function(x) dgamma(x, shape = shp, scale = beta)
+           mySummary(100, 1000, h, df, dg, rg)
+       })
+```
+
+
+### Control Variates
 
 
 ## Exercises
