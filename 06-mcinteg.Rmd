@@ -133,7 +133,7 @@ where $X_1, \ldots, X_n$ are a random sample from a density $g$ whose support is
 \[
   \E (\hat\mu^2) \ge \E^2 (\hat\mu) = \mu^2.
 \]
-When the equality holds, we have $\Var(\hat\mu) = 0$. That is the density $g$ should be chosen such that $g(x) \propto |h(x)| f(x) = |H(x)|$. The result is slightly irrelevant since $\int_a^b H(x) \dif x$ is exactly what we need to find out the first place. Nonetheless, it implies that the variance of the weighted estimator is lower if $g(z)$ resembles $|h(z)| f(z)$, in which case, random points are sampled where they are needed most for accuracy.
+When the equality holds, we have $\Var(\hat\mu) = 0$. That is the density $g$ should be chosen such that $g(x) \propto |h(x)| f(x) = |H(x)|$. The result is slightly irrelevant since $\int_a^b H(x) \dd x$ is exactly what we need to find out the first place. Nonetheless, it implies that the variance of the weighted estimator is lower if $g(z)$ resembles $|h(z)| f(z)$, in which case, random points are sampled where they are needed most for accuracy.
 
 
 For illustration, Consider MC integration of $\E[ h(X)]$, where
@@ -165,7 +165,96 @@ sapply(1:6,
 ```
 
 
-### Control Variates
+### Control Variate
+
+Suppose that there is another MC estimator 
+\[
+\hat\theta = \frac{1}{n}\sum_{i=1}^n g(Y_i)
+\]
+whose target $\theta$ is known. If $h(X_i)$ and $g(Y_i)$ are positively correlated, their dependence can be exploited to construct an improved MC estimator for $\mu$. The intuition is that if $\hat\theta$ is overestimating (underestimating) $\theta$, it is likely that $\hat\mu$ is also overestimating (underestimating) $\mu$. The known bias in $\hat\theta$ can be used to adjust $\hat\mu$. The random variable on which $\hat\theta$ is based is called a control variate in estimating $\mu$. Specifically, the control variate MC estimator for $\mu$ is 
+\[
+\hat\mu_{\mbox{CV}} = \hat\mu - b (\hat\theta - \theta)
+\]
+where $b$ is constant designed to minimize the variance of $\hat\mu_{\mbox{CV}}$.
+
+
+Clearly, $\hat\mu_{\mbox{CV}}$ is unbiased and consistent. It reduces to $\hat\mu$ when $b = 0$. Given $g$ and the distribution of $Y_i$, 
+\[
+\Var(\hat\mu_{\mbox{CV}}) = \Var(\hat\mu) + \Var(\hat\theta) - 2 \Cov(\hat\mu, \hat\theta).
+\]
+The optimal $b$ that minimizes $\Var(\hat\mu_{\mbox{CV}})$ is
+\[
+b_{\mbox{opt}} = \frac{\Cov(\hat\mu, \hat\theta)}{\Var(\hat\mu)} 
+= \frac{\Cov[h(X), g(Y)]}{\Var[g(Y)]}.
+\]
+The minimized variance is
+\[
+\Var(\hat\mu_{\mbox{CV}}) = (1 - \rho^2) \Var(\hat\mu)
+\]
+where $\rho$ is the correlation between $h(X)$ and $g(Y)$.
+In practice, the covariance and variance in the equations are unknown but can be estimated by the their sample version based on the MC sample of $X$ and $Y$.
+
+
+To select a control variate $g(Y)$, we need that $E[g(Y)]$ is known and that the correlation between $h(X)$ and $g(Y)$ is strong. When $\rho = 1$, we have $\Var(\hat\mu_{\mbox{CV}}) = 0$. This is not a surprise because in that case $h(X)$ is a linear transformation of $g(Y)$ and $\mu$ is a linear transformation of $\theta$.
+
+
+Consider pricing an Asian call option; Example 4.1.2 in Glasserman (2000, p.189).
+For MC integration, sample paths of BM will be needed.
+```{r rBM}
+rBM <- function(n, tgrid, sigma) {
+    tt <- c(0, tgrid)
+    dt <- diff(tt)
+    nt <- length(tgrid)
+    dw <- matrix(rnorm(n * nt, sd = sigma * sqrt(dt)), n, nt, byrow = TRUE)
+    t(apply(dw, 1, cumsum))
+}
+```
+If the value the underlying asset at maturity follows a lognormal distribution, then the expected value of a European call option has a closed-form.
+```{r callValLognormal}
+callValLognorm <- function(S0, K, mu, sigma) {
+    d <- (log(S0 / K) + mu + sigma^2) / sigma
+    S0 * exp(mu + 0.5 * sigma^2) * pnorm(d) - K * pnorm(d - sigma)
+}
+```
+We now approximate the present value of an Asian call option. The first estimator is a simple MC estimator, which will be compared with three control variate MC estimator. The three control variates are, respectively, the underlying asset, a standard European call option, and an Asian call option but defined with geometric mean instead of arithmetic mean.
+```{r optValueAppr}
+optValueAppr <- function(n, r = 0.05, sigma = 0.3, S0 = 50, K = 50,
+                         tgrid = seq(0, .25, length = 14)[-1]) {
+    wt <- rBM(n, tgrid, sigma)
+    ## payoff of call option on arithmetic average
+    nt <- length(tgrid)
+    TT <- tgrid[nt]
+    St <- S0 * exp((r - sigma^2 / 2) * matrix(tgrid, n, nt, byrow = TRUE) + wt)
+    pAri <- pmax(rowMeans(St) - K, 0)
+    vAri <- mean(pAri) 
+    ## underlying asset price
+    ST <- St[, nt]
+    vAs <- vAri - cov(ST, pAri) / var(ST) * (mean(ST) - exp(r * TT) * S0)
+    ## value of standard option
+    pStd <- pmax(ST - K, 0)
+    pStdTrue <- callValLognorm(S0, K, (r - 0.5 * sigma^2) * TT,
+                               sigma * sqrt(TT))
+    vStd <-  vAri - cov(pStd, pAri) / var(pStd) * (mean(pStd) - pStdTrue)
+    ## payoff of call option on geometric average
+    pGeo <- pmax(exp(rowMeans(log(St))) - K, 0)
+    tbar <- mean(tgrid)
+    sBar2 <- sigma^2 / nt^2 / tbar * sum( (2 * seq(nt) - 1) * rev(tgrid) )
+    pGeoTrue <- callValLognorm(S0, K, (r - 0.5 * sigma^2) * tbar,
+                               sqrt(sBar2 * tbar))
+    vGeo <- vAri - cov(pGeo, pAri) / var(pGeo) * (mean(pGeo) - pGeoTrue)
+    ## sim <- data.frame(pAri, ST, pStd, pGeo)
+    ## result
+    c(vAri, vAs, vStd, vGeo) * exp(-r * TT)
+}
+```
+
+We run 200 replicates, each with a sample size of 500, and compare the results
+```{r cvOptRun}
+sim <- replicate(200, optValueAppr(500))
+apply(sim, 1, mean)
+apply(sim, 1, sd)
+```
+The standard error using the geometric mean Asian option is strikingly small compared the first version. This is due to the strong correlation between the arithmetic mean Asian option and geometric mean Asian option.
 
 
 ## Exercises

@@ -15,6 +15,7 @@ header-includes:
 
 \newcommand{\E}{\mathbb{E}}
 \newcommand{\Var}{\mathrm{Var}}
+\newcommand{\Cov}{\mathrm{Cov}}
 \newcommand{\dd}{\mathrm{d}}
 \newcommand{\sgn}{\mathrm{sgn}}
 \newcommand{\bx}{\textbf{x}}
