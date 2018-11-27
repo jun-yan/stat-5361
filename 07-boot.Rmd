@@ -1,0 +1,14 @@
+# Bootstrap {#boot}
+
+## Exercises
+
+1. Suppose that $X$ and $Y$ are independent $\Gamma(\alpha_1, \beta_1)$ and $\Gamma(\alpha_2, \beta_2)$ variables, where $\Gamma(a, b)$ have mean $a b$. We are interested in point and interval estimation of $\theta = \E(X) / \E(Y)$ based on two independent samples of size $n_1$ and $n_2$, respectively. Let $n_1 = 10$ and $n_2 = 15$. Set the random seed to be 123 for reproducibility. Let $\bar X$ and $\bar Y$ be the sample means. Consider statistic $T = \bar X / \bar Y$.
+    a. Given the sample, draw bootstrap samples of $T$ using the nonparametric method and the parametric method with sample size $B = 1000$.
+    a. Correct the bias of $T$ in estimating $\theta$. 
+    a. Construct a 95\% bootstrap percentile confidence interval for $\theta$.
+    a. Repeat the experiments 1000 times. Compare the average bias with the exact bias; compare the empirical coverage of the 95\% bootstrap confidence interval with the nominal level.
+
+1. One goodness-of-fit diagnosis is the QQ plot. Consider a random sample of size $n$ from $N(\mu, \sigma^2)$. A QQ plot displays the empirical quantiles against the theoretical quannntiles. For uncertainty assessment, a pointwise confidence interval constructed from simulation is often overlaid . In practice, the parameters of the distribution to be checked are unknown and the estimation uncertainty needs to be take into account. Let $n = 10$, $\mu = 0$, and $\sigma^2 = 1$.
+    a. Construct a QQ plot with pointwise confidence intervals with known $\mu$ and $\sigma^2$.
+    a. Construct a QQ plot with pointwise confidence intervals with estimated $\mu$ and $\sigma^2$. The uncertainty in estimated parameters can be realized by bootstrapping.
+    a. Repeat with sample size $n \in \{20, 30\}$.
