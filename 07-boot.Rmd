@@ -2,7 +2,7 @@
 
 ## Exercises
 
-1. Suppose that $X$ and $Y$ are independent $\Gamma(\alpha_1, \beta_1)$ and $\Gamma(\alpha_2, \beta_2)$ variables, where $\Gamma(a, b)$ have mean $a b$. We are interested in point and interval estimation of $\theta = \E(X) / \E(Y)$ based on two independent samples of size $n_1$ and $n_2$, respectively. Let $n_1 = 10$ and $n_2 = 15$. Set the random seed to be 123 for reproducibility. Let $\bar X$ and $\bar Y$ be the sample means. Consider statistic $T = \bar X / \bar Y$.
+1. Suppose that $X$ and $Y$ are independent $\Gamma(\alpha_1, \beta_1)$ and $\Gamma(\alpha_2, \beta_2)$ variables, where $\Gamma(a, b)$ have mean $a b$. We are interested in point and interval estimation of $\theta = \E(X) / \E(Y)$ based on two independent samples of size $n_1$ and $n_2$, respectively. Consider for example $\alpha_1 = \beta_1 = 2$, $\alpha_2 = 4$, $\beta = 2$, $n_1 = 10$ and $n_2 = 15$. Set the random seed to be 123 for reproducibility. Let $\bar X$ and $\bar Y$ be the sample means. Consider statistic $T = \bar X / \bar Y$.
     a. Given the sample, draw bootstrap samples of $T$ using the nonparametric method and the parametric method with sample size $B = 1000$.
     a. Correct the bias of $T$ in estimating $\theta$. 
     a. Construct a 95\% bootstrap percentile confidence interval for $\theta$.
