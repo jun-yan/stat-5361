@@ -1,5 +1,225 @@
 # Bootstrap {#boot}
 
+## Principles of Bootstrap
+
+## Parametric Bootstrap
+
+A parametric model is specified to the data, and the model parameters 
+are estimated by likelihood methods, moment methods, or other methods.
+Parametric bootstrap samples are generated from the fitted model, and 
+for each sample the quantity to be bootstrapped is calculated.
+
+
+Parametric bootstrap is often used to approximate the null 
+distribution of a testing statistic which is otherwise unwieldy.
+The uncertainty of parameter estimation can be accounted for.
+
+### Goodness-of-Fit Test
+
+Goodness of fit test with the KS statistic.
+Consider two different null hypotheses:
+\[
+H_0: \mbox{ the data follows $N(2, 2^2)$ distribution,}
+\]
+and
+\[
+H_0: \mbox{ the data follows a normal distribution.}
+\]
+Note that the first hypothesis is a simple hypothesis while the second one is a composite hypothesis.
+```{r gofNaive}
+do1rep <- function(n) {
+  x <- rnorm(n, mean = 2, sd = 2)
+  p1 <- ks.test(x, "pnorm", mean = 2, sd = 2)$p.value
+  p2 <- ks.test(x, "pnorm", mean = mean(x), sd = sd(x))$p.value
+  c(p1, p2)
+}
+
+pvals <- replicate(1000, do1rep(100))
+
+## par(mfrow=c(1, 2), mar=c(2.5, 2.5, 0.1, 0.1), mgp=c(1.5, 0.5, 0))
+hist(pvals[1,])
+hist(pvals[2,])
+
+ks.test(pvals[1,], "punif")
+ks.test(pvals[2,], "punif")
+```
+
+
+Compare the histograms of the p-values obtained from applying `ks.test()` to $N(2, 2^2)$ and to $N(\hat\mu, \hat\sigma^2)$ with fitted mean $\hat\mu$ and variance $\hat\sigma^2$. The first one is what is expected from a $U(0, 1)$ distribution, but the second one is not, which confirms that direct application of `ks.test()` to fitted distribution is incorrect for the goodness-of-fit of the hypothesized distribution with unknown parameters that need to be estimated.
+
+
+A parametric bootstrap procedure can be employed for such tests. The test statistic remain the same, but its null distribution is approximated from parametric bootstrap. 
+```{r gof-pb}
+my.ks.normal <- function(x, B = 1000) {
+  ## mle
+  mu <- mean(x)
+  sigma <- sd(x)
+  ## KS stat
+  stat <- ks.test(x, "pnorm", mu, sigma)$statistic
+  ## parametric bootstrap to approximate the null distribution
+  n <- length(x)
+  stat.b <- double(B)
+  for (i in 1:B) {
+    x.b <- rnorm(n, mu, sigma)
+    mu.b <- mean(x.b)
+    sigma.b <- sd(x.b)
+    stat.b[i] <- ks.test(x.b, "pnorm", mu.b, sigma.b)$statistic
+  }
+  p.value <- (sum(stat.b >= stat) + 0.5) / (B + 1)
+  list(statistics = stat, p.value = p.value, 
+       estimate = c(mean = mu, sd = sigma),
+       stat.sim = stat.b)
+}
+
+pvals <- replicate(1000, my.ks.normal(rnorm(100, 2, 2), B = 200)$p.value)
+## check the distribution of the pvals
+hist(pvals)
+ks.test(pvals, "punif") 
+## this is not good because pvals has only (B + 1) possible values
+## while ks.test cannot handle data with ties
+
+## check the distribution of the testing statistics
+stat.naive <- replicate(1000, ks.test(rnorm(100, 2, 2), "pnorm", 2, 2)$statistic)
+## compare with the empirical distribution
+stat.pb <- replicate(200, my.ks.normal(rnorm(100, 2, 2), B = 200)$statistic)
+## plot them
+dens.naive <- density(stat.naive)
+dens.pb <- density(stat.pb)
+## note that stat.pb tends to be smaller than stat.naiv
+plot(dens.pb, xlim = range(dens.naive$x))
+lines(density(stat.naive), lty=2)
+```
+Note that the KS statistic and the CvM statistic are functionals
+of the empirical distribution and the fitted parametric distribution.
+Faster alternatives are possible with the multiplier CLT
+[@Koja:Yan:good:2012].
+
+## Block bootstrap
+
+
+
+## Multiplier bootstrap
+### Multiplier central limit theorem
+The theoretical background and presentation of the multiplier CLT
+can be found in Section~2.9 of @van:Well:weak:1996.
+Let $X_1, \ldots, X_n$ be a random sample from a distribution $P$.
+Let $\delta_x(t) = I(x <= t)$.
+With the notation $Z_i(t) = \delta_{X_i}(t) - P(t)$, the empirical
+CLT can be written as 
+\[
+\frac{1}{\sqrt{n}} \sum_{i = 1}^n Z_i \to \mathbb{G}
+\]
+where $\mathbb{G}$ is a Brownian bridge.
+
+
+Let $\xi_1, \ldots, \xi_n$ be a set of iid random variables with
+mean zero and variance 1, and independent of $X_1, \ldots, X_n$.
+The multiplier CLT asserts that
+\[
+\frac{1}{\sqrt{n}} \sum_{i=1}^n \xi_i Z_i \to \mathbb{G},
+\]
+under some conditions about the (Donsker) class of the distribution $P$.
+
+
+A more refined and deeper result is the conditional multiplier CLT
+which states that 
+\[
+\frac{1}{\sqrt{n}} \sum_{i=1}^n \xi_i Z_i \to \mathbb{G},
+\]
+given almost every sequence of $Z_i, Z_2, \ldots$, under
+only slightly stronger conditions.
+
+
+For illustration, consider a scalar. We first look at the unconditional version; that is, the observed data is not fixed.
+```{r multScalar}
+n <- 100
+nrep <- 1000
+
+## CLT and Multiplier CLT
+do1rep <- function(n) {
+  x <- rexp(n)
+  z1 <- sum(x - 1) / sqrt(n)
+  z2 <- sum((x - 1) * rnorm(n)) / sqrt(n)
+  z3 <- sum((x - 1) * ifelse(runif(n) < 0.5, 1, -1)) / sqrt(n)
+  c(z1, z2, z3)
+}
+
+clt <- replicate(nrep, do1rep(n))
+
+## check normality of each component
+qqnorm(clt[1,], xlim = c(-3, 3), ylim = c(-3, 3), main = "")
+qqline(clt[1,])
+qqnorm(clt[2,], xlim = c(-3, 3), ylim = c(-3, 3), main = "")
+qqline(clt[2,])
+qqnorm(clt[3,], xlim = c(-3, 3), ylim = c(-3, 3), main = "")
+qqline(clt[3,])
+```
+
+Now we look at the conditional version where the observed data are conditioned on.
+
+```{r cmult}
+## Conditional multiplier CLT
+x <- rexp(n) ## given one sample
+cclt1rep <- function(x) {
+  n <- length(x)
+  z2 <- sum((x - 1) * rnorm(n)) / sqrt(n)
+  z3 <- sum((x - 1) * ifelse(runif(n) < 0.5, 1, -1)) / sqrt(n)
+  c(z2, z3)
+}
+
+cclt <- replicate(nrep, cclt1rep(x))
+## par(mfrow=c(1, 2), mar=c(2.5, 2.5, 0.1, 0.1), mgp=c(1.5, 0.5, 0))
+qqnorm(cclt[1,], xlim = c(-3, 3), ylim = c(-3, 3), main = "")
+qqline(cclt[1,])
+qqnorm(cclt[2,], xlim = c(-3, 3), ylim = c(-3, 3), main = "")
+qqline(cclt[2,])
+```
+
+The process version retains the dependence structure which saves much computing time in many applications such as goodness-of-fit tests.
+```{r multProc}
+uu <- (1:(2 * n) + 0.5) / (2 * n + 1)
+tt <- qexp(uu)
+
+## sampling from the distribution of the KS statistic
+ks1rep <- function(n, tt) {
+  x <- rexp(n)
+  ## rate <- 1 / mean(x)
+  ## using the true rate parameter in pexp
+  ## if estimate is used, it will be a different distribution
+  indXt <- sapply(tt, function(t) ifelse(x <= t, 1, 0))
+  Ft <- matrix(pexp(tt), n, length(tt), byrow = TRUE)
+  z1 <- colSums(indXt - Ft) / sqrt(n)
+  ## z1 <- sqrt(n) * (ecdf(x)(tt) - pexp(tt)) ## equivalent but less visual
+  z2 <- colSums( rnorm(n) * (indXt - Ft) ) / sqrt(n)
+  c(max(abs(z1)), max(abs(z2)))
+}
+
+system.time(ksSamp <- replicate(nrep, ks1rep(n, tt)))
+
+ks1cclt <- function(x, tt) {
+  n <- length(x)
+  indXt <- sapply(tt, function(t) ifelse(x <= t, 1, 0))
+  Ft <- matrix(pexp(tt), n, length(tt), byrow = TRUE)
+  z <- colSums( rnorm(n) * (indXt - Ft) ) / sqrt(n)
+  max(abs(z))
+}
+
+system.time(ksMult <- replicate(nrep, ks1cclt(x, tt)))
+
+ran <- range(c(ksSamp, ksMult))
+qqplot(ksSamp[1,], ksSamp[2,], main = "", xlim = ran, ylim = ran,
+       xlab = "parametric bootstrap", ylab = "multiplier bootstrap")
+abline(0, 1)
+qqplot(ksSamp[1,], ksMult, main = "", xlim = ran, ylim = ran,
+       xlab = "parametric bootstrap", ylab = "conditional multipler bootstrap")
+abline(0, 1)
+```
+
+Application of the multiplier CLT needs the asymptotic representation of the random quantities or process of interest.
+
+Question: for goodness-of-fit tests with unknown parameters, how would the procedure of the conditional multiplier approach change? This is the subject of @Koja:Yan:good:2012.
+
+
 ## Exercises
 
 1. Suppose that $X$ and $Y$ are independent $\Gamma(\alpha_1, \beta_1)$ and $\Gamma(\alpha_2, \beta_2)$ variables, where $\Gamma(a, b)$ have mean $a b$. We are interested in point and interval estimation of $\theta = \E(X) / \E(Y)$ based on two independent samples of size $n_1$ and $n_2$, respectively. Consider for example $\alpha_1 = \beta_1 = 2$, $\alpha_2 = 4$, $\beta = 2$, $n_1 = 10$ and $n_2 = 15$. Set the random seed to be 123 for reproducibility. Let $\bar X$ and $\bar Y$ be the sample means. Consider statistic $T = \bar X / \bar Y$.
