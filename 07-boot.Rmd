@@ -104,10 +104,9 @@ To ensure that the bootstrap samples replicate both the marginal and the depende
 
 ```{r bootHT}
 
-bootHT <- function(umat) {
-  nr <- nrow(umat)
-  nc <- ncol(umat)
-  rkmat <- apply(umat, 2, rank, ties.method = "random")
+bootHT <- function(rkmat) {
+  nr <- nrow(rkmat)
+  nc <- ncol(rkmat)
   ## resampling rows
   idx <- sample(1:nr, nr, replace=TRUE)
   rkmat.bt <- rkmat[idx, ]
@@ -118,15 +117,16 @@ bootHT <- function(umat) {
 
 ns <- 6
 nt <- 10
-umat <- matrix(runif(ns * nt), nrow = nt)
-
+umat <- copula::rCopula(nt, copula::normalCopula(0.6, dim = ns, dispstr = "ar1"))
+rkmat <- apply(umat, 2, rank, ties.method = "random")
 set.seed(123)
-umat.bt <- bootHT(umat)
+umat.bt <- bootHT(rkmat)
 
-ht <- replicate(1000, bootHT(umat))
+ht <- replicate(1000, bootHT(rkmat))
 str(ht)
 hist(ht[3, 3, ])
 hist(ht[4, 5, ])
+plot(ht[2, 3, ], ht[2, 4, ])
 ```
 
 What if the data is not balanced and the blocks are of different sizes?
