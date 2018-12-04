@@ -96,6 +96,40 @@ Faster alternatives are possible with the multiplier CLT
 
 ## Block bootstrap
 
+## Semiparametric bootstrap
+@Heff:Tawn:cond:2004 applied a semiparametric bootstrap method [@Davi:Hink:boot:1997] in multivariate extreme value modeling. The challenge here is that, although univariate margins are fitted fine with generalized extreme value (GEV) distributions, an extreme-value dependence structure may be too strong an assumption to be practical. How does one obtain bootstrap samples of a semiparametric model where the marginal models are specified but the dependence structure is not?
+
+
+To ensure that the bootstrap samples replicate both the marginal and the dependence features ofthe data, @Heff:Tawn:cond:2004 proposed a two-step bootstrap algorithm. A nonparametric bootstrap is employed first, ensuring the preservation of the dependence structure; then a parametric step is carried out to assess the uncertainty in the estimation of the parametric marginal models. The precise procedure is as follows. The original data are first transformed to have Gumbel margins using the fitted marginal models from the original data. A nonparametric bootstrap sample is then obtained by sampling with replacement from the transformed data. We then change the marginal values of this bootstrap sample, ensuring that the marginal distributions are all Gumbel and preserving the associations between the ranked points in each component. Specifically, for each $i$, $i = 1, \ldots, d$, where $d$ is the multivariate dimension, replace the ordered sample of component $Y_i$ with an ordered sample of the same size from the standard Gumbel distribution. The resulting sample is then transformed back to the original margins by using the marginal model that was estimated from the original data. The bootstrap samples obtained this way have desired univariate marginal distributions and dependence structure entirely consistent with the data as determined by the associations between the ranks of the components of the variables.
+
+```{r bootHT}
+
+bootHT <- function(umat) {
+  nr <- nrow(umat)
+  nc <- ncol(umat)
+  rkmat <- apply(umat, 2, rank, ties.method = "random")
+  ## resampling rows
+  idx <- sample(1:nr, nr, replace=TRUE)
+  rkmat.bt <- rkmat[idx, ]
+  ## reordering iid uniform variables for each column
+  vv <- matrix(runif(nr * nc), nr, nc)
+  sapply(1:nc, function(i) sort(vv[,i])[rkmat.bt[,i]])
+}
+
+ns <- 6
+nt <- 10
+umat <- matrix(runif(ns * nt), nrow = nt)
+
+set.seed(123)
+umat.bt <- bootHT(umat)
+
+ht <- replicate(1000, bootHT(umat))
+str(ht)
+hist(ht[3, 3, ])
+hist(ht[4, 5, ])
+```
+
+What if the data is not balanced and the blocks are of different sizes?
 
 
 ## Multiplier bootstrap
