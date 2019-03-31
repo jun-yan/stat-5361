@@ -325,6 +325,7 @@ Further, repeat the experiment 100 times. Draw box plots of the 100 approximatio
 
 3. Explain how `.Machine$double.xmax`, `.Machine$double.xmin`, `.Machine$double.eps`, and `.Machine@double.neg.eps` are defined using the 64-bit double precision floating point arithmetic.
 
+4. first 10-digit prime number occurring in consecutive digits of e [http://mathworld.wolfram.com/news/2004-10-13/google/](http://mathworld.wolfram.com/news/2004-10-13/google/)
 
 ## Course Project
 
