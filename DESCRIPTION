@@ -15,5 +15,7 @@ Description: STAT 5361 Statistical computing notes.
 License: GPL (>=3)
 Encoding: UTF-8
 LazyData: true
+Imports:
+    evir
 Suggests:
     bookdown
