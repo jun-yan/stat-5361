@@ -1,0 +1,19 @@
+Package: stat5361
+Title: Statistical Computing Notes
+Version: 2019.8.0.9000
+Authors@R: 
+    c(person(given = "Jun",
+             family = "Yan",
+             role = c("aut", "cre"),
+             email = "jun.yan@uconn.edu"),
+      person(given = "Pariksheet",
+             family = "Nanda",
+             role = c("ctb"),
+             email = "pariksheet.nanda@uconn.edu",
+             comment = c(ORCID = "0000-0001-9726-4552")))
+Description: STAT 5361 Statistical computing notes.
+License: GPL (>=3)
+Encoding: UTF-8
+LazyData: true
+Suggests:
+    bookdown
