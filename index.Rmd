@@ -30,18 +30,19 @@ header-includes:
 We assume that students can use R/Rstudio comfortably. If you are new to R, an
 extra amount of hard work should be devoted to make it up. In addition to the
 official documentations from the R-project, the presentations at a [local SIAM
-workshop in Spring 2018] (https://siam.math.uconn.edu/events/) given by Wenjie
+workshop in Spring 2018](https://siam.math.uconn.edu/events/) given by Wenjie
 Wang, a PhD student in Statistics at the time, can be enlighting:
 - <https://github.com/wenjie2wang/2018-01-19-siam>
 - <https://github.com/wenjie2wang/2018-04-06-siam>
 
-If you have used R, but never paid attention to R programming styles, a style clinic would be a necessary step. A good place to start is Google's R style guide at <https://google.github.io/styleguide/Rguide.xml>. From my experience, the two most commonly overlooked styles for beginners are spacing and indentation. Appropriate spacing and indentation would immediately make crowdly piled code much more eye-friendly. Such styles can be automatically enforced by R packages such as **formatr** or **lintr**. Tow important styles that cannot be automatically corrected are naming and documentation. As in any programming languate, naming of R objects (variables, functions, files, etc.) shoud be informative, concise, and consistent with certain naming convention. Documentation needs to be sufficient, concise, and kept close to the code; tools like R package **roxygen2** can be very helpful. See Hadley Wichham's online book <http://style.tidyverse.org/> for more detailed tips.
+
+If you have used R, but never paid attention to R programming styles, a style clinic would be a necessary step. A good place to start is Google's R style guide at <https://google.github.io/styleguide/Rguide.xml>. From my experience, the two most commonly overlooked styles for beginners are spacing and indentation. Appropriate spacing and indentation would immediately make crowdly piled code much more eye-friendly. Such styles can be automatically enforced by R packages such as **formatr** or **lintr**. Two important styles that cannot be automatically corrected are naming and documentation. As in any programming languate, naming of R objects (variables, functions, files, etc.) shoud be informative, concise, and consistent with certain naming convention. Documentation needs to be sufficient, concise, and kept close to the code; tools like R package **roxygen2** can be very helpful. See Hadley Wichham's online book <http://style.tidyverse.org/> for more detailed tips.
 
 
 For intermediate R users who want a skill lift, The __Advanced R Programming__ book [@wickham2014advanced] by Hadley Wickham is available at <https://adv-r.hadley.nz/>. The source that generated the book is kindly made available at GitHub: <https://github.com/hadley/adv-r>. It is a great learning experience to complile the book from the source, during which you may pick up many necessary skills.
 
 
-The homework, exam, and project will be completed by __R Markdown__. Following the step by step the instructions in Yihui Xie's online book on __bookdown__ [@xie2016bookdown].at <https://bookdown.org/yihui/bookdown/>, you will be amazed how quickly you can learn to produce cool-looking documents and even book manuscripts. If you are a keener, you may as well following Yihui's __blogdown__, see online book <https://bookdown.org/yihui/blogdown/>, to build your own website using R Markdown.
+The homework, exam, and project will be completed by __R Markdown__. Following the step by step the instructions in Yihui Xie's online book on __bookdown__ [@xie2016bookdown].at <https://bookdown.org/yihui/bookdown/>, you will be amazed how quickly you can learn to produce cool-looking documents and even book manuscripts. If you are a keener, you may as well follow Yihui's __blogdown__ [@xie2017blogdown], see the online book <https://bookdown.org/yihui/blogdown/>, to build your own website using R Markdown.
 
 
 All your source code will be version controlled by __git__ and archived on __GitHub__. RStudio has made using git quite straightforward. The online tutorial by Jenny Bryan, Happy Git and GitHub for the useR, is a very useful tool to get started
@@ -68,7 +69,8 @@ dfancy <- function(x, shape, scale, log = FALSE) {
   dgamma(x, shape = shape, scale = scale, log = log)
 }
 
-suppressWarnings(MASS::fitdistr(x, densfun = dfancy, start = list(shape = 10, scale = 20)))
+suppressWarnings(MASS::fitdistr(x, densfun = dfancy, 
+                                start = list(shape = 10, scale = 20)))
 ```
 
 
@@ -125,6 +127,7 @@ u
 1000L * 1000L * 1000L * 1000L
 1000L * 1000L * 1000L * 1000
 ```
+
 
 ### Floating Point
 A floating point number is represented by 
@@ -325,7 +328,7 @@ Further, repeat the experiment 100 times. Draw box plots of the 100 approximatio
 
 3. Explain how `.Machine$double.xmax`, `.Machine$double.xmin`, `.Machine$double.eps`, and `.Machine@double.neg.eps` are defined using the 64-bit double precision floating point arithmetic.
 
-4. first 10-digit prime number occurring in consecutive digits of e [http://mathworld.wolfram.com/news/2004-10-13/google/](http://mathworld.wolfram.com/news/2004-10-13/google/)
+4. first 10-digit prime number occurring in consecutive digits of $e$ [http://mathworld.wolfram.com/news/2004-10-13/google/](http://mathworld.wolfram.com/news/2004-10-13/google/)
 
 ## Course Project
 
