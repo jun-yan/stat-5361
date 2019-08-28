@@ -1,5 +1,5 @@
 --- 
-title: "STAT 5361: Statistical Computing, Fall 2018"
+title: "STAT 5361: Statistical Computing, Fall 2019"
 author: "Jun Yan"
 date: "`r Sys.Date()`"
 site: bookdown::bookdown_site
@@ -39,7 +39,7 @@ Wang, a PhD student in Statistics at the time, can be enlighting:
 If you have used R, but never paid attention to R programming styles, a style clinic would be a necessary step. A good place to start is Google's R style guide at <https://google.github.io/styleguide/Rguide.xml>. From my experience, the two most commonly overlooked styles for beginners are spacing and indentation. Appropriate spacing and indentation would immediately make crowdly piled code much more eye-friendly. Such styles can be automatically enforced by R packages such as **formatr** or **lintr**. Two important styles that cannot be automatically corrected are naming and documentation. As in any programming languate, naming of R objects (variables, functions, files, etc.) shoud be informative, concise, and consistent with certain naming convention. Documentation needs to be sufficient, concise, and kept close to the code; tools like R package **roxygen2** can be very helpful. See Hadley Wichham's online book <http://style.tidyverse.org/> for more detailed tips.
 
 
-For intermediate R users who want a skill lift, The __Advanced R Programming__ book [@wickham2014advanced] by Hadley Wickham is available at <https://adv-r.hadley.nz/>. The source that generated the book is kindly made available at GitHub: <https://github.com/hadley/adv-r>. It is a great learning experience to complile the book from the source, during which you may pick up many necessary skills.
+For intermediate R users who want a skill lift, The __Advanced R Programming__ book [@wickham2019advanced] by Hadley Wickham is available at <https://adv-r.hadley.nz/>. The source that generated the book is kindly made available at GitHub: <https://github.com/hadley/adv-r>. It is a great learning experience to complile the book from the source, during which you may pick up many necessary skills.
 
 
 The homework, exam, and project will be completed by __R Markdown__. Following the step by step the instructions in Yihui Xie's online book on __bookdown__ [@xie2016bookdown].at <https://bookdown.org/yihui/bookdown/>, you will be amazed how quickly you can learn to produce cool-looking documents and even book manuscripts. If you are a keener, you may as well follow Yihui's __blogdown__ [@xie2017blogdown], see the online book <https://bookdown.org/yihui/blogdown/>, to build your own website using R Markdown.
