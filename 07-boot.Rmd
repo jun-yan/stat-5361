@@ -49,7 +49,7 @@ Compare the histograms of the p-values obtained from applying `ks.test()` to $N(
 
 
 A parametric bootstrap procedure can be employed for such tests. The test statistic remain the same, but its null distribution is approximated from parametric bootstrap. 
-```{r gof-pb}
+```{r gof-pb, cache = TRUE}
 my.ks.normal <- function(x, B = 1000) {
   ## mle
   mu <- mean(x)
@@ -210,7 +210,7 @@ qqline(cclt[2,])
 ```
 
 The process version retains the dependence structure which saves much computing time in many applications such as goodness-of-fit tests.
-```{r multProc}
+```{r multProc, cache = TRUE}
 uu <- (1:(2 * n) + 0.5) / (2 * n + 1)
 tt <- qexp(uu)
 
