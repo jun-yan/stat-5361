@@ -26,3 +26,5 @@ deploy:
   skip_cleanup: true
   github_token: $GITHUB_TOKEN
   local_dir: book_output
+  on:
+    all_branches: true
