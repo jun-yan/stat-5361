@@ -25,6 +25,4 @@ deploy:
   provider: pages
   skip_cleanup: true
   github_token: $GITHUB_TOKEN
-  on:
-    branch: master
   local_dir: book_output
