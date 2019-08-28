@@ -1,0 +1,22 @@
+# (APPENDIX) Appendix {-}
+
+# Git Setup
+
+To participate in the git lesson,
+you need to:
+
+1. Install
+    - R
+    - RStudio
+    - git
+2. Setup your SSH keys in RStudio, and
+3. Have a [github.com](https://github.com) account
+
+To quickly check that your setup, in RStudio, open
+**Tools > Global Options... > Git/SVN** and check
+that RStudio sees values for **Git executable** and
+**SSH RSA key**
+
+```{r RStudio git settings, cache = TRUE, echo = FALSE}
+knitr::include_graphics("images/rstudio-git-settings.png")
+```
