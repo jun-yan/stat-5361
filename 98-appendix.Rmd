@@ -113,6 +113,25 @@ instead of using direct git commands.
 
 <!-- https://swcarpentry.github.io/git-novice/fig/phd101212s.png -->
 
+Several incentives for using version control according to a commenter on
+StackOverflow
+^[https://stackoverflow.com/a/1408464] are:
+
+> Have you ever:
+>
+> - Made a change to code, realised it was a mistake and wanted to revert back?
+> - Lost code or had a backup that was too old?
+> - ...
+> - Wanted to see the difference between two (or more) versions of your code?
+> - Wanted to prove that a particular change broke or fixed a piece of code?
+> - Wanted to review the history of some code?
+> - Wanted to submit a change to someone else's code?
+> - Wanted to share your code, or let other people work on your code?
+> - Wanted to see how much work is being done, and where, when and by whom?
+> - Wanted to experiment with a new feature without interfering with working code?
+>
+> In these cases, and no doubt others, a version control system should make your life easier.
+
 ## Creating a Repository
 
 RStudio automates repository creation for us,
