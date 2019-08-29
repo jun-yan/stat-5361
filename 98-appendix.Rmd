@@ -210,6 +210,12 @@ You can re-run the `--list` command above to check your new settings.
 
 The Git stage
 is a place to include multiple files with a related change.
+
+```{r Staging files, echo = FALSE}
+knitr::include_graphics("images/git-staging-area.svg")
+knitr::include_graphics("images/git-committing.svg")
+```
+
 You can think of the Git stage like the small "staging" area under your feet
 where people gather to take a photograph.
 Most often though, only one file is changed at a time,
