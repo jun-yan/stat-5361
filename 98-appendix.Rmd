@@ -206,6 +206,19 @@ with your actual name and e-mail.
 
 You can re-run the `--list` command above to check your new settings.
 
+## Tracking Changes
+
+The Git stage
+is a place to include multiple files with a related change.
+You can think of the Git stage like the small "staging" area under your feet
+where people gather to take a photograph.
+Most often though, only one file is changed at a time,
+which would make our "photograph" of a single file more like selfie.
+
+```{r Staging a single file is like taking a selfie, echo = FALSE}
+knitr::include_graphics("images/selfie.jpg")
+```
+
 ## Next Steps
 
 - Read sections 8 onwards of the Software Carpentry
