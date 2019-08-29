@@ -129,13 +129,6 @@ knitr::include_graphics("images/versions.svg")
 knitr::include_graphics("images/merge.svg")
 ```
 
-Version control is your magical undo button
-for making mistakes with text files like R source code:
-
-```{r undo button, cache = TRUE, echo = FALSE}
-knitr::include_graphics("images/undo-button.jpg")
-```
-
 Several incentives for using version control according to a commenter on
 StackOverflow
 ^[https://stackoverflow.com/a/1408464] are:
@@ -154,6 +147,14 @@ StackOverflow
 > - Wanted to experiment with a new feature without interfering with working code?
 >
 > In these cases, and no doubt others, a version control system should make your life easier.
+
+Most often though,
+we use version control as our magic undo button
+for restoring plain text files like R source code:
+
+```{r undo button, cache = TRUE, echo = FALSE}
+knitr::include_graphics("images/undo-button.jpg")
+```
 
 ## Creating a Repository
 
