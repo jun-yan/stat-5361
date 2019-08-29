@@ -156,6 +156,11 @@ for restoring plain text files like R source code:
 knitr::include_graphics("images/undo-button.jpg")
 ```
 
+## Setup
+
+Please setup R, RStudio, git, your SSH keys, and create your GitHub account
+as explained in appendix \@ref(git-setup).
+
 ## Creating a Repository
 
 RStudio automates repository creation for us,
