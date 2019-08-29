@@ -32,7 +32,11 @@ knitr::include_graphics("images/rstudio-git-settings.png")
 
 ## Git for Windows installer {#git-windows}
 
-These instructions are for Windows only:
+These instructions
+^[These Git Windows installer steps
+are from the
+[Software Carpentry setup page](https://carpentries.github.io/workshop-template/#git).]
+are for Windows only:
 
 1. Click on **Next** four times (two times if you've previously installed Git). You don't need to change anything in the Information, location, components, and start menu screens.
 1. Select **Use the nano editor by default** and click on **Next**.
