@@ -111,7 +111,12 @@ instead of using direct git commands.
 
 ## Automated Version Control
 
-<!-- https://swcarpentry.github.io/git-novice/fig/phd101212s.png -->
+Even if you aren’t collaborating with other people,
+automated version control is much better than this situation:
+
+```{r PhD comics FINAL.doc, echo = FALSE}
+knitr::include_graphics("images/phd101212s.png")
+```
 
 Version control is your magical undo button
 for making mistakes with text files like R source code:
