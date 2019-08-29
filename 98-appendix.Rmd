@@ -5,18 +5,42 @@
 To participate in the git lesson,
 you need to:
 
-1. Install
-    - R
-    - RStudio
-    - git
-2. Setup your SSH keys in RStudio, and
-3. Have a [github.com](https://github.com) account
+1. Download and install
+    - [R](https://cloud.r-project.org/)
+    - [RStudio Desktop](https://www.rstudio.com/products/rstudio/download/#download)
+    - git:
+	    - [Windows](https://git-for-windows.github.io/) - to install see section \@ref(git-windows) below.
+		- [OS X &ge; 10.9](http://sourceforge.net/projects/git-osx-installer/files/)
+		- [OS X &le; 10.8 snow-leopard](http://sourceforge.net/projects/git-osx-installer/files/)
+2. Setup your SSH RSA key if necessary in RStudio -
+   only if your **SSH RSA key** is **(none)**, then
+   click on the button to **Create RSA key...**
+3. Have a [github.com](https://github.com) account, and
+4. Copy your SSH RSA key to github.com -
+   in the RStudio window below click on **View public key**
+   and copy the public key to your account as explained in step 2 onwards:
+   https://help.github.com/en/articles/adding-a-new-ssh-key-to-your-github-account
 
-To quickly check that your setup, in RStudio, open
+To quickly check that you are fully setup, in RStudio, open
 **Tools > Global Options... > Git/SVN** and check
 that RStudio sees values for **Git executable** and
-**SSH RSA key**
+**SSH RSA key**.
 
 ```{r RStudio git settings, cache = TRUE, echo = FALSE}
 knitr::include_graphics("images/rstudio-git-settings.png")
 ```
+
+## Git for Windows installer {#git-windows}
+
+These instructions are for Windows only:
+
+1. Click on **Next** four times (two times if you've previously installed Git). You don't need to change anything in the Information, location, components, and start menu screens.
+1. Select **Use the nano editor by default** and click on **Next**.
+1. Keep **Git from the command line and also from 3rd-party software** selected and click on **Next**.
+1. Click on **Next**.
+1. Select **Use the native Windows Secure Channel library**, and click **Next**.
+1. Keep **Checkout Windows-style, commit Unix-style line endings** selected and click on **Next**.
+1. Select **Use Windows' default console window** and click on **Next**.
+1. Leave all three items selected, and click on **Next**.
+1. Do not select the experimental option. Click **Install**.
+1. Click on **Finish**.
