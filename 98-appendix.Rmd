@@ -48,3 +48,139 @@ are for Windows only:
 1. Leave all three items selected, and click on **Next**.
 1. Do not select the experimental option. Click **Install**.
 1. Click on **Finish**.
+
+# Git Lesson
+
+Adapted from Software Carpentry's
+[Git lesson](https://swcarpentry.github.io/git-novice/),
+sections 1 through 7.
+The primary difference is we're learning RStudio's git interface
+instead of using direct git commands.
+
+- Teaching 25 min
+- Exercises 5 min
+
+**Learning Goals**
+
+- What is version control and why should I use it?
+- Where does Git store information?
+- How do I record changes in Git?
+- How do I check the status of my version control repository?
+- How do I record notes about what changes I made and why?
+- How can I identify old versions of files?
+- How do I review my changes?
+- How can I recover old versions of files?
+- How can I tell Git to ignore files I don’t want to track?
+- How do I share my changes with others on the web?
+
+
+**Learning Objectives**
+
+- Understand the benefits of an automated version control system.
+- Understand the basics of how Git works.
+- Create a local Git repository.
+- Go through the modify-add-commit cycle for one or more files.
+- Explain where information is stored at each stage of that cycle.
+- Distinguish between descriptive and non-descriptive commit messages.
+- Identify and use Git commit numbers.
+- Compare various versions of tracked files.
+- Restore old versions of files.
+- Configure Git to ignore specific files.
+- Explain why ignoring files can be useful.
+- Explain what remote repositories are and why they are useful.
+- Push to or pull from a remote repository.
+
+**Key Points**
+
+- Version control is like an unlimited 'undo'.
+- Version control also allows many people to work in parallel.
+- Initialize a Git repository.
+- Git stores all of its repository data in the `.git/` directory.
+- See the status of a repository.
+- Files can be stored in a project’s working directory (which users see), the staging area (where the next commit is being built up) and the local repository (where commits are permanently recorded).
+- Checking the box puts files in the staging area.
+- Commit saves the staged content as a new commit in the local repository.
+- Write a commit message that accurately describes your changes.
+- Diff displays differences between commits.
+- Checkout recovers old versions of files.
+- The `.gitignore` file tells Git what files to ignore.
+- A local Git repository can be connected to one or more remote repositories.
+- Use the HTTPS protocol to connect to remote repositories only if you do not have commit access, otherwise set up SSH with RSA keys.
+- Push copies changes from a local repository to a remote repository.
+- Pull copies changes from a remote repository to a local repository.
+
+## Automated Version Control
+
+<!-- https://swcarpentry.github.io/git-novice/fig/phd101212s.png -->
+
+## Creating a Repository
+
+RStudio automates repository creation for us,
+by tying it into the RStudio project.
+
+To create a local Git repository,
+make sure you check the box **Create a git repository**
+when you run **File > New Project... > New Directory > New Project**
+
+```{r RStudio git new project, cache = TRUE, echo = FALSE}
+knitr::include_graphics("images/rstudio-git-new-project.png")
+```
+
+That check box enables an additional Git tab in RStudio:
+
+```{r RStudio git tab new, cache = TRUE, echo = FALSE}
+knitr::include_graphics("images/rstudio-git-tab-new.png")
+```
+
+The reason we see the Git tab is because the `git` program
+creates a directory `.git/` inside our project directory.
+Never delete this directory,
+because this is your Git database that stores all of your changes and history.
+You cannot see this special `.git/` directory unless you
+**Show hidden files** in RStudio.
+But let's disable the **Show hidden files** now that we know
+where our `.git/` directory lives.
+
+```{r RStudio git files tab hidden, cache = TRUE, echo = FALSE}
+knitr::include_graphics("images/rstudio-git-files-tab-hidden.png")
+```
+
+## Setting up Git Authorship
+
+Tell Git who you are by clicking on the **Git** tab in RStudio
+and opening **More > Shell...**
+
+```{r RStudio git tab more, cache = TRUE, echo = FALSE}
+knitr::include_graphics("images/rstudio-git-tab-more.png")
+```
+
+Check what your git configuration looks like by running the command:
+
+```bash
+git config --global --list
+
+#> Output of the above command might look similar to:
+#>
+#> user.email=firstname.lastname@uconn.edu
+#> user.name=Firstname Lastname
+#> core.autocrlf=input
+```
+
+If you have never used git on your particular computer before,
+you will have to set your global `user.name` and `user.email`.
+The commands to do that are:
+
+```bash
+git config --global user.name "Firstname Lastname"
+git config --global user.email firstname.lastname@uconn.edu
+```
+
+Of course, replace `"Firstname Lastname"` and `firstname.lastname@uconn.edu`
+with your actual name and e-mail.
+
+You can re-run the `--list` command above to check your new settings.
+
+## Next Steps
+
+- Read sections 8 onwards of the Software Carpentry
+  [Git lesson](https://swcarpentry.github.io/git-novice/).
