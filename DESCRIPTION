@@ -19,6 +19,8 @@ Imports:
     copula,
     evir,
     HI,
-    texmex
+    modelr,
+    texmex,
+    tidyverse
 Suggests:
     bookdown

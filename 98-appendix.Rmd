@@ -20,6 +20,7 @@ you need to:
    in the RStudio window below click on **View public key**
    and copy the public key to your account as explained in step 2 onwards:
    https://help.github.com/en/articles/adding-a-new-ssh-key-to-your-github-account
+5. Install the `tidyverse` and `modelr` packages in RStudio.
 
 To quickly check that you are fully setup, in RStudio, open
 **Tools > Global Options... > Git/SVN** and check
@@ -158,8 +159,8 @@ knitr::include_graphics("images/undo-button.jpg")
 
 ## Setup
 
-Please setup R, RStudio, git, your SSH keys, and create your GitHub account
-as explained in appendix \@ref(git-setup).
+Please setup R, RStudio, git, your SSH keys, create your GitHub account,
+and install the R packages as explained in appendix \@ref(git-setup).
 
 ## Creating a Repository
 
@@ -230,6 +231,49 @@ You can re-run the `--list` command above to check your new settings.
 
 ## Tracking Changes
 
+We see some yellow question marks in our Git tab:
+
+```{r RStudio git tab nothing staged, echo = FALSE}
+knitr::include_graphics("images/rstudio-git-tab-new.png")
+```
+
+The yellow question marks tell us that git is not tracking those files;
+if the files were to change, git would not be able to help us undo the change.
+To start tracking the files, click on the **Staged** checkboxes 
+next to the files:
+
+```{r RStudio git tab first files staged, echo = FALSE}
+knitr::include_graphics("images/rstudio-git-tab-stage-new-files.png")
+```
+
+Click on the **Commit** button
+and enter a **Commit message** such as "Create RStudio project":
+
+```{r RStudio git tab first commit, echo = FALSE}
+knitr::include_graphics("images/rstudio-git-tab-stage-first-commit.png")
+```
+
+Then click the Commit button to save the files 
+with the message to the git database:
+
+```{r RStudio git tab first commit complete, echo = FALSE}
+knitr::include_graphics("images/rstudio-git-tab-stage-first-commit-complete.png")
+```
+
+You created your first git commit!
+
+Each commit has a unique version hash associated with it.
+Older version control systems used to use versions like 1, 2, 3...
+however newer systems like Git no longer uses sequential numbers
+because that causes problems with collaboration.
+Instead Git creates a hash; in the screenshot above,
+we can see the hash version identifier is `974b832`.
+
+Git creates the creates the unique by using information about the files,
+your author name and e-mail, the time at which the commit happened, etc.
+
+Why did we need to check the boxes next to the files in the **Staged** column?
+
 The Git stage
 is a place to include multiple files with a related change.
 
@@ -246,6 +290,81 @@ which would make our "photograph" of a single file more like selfie.
 ```{r Staging a single file is like taking a selfie, echo = FALSE}
 knitr::include_graphics("images/selfie.jpg")
 ```
+
+If we close those pop up windows, we now see that our stage is empty:
+
+```{r Stage is empty after a commit, echo = FALSE}
+knitr::include_graphics("images/rstudio-git-tab-stage-empty.png")
+```
+
+After taking the photo, our friends have moved off the stage
+to free the area for taking future photos.
+
+Our goal when using Git is always to have a "clean" stage,
+because that means all of our work is saved.
+
+Now create another commit with our first file `model.R`.
+Click on **File > New File > R Script** and run the script:
+
+
+```{r Hide package startup messages, echo = FALSE}
+suppressPackageStartupMessages({
+	library(tidyverse)
+	library(modelr)
+})
+```
+
+```{r Create the model.R script, results = FALSE}
+library(tidyverse)
+library(modelr)
+
+sim1
+
+ggplot(sim1, aes(x, y)) +
+    geom_point()
+```
+
+Commit these changes with the message "Inspect raw data".
+
+Let's add more lines to our script to fit a linear model:
+
+```{r Fit a linear model, results = FALSE}
+library(tidyverse)
+library(modelr)
+
+sim1
+
+model_lm <- lm(y ~ x, data = sim1)
+coef <- coef(model_lm)
+coef
+
+ggplot(sim1, aes(x, y)) +
+    geom_point() +
+    geom_abline(intercept = coef[1],
+                slope = coef[2])
+```
+
+Note how now we see a blue "M" icon in the **Status** column
+indicating that our tracked file has been "Modified":
+
+```{r Stage has a modified file, echo = FALSE}
+knitr::include_graphics("images/rstudio-git-tab-stage-modified.png")
+```
+
+Don't commit our new changes just yet.
+Instead click on the **Diff** button:
+
+```{r Diff of unstaged file, echo = FALSE}
+knitr::include_graphics("images/rstudio-git-tab-stage-diff.png")
+```
+
+Click on the **Commit** button as usual.  This creates an error:
+
+```{r Error committing unstaged file, echo = FALSE}
+knitr::include_graphics("images/rstudio-git-tab-unstaged-commit.png")
+```
+
+Fix this by clicking on the **Staged** checkbox and then click **Commit**.
 
 ## Next Steps
 
