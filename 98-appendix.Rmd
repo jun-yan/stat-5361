@@ -12,20 +12,26 @@ you need to:
 	    - [Windows](https://git-for-windows.github.io/) - to install see section \@ref(git-windows) below.
 		- [OS X &ge; 10.9](http://sourceforge.net/projects/git-osx-installer/files/)
 		- [OS X &le; 10.8 snow-leopard](http://sourceforge.net/projects/git-osx-installer/files/)
-2. Setup your SSH RSA key if necessary in RStudio -
-   only if your **SSH RSA key** is **(none)**, then
+1. The location of the **Git executable** in RStudio is set in
+   **Tools > Global Options... > Git/SVN**
+   as shown in the screenshot below.
+   The default location of **/usr/bin/git** won't work for most people, so
+   set the location of **Git executable** as follows:
+    - Windows = **C:/Program Files/Git/bin/git.exe**
+	- OS X = **/usr/local/bin/git**
+
+   If you need to change this location setting,
+   you will need to restart RStudio for the new Git location to apply.
+1. Setup your SSH RSA key if necessary in RStudio -
+   if your **SSH RSA key** is **(none)**
+   instead of **~/.ssh/id_rsa** or similar, then
    click on the button to **Create RSA key...**
-3. Have a [github.com](https://github.com) account, and
-4. Copy your SSH RSA key to github.com -
+1. Have a [github.com](https://github.com) account, and
+1. Copy your SSH RSA key to github.com -
    in the RStudio window below click on **View public key**
    and copy the public key to your account as explained in step 2 onwards:
    https://help.github.com/en/articles/adding-a-new-ssh-key-to-your-github-account
 5. Install the `tidyverse` and `modelr` packages in RStudio.
-
-To quickly check that you are fully setup, in RStudio, open
-**Tools > Global Options... > Git/SVN** and check
-that RStudio sees values for **Git executable** and
-**SSH RSA key**.
 
 ```{r RStudio git settings, cache = TRUE, echo = FALSE}
 knitr::include_graphics("images/rstudio-git-settings.png")
