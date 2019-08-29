@@ -372,6 +372,158 @@ knitr::include_graphics("images/rstudio-git-tab-unstaged-commit.png")
 
 Fix this by clicking on the **Staged** checkbox and then click **Commit**.
 
+## Undo Changes
+
+Sometimes a script stops working because of accidental changes.
+Perhaps a chunk of code was accidentally deleted and
+replaced with some junk text.  How would we repair this
+with our Git history?
+
+```{r Accidental modification of model.R, eval = FALSE}
+library(tidyverse)
+library(modelr)
+
+fja3q2rl;js
+```
+
+We have saved the problematic file and Git sees it as modified:
+
+```{r Stage has an accidentally modified file, echo = FALSE}
+knitr::include_graphics("images/rstudio-git-tab-stage-modified.png")
+```
+
+One possible solution is to look back at the previous history and copy the code,
+but the really quick and simple fix is using Git's **Revert** button instead.
+Clicking on **Diff** and then **Revert**
+restores the tracked file to the last commit version.
+
+Now our `model.R` file is back to the last commit version
+and our stage is clean because all files are the same as the
+last commit version:
+
+```{r Reverted model.R, eval = FALSE}
+library(tidyverse)
+library(modelr)
+
+sim1
+
+model_lm <- lm(y ~ x, data = sim1)
+coef <- coef(model_lm)
+coef
+
+ggplot(sim1, aes(x, y)) +
+    geom_point() +
+    geom_abline(intercept = coef[1],
+                slope = coef[2])
+```
+
+```{r Stage is empty after revert, echo = FALSE}
+knitr::include_graphics("images/rstudio-git-tab-stage-empty.png")
+```
+
+Instead of going back to the last commit version
+we may want to go back to a much older version,
+say from several months ago.
+RStudio does not have a quick way of going back further than the last version,
+so we have to access the full power of the Git from the command line.
+In RStudio, click on **Tools > Shell...**
+to open a shell at your Git directory.
+Then to list all your recent commits, in the shell type `git log` and hit enter:
+
+```bash
+git log
+
+#> commit 17a6f9a4fbcfdbb8091965ef75742ec3fc1f67cb (HEAD -> master)
+#> Author: Pariksheet Nanda <pariksheet.nanda@uconn.edu>
+#> Date:   Thu Aug 29 10:25:20 2019 -0400
+#>
+#>     Run linear model and add to plot
+#>
+#> commit c9da9361868d5f568471c14dd8b8b29e72ea5236
+#> Author: Pariksheet Nanda <pariksheet.nanda@uconn.edu>
+#> Date:   Thu Aug 29 10:17:26 2019 -0400
+#>
+#>     Inspect raw data
+#>
+#> commit 974b8325da19cf35bb5e73639943b9bfee5c4091
+#> Author: Pariksheet Nanda <pariksheet.nanda@uconn.edu>
+#> Date:   Thu Aug 29 09:45:36 2019 -0400
+#>
+#>     Create RStudio project
+```
+
+Note how instead of the abbreviated 7 letter hash we now see the full 40 letter
+hash; for example instead of `974b832` we see our first commit version hash
+is actually `974b8325da19cf35bb5e73639943b9bfee5c4091`.
+
+To use one of these old commits, we can use the full hash.
+Let's say we want our code at the "Inspect raw data" state before we added
+the linear model.  In the shell we would run the Git command:
+
+```bash
+git checkout c9da9361868d5f568471c14dd8b8b29e72ea5236 model.R
+```
+
+Note that we must specify the `model.R` file at the end we want to restore.
+
+Going from the shell back to RStudio, we can save the older version of the file
+as a new commit with a message like "Remove linear model fit":
+
+```{r Commit old version, echo = FALSE}
+knitr::include_graphics("images/rstudio-git-tab-stage-old-commit.png")
+```
+
+In the shell, if we accidentally neglected to specify the file to restore,
+we will run into a detached HEAD state
+where none of our new history will be saved:
+
+```bash
+git checkout c9da9361868d5f568471c14dd8b8b29e72ea5236
+
+#> Note: checking out 'c9da9361868d5f568471c14dd8b8b29e72ea5236'.
+#>
+#> You are in 'detached HEAD' state. You can look around, make experimental
+#> changes and commit them, and you can discard any commits you make in this
+#> state without impacting any branches by performing another checkout.
+#>
+#> If you want to create a new branch to retain commits you create, you may
+#> do so (now or later) by using -b with the checkout command again. Example:
+#>
+#>   git checkout -b <new-branch-name>
+#>
+#> HEAD is now at c9da936 Inspect raw data
+```
+
+Running into this detached HEAD state from forgetting to write the file name
+is common typo, and to fix the detached HEAD state
+we need to tell Git to get back to our default `master` branch:
+
+```bash
+git checkout master
+
+#> Previous HEAD position was c9da936 Inspect raw data
+#> Switched to branch 'master'
+```
+
+Phew!  Now Git behavior is back to normal.
+
+## Explore History
+
+Now that we have a few commits in our history,
+click on the **History** button with a clock icon:
+
+```{r Git tab with history icon, echo = FALSE}
+knitr::include_graphics("images/rstudio-git-tab-stage-empty.png")
+```
+
+This opens up a window with our 4 commits.
+You can click on the commit and the modified file to see which lines
+were added and removed:
+
+```{r Git history window, echo = FALSE}
+knitr::include_graphics("images/rstudio-git-history.png")
+```
+
 ## Next Steps
 
 - Read sections 8 onwards of the Software Carpentry
