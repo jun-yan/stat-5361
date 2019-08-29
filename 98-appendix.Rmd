@@ -118,6 +118,17 @@ automated version control is much better than this situation:
 knitr::include_graphics("images/phd101212s.png")
 ```
 
+A key difference of the Git version control system from
+the "Track Changes" in Microsoft Word is
+the database of changes is stored separately from the document.
+We will see where these changes are stored at the end of our next section.
+
+```{r track changes fork and merge, cache = TRUE, echo = FALSE}
+knitr::include_graphics("images/play-changes.svg")
+knitr::include_graphics("images/versions.svg")
+knitr::include_graphics("images/merge.svg")
+```
+
 Version control is your magical undo button
 for making mistakes with text files like R source code:
 
