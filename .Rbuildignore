@@ -7,3 +7,5 @@
 ^_bookdown_files$
 ^book_output$
 ^style\.css$
+^packrat/
+^\.Rprofile$

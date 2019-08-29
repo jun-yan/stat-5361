@@ -10,3 +10,4 @@ docs/*
 index.knit.md
 packages.bib
 stat5361-book.rds
+packrat/lib*/
