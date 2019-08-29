@@ -246,3 +246,10 @@ knitr::include_graphics("images/selfie.jpg")
 
 - Read sections 8 onwards of the Software Carpentry
   [Git lesson](https://swcarpentry.github.io/git-novice/).
+- If you enjoy using Git or R and want to teach others to use these tools
+  alongside experienced volunteer instructors,
+  consider getting your free
+  [Carpentries instructor certification](https://carpentries.org/volunteer/).
+  There are
+  [several certified Carpentries instructors at UConn](https://carpentries.org/instructors/)
+  and we would be happy to talk to you about our workshops.
