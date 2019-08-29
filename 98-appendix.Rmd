@@ -113,6 +113,13 @@ instead of using direct git commands.
 
 <!-- https://swcarpentry.github.io/git-novice/fig/phd101212s.png -->
 
+Version control is your magical undo button
+for making mistakes with text files like R source code:
+
+```{r undo button, cache = TRUE, echo = FALSE}
+knitr::include_graphics("images/undo-button.jpg")
+```
+
 Several incentives for using version control according to a commenter on
 StackOverflow
 ^[https://stackoverflow.com/a/1408464] are:
