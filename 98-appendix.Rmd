@@ -31,6 +31,12 @@ you need to:
    in the RStudio window below click on **View public key**
    and copy the public key to your account as explained in step 2 onwards:
    https://help.github.com/en/articles/adding-a-new-ssh-key-to-your-github-account
+   Make sure to test your GitHub connection
+   by opening a shell in RStudio using **Tools > Terminal > New Terminal**
+   and run the command to test your account as described in
+   https://help.github.com/en/articles/testing-your-ssh-connection
+   otherwise you may run into trouble with RStudio prompt window overflowing
+   with the authenticity prompt.
 5. Install the `tidyverse` and `modelr` packages in RStudio.
 
 ```{r RStudio git settings, cache = TRUE, echo = FALSE}
