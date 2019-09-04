@@ -245,7 +245,7 @@ knitr::include_graphics("images/rstudio-git-tab-new.png")
 
 The yellow question marks tell us that git is not tracking those files;
 if the files were to change, git would not be able to help us undo the change.
-To start tracking the files, click on the **Staged** checkboxes 
+To start tracking the files, click on the **Staged** checkboxes
 next to the files:
 
 ```{r RStudio git tab first files staged, echo = FALSE}
@@ -259,7 +259,7 @@ and enter a **Commit message** such as "Create RStudio project":
 knitr::include_graphics("images/rstudio-git-tab-stage-first-commit.png")
 ```
 
-Then click the Commit button to save the files 
+Then click the Commit button to save the files
 with the message to the git database:
 
 ```{r RStudio git tab first commit complete, echo = FALSE}
