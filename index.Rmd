@@ -193,11 +193,11 @@ where $\circ$ is an operator (e.g., add, subtract, multiple, divide, etc.), $(x 
 (Section 1.4 from Gray)
 Consider computing $x + y$, where $x$ and $y$ have the same sign. Let $\delta_x$ and $\delta_y$ be the relative error in the floating point representation of $x$ and $y$, respectively (e.g., $\delta_x = [f(x) - x]/x$, so $f(x) = x(1 + \delta_x)$). What the computer actually calculates is the sum of the floating point representations $f (x) + f (y)$, which may not have an exact floating point representation, in which case it is rounded to the nearest representable number $f(f(x) + f(y))$. Let $\delta_s$ be the relative error of the $f(f(x) + f(y))$. Then,
 \begin{align*}
-&\,\, |f(f(x)+f(y)) - x+y)| \\ 
-&= |f(f(x)+f(y)) - f(x) - f(y) + f(x)-x+f(y)-y| \\
-&\le |\delta_s[f(x) + f(y)]| + |\delta_x x| + |\delta_y y|\\
-&\le |x+y|(\epsilon_m + \epsilon^2_m) + |x+y| \epsilon_m \\
-&\approx 2\epsilon_m |x+y|,
+\phantom{ = } & |f(f(x) + f(y)) - (x+y)| \\ 
+= & |f(f(x) + f(y)) - f(x) - f(y) + f(x) - x + f(y) - y| \\
+\le & |\delta_s[f(x) + f(y)]| + |\delta_x x| + |\delta_y y|\\
+\le & |x+y|(\epsilon_m + \epsilon^2_m) + |x+y| \epsilon_m \\
+\approx & 2\epsilon_m |x+y|,
 \end{align*}
 where the higher order terms in $\epsilon_m$ have been dropped, since they are usually negligible. Thus $2\epsilon_m$ is an (approximate) bound on the relative error in a single addition of two numbers with the same sign.
 
@@ -217,7 +217,7 @@ f(s_3) = (x_1 + x_2 + x_3) + x_1 (\epsilon_1 + \epsilon_2 + \epsilon_3) + x_2 (\
 \end{align*}
 The cumulative error is approximately
 \begin{align*}
-&\phantom{=} \| f(s_3) - (x_1 + x_2 + x_3)\| \\
+&\phantom{ = } \| f(s_3) - (x_1 + x_2 + x_3)\| \\
 &\sim \| x_1 (\epsilon_1 + \epsilon_2 + \epsilon_3) + x_2 (\epsilon_2 + \epsilon_3) + x_3(\epsilon_3) \|\\
 &\le \|x_1\| (\|\epsilon_1\| + \|\epsilon_2\| + \|\epsilon_3\|) + \|x_2\| (\|\epsilon_2\| + \|\epsilon_3\|) + \|x_3\| \|\epsilon_3\| \\
 &\le (3 \|x_1\| + 2\|x_2\| + \|x_3\|) \epsilon_m.
@@ -280,7 +280,11 @@ cbind(exp(-x), sapply(-x, fexp2))
 In numerical analysis, the condition number of a function with respect to an argument measures how much the output value of the function can change for a small change in the input argument. This is used to measure how sensitive a function is to changes or errors in the input, and how much error in the output results from an error in the input. 
 
 
-The condition number is an application of the derivative, and is formally defined as the value of the asymptotic worst-case relative change in output for a relative change in input. The ``function'' is the solution of a problem and the ``arguments'' are the data in the problem. The condition number is frequently applied to questions in linear algebra, in which case the derivative is straightforward but the error could be in many different directions, and is thus computed from the geometry of the matrix. More generally, condition numbers can be defined for non-linear functions in several variables.
+The condition number is an application of the derivative, and is formally defined as the value of the asymptotic worst-case relative change in output for a relative change in input. The "function" is the solution of a problem and the "arguments" are the data in the problem. In particular, $C(x)$ is called the condition number of a function $f$ at a given point $x$ if it satisfies the condition
+\[
+|\mbox{relative change in } f(x)| \sim C(x)|\mbox{relative change in } x| .
+\]
+The condition number is frequently applied to questions in linear algebra, in which case the derivative is straightforward but the error could be in many different directions, and is thus computed from the geometry of the matrix. More generally, condition numbers can be defined for non-linear functions in several variables.
 
 
 A problem with a low condition number is said to be well-conditioned, while a problem with a high condition number is said to be ill-conditioned. The condition number is a property of the problem. Paired with the problem are any number of algorithms that can be used to solve the problem, that is, to calculate the solution. Some algorithms have a property called backward stability. In general, a backward stable algorithm can be expected to accurately solve well-conditioned problems. Numerical analysis textbooks give formulas for the condition numbers of problems and identify the backward stable algorithms. In the exponential function example, the first implementation is unstable for large negative $x$ while the second is stable.
@@ -329,7 +333,7 @@ Further, repeat the experiment 100 times. Draw box plots of the 100 approximatio
 
 3. Explain how `.Machine$double.xmax`, `.Machine$double.xmin`, `.Machine$double.eps`, and `.Machine@double.neg.eps` are defined using the 64-bit double precision floating point arithmetic.
 
-4. first 10-digit prime number occurring in consecutive digits of $e$ [http://mathworld.wolfram.com/news/2004-10-13/google/](http://mathworld.wolfram.com/news/2004-10-13/google/)
+4. Find the first 10-digit prime number occurring in consecutive digits of $e$ [http://mathworld.wolfram.com/news/2004-10-13/google/](http://mathworld.wolfram.com/news/2004-10-13/google/). __Hint__: How can $e$ be represented to an arbitrary precision?
 
 ## Course Project
 
