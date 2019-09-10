@@ -186,7 +186,7 @@ The relative error of $f(x)$ is $\delta_x = [f(x) - x] / x$. The basic formula f
 \[
 f(x \circ y) = (1+ \epsilon_m) (x \circ y) 
 \]
-where $\circ$ is an operator (e.g., add, subtract, multiple, divide, etc.), $(x \circ y)$ is the exact result, and $\epsilon_m$ is the smallest positive floating-point number $z$ such that $1 + z \ne 1$. __Add demonstration from Section 1.3 of @gray2001advanced; see also [notes] (https://people.eecs.berkeley.edu/~demmel/cs267/lecture21/lecture21.html). __
+if $f(x \circ y)$ does not overflow or underflow, where $\circ$ is an operator (e.g., add, subtract, multiple, divide, etc.), $(x \circ y)$ is the exact result, and $\epsilon_m$ is the smallest positive floating-point number $z$ such that $1 + z \ne 1$. __Add demonstration from Section 1.3 of @gray2001advanced; see also [notes] (https://people.eecs.berkeley.edu/~demmel/cs267/lecture21/lecture21.html). __
 
 
 
@@ -303,8 +303,8 @@ F(x; \mu, \sigma, \xi) =
 \end{equation*}
 for $\mu \in R$, $\sigma > 0$, $\xi \in R$.
 ```{r gev, fig.asp = 1, out.width='50%', fig.show='hold', fig.cap='Two implementations of GEV distribution function when $\\xi$ is close to zero.'}
-curve(evir::pgev(1, xi = x),    1e-20, .01, log="x", n = 1025)
-curve(texmex::pgev(1, 0, 1, x), 1e-20, .01, log="x", n = 1025)
+curve(evir::pgev(1, xi = x),    -1e-14, 1e-14, n = 1025)
+curve(texmex::pgev(1, 0, 1, x), -1e-14, 1e-14, n = 1025)
 ```
 Figure \@ref(fig:gev) shows a comparison of evaluating the GEV distribution function at $x = 1$ for $\mu = 0$, $\sigma = 1$, and a sequence of $\xi$ values near zero using two implementations.
 
@@ -314,7 +314,7 @@ Figure \@ref(fig:gev) shows a comparison of evaluating the GEV distribution func
 from his GitHub repository to a local space on your own computer. Build the book using RStudio. During the building process, you may see error messages due to missing tools on your computer. Read the error messages carefully and fix them, until you get the book built. You may need to install some R packages, some fonts, some latex packages, and some building tools for R packages. On Windows, some codes for parallel computing may not work and need to be swapped out. Document the problems you encountered and how you solved them in an R Markdown file named `README.Rmd`. Push it to your homework GitHub repository so that it can help other students to build the book. 
 
 
-2. Use **bookdown** or **rmarkdown** to produce a report for the following task. Consider approximation of the distribution function of $N(0, 1)$,
+1. Use **bookdown** or **rmarkdown** to produce a report for the following task. Consider approximation of the distribution function of $N(0, 1)$,
 \begin{equation}
 \Phi(t) = \int_{-\infty}^t \frac{1}{\sqrt{2\pi}} e^{-y^2 / 2} \dd y,
 (\#eq:cdf)
@@ -323,17 +323,16 @@ by the Monte Carlo methods:
 \begin{equation}
 \hat\Phi(t) = \frac{1}{n} \sum_{i=1}^n I(X_i \le t),
 \end{equation}
-where $X_i$'s are iid $N(0, 1)$ variables.
-Experiment with the approximation at $n \in \{10^2, 10^3, 10^4\}$ at $t \in \{0.0, 0.67, 0.84, 1.28, 1.65, 2.32, 2.58, 3.09, 3.72\}$ to form a table.
+where $X_i$'s are a random sample from $N(0, 1)$, and $I(\cdot)$ is the indicator function. Experiment with the approximation at $n \in \{10^2, 10^3, 10^4\}$ at $t \in \{0.0, 0.67, 0.84, 1.28, 1.65, 2.32, 2.58, 3.09, 3.72\}$ to form a table.
 
 
     The table should include the true value for comparison.
 Further, repeat the experiment 100 times. Draw box plots of the 100 approximation errors at each $t$ using **ggplot2** [@R-ggplot2] for each $n$. The report should look like a manuscript, with a title, an abstract, and multiple sections. It should contain at least one math equation, one table, one figure, and one chunk of R code. The template of our Data Science Lab can be helpful: <https://statds.org/template/>, the source of which is at <https://github.com/statds/dslab-templates>.
 
 
-3. Explain how `.Machine$double.xmax`, `.Machine$double.xmin`, `.Machine$double.eps`, and `.Machine@double.neg.eps` are defined using the 64-bit double precision floating point arithmetic.
+1. Explain how `.Machine$double.xmax`, `.Machine$double.xmin`, `.Machine$double.eps`, and `.Machine@double.neg.eps` are defined using the 64-bit double precision floating point arithmetic.
 
-4. Find the first 10-digit prime number occurring in consecutive digits of $e$ [http://mathworld.wolfram.com/news/2004-10-13/google/](http://mathworld.wolfram.com/news/2004-10-13/google/). __Hint__: How can $e$ be represented to an arbitrary precision?
+1. Find the first 10-digit prime number occurring in consecutive digits of $e$ [http://mathworld.wolfram.com/news/2004-10-13/google/](http://mathworld.wolfram.com/news/2004-10-13/google/). __Hint__: How can $e$ be represented to an arbitrary precision?
 
 ## Course Project
 
