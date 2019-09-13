@@ -72,10 +72,10 @@ Given initial values $x_0$ and $x_1$, the iteration is
 ### Fixed Point Iteration
 
 A fixed point of a function is a point whose evaluation by that 
-function equals to itself, i.e., $x=G(x)$.
+function equals to itself, i.e., $x = G(x)$.
 
 Fixed point iteration: the natural way of hunting for a fixed point 
-is to use $x_{t+1}=G(x_t)$.
+is to use $x_{t+1} = G(x_t)$.
 
 ```{definition contractive}
 A function $G$ is contractive on $[a,b]$ if
@@ -380,15 +380,15 @@ Let $X_1, \ldots, X_n$ be a random sample of size $n$ and $\ell(\theta)$ the log
   = n/2,
   \end{align*}
 where $I_n$ is the Fisher information of this sample.
-- Set the random seed as $20180909$ and generate a random sample of size $n = 10$ with $\theta = 5$. Implement a loglikelihood function and plot against $\theta$.
-- Find the MLE of $\theta$ using the Newton--Raphson method with initial values on a grid starting from $-10$ to $30$ with increment $0.5$. Summarize the results. 
-- Improved the Newton--Raphson method by halving the steps if the likelihood is not improved.
-- Apply fixed-point iterations using
+
+1. Set the random seed as $909$ and generate a random sample of size $n = 10$ with $\theta = 5$. Implement a loglikelihood function and plot against $\theta$.
+1. Find the MLE of $\theta$ using the Newton--Raphson method with initial values on a grid starting from $-10$ to $30$ with increment $0.5$. Summarize the results.
+1. Improved the Newton--Raphson method by halving the steps if the likelihood is not improved.
+1. Apply fixed-point iterations using
 $G(\theta)=\alpha \ell'(\theta) + \theta$,
 with scaling choices of $\alpha \in \{1, 0.64, 0.25\}$ and the same initial values as above. 
-- First use Fisher scoring to find the MLE for $\theta$, then refine the estimate by running Newton-Raphson method. 
-Try the same starting points as above.
-- Comment on the results from different methods (speed, stability, etc.).
+1. First use Fisher scoring to find the MLE for $\theta$, then refine the estimate by running Newton-Raphson method. Try the same starting points as above.
+1. Comment on the results from different methods (speed, stability, etc.).
 
 ### Many local maxima
 Consider the probability density function with parameter $\theta$:
@@ -401,16 +401,16 @@ A random sample from the distribution is
 x <- c(3.91, 4.85, 2.28, 4.06, 3.70, 4.04, 5.46, 3.53, 2.28, 1.96,
        2.53, 3.88, 2.22, 3.47, 4.82, 2.46, 2.99, 2.54, 0.52)
 ```
-- Find the the log-likelihood function of $\theta$ based on the sample and plot it between $-\pi$ and $\pi$.
-- Find the method-of-moments estimator of $\theta$.  That is, the estimator $\tilde\theta_n$ is value of $\theta$ with
+1. Find the the log-likelihood function of $\theta$ based on the sample and plot it between $-\pi$ and $\pi$.
+1. Find the method-of-moments estimator of $\theta$.  That is, the estimator $\tilde\theta_n$ is value of $\theta$ with
 \begin{align*}
   \E (X \mid \theta) = \bar X_n,
 \end{align*}
 where $\bar X_n$ is the sample mean. This means you have to first find the expression for $\E (X \mid \theta)$.
-- Find the MLE for $\theta$ using the Newton--Raphson method initial value $\theta_0 = \tilde\theta_n$.
-- What solutions do you find when you start at 
+1. Find the MLE for $\theta$ using the Newton--Raphson method initial value $\theta_0 = \tilde\theta_n$.
+1. What solutions do you find when you start at 
 $\theta_0 = -2.7$ and $\theta_0 = 2.7$?
-- Repeat the above using 200 equally spaced starting values
+1. Repeat the above using 200 equally spaced starting values
 between $-\pi$ and $\pi$.  Partition the values into sets of attraction. That is, divide the set of starting values into separate groups, with each group corresponding to a separate unique outcome of the optimization.
 
 ### Modeling beetle data
