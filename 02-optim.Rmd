@@ -366,7 +366,8 @@ Consider estimating the location parameter of a Cauchy distribution with a known
   \quad x \in R, \quad \theta \in R.
 \end{align*}
 Let $X_1, \ldots, X_n$ be a random sample of size $n$ and $\ell(\theta)$ the log-likelihood function of $\theta$ based on the sample.
-  - Show that
+
+1. Show that
   \begin{align*}
   \ell(\theta)
   &= -n\ln \pi - \sum_{i=1}^n \ln [1+(\theta-X_i)^2], \\
@@ -380,7 +381,6 @@ Let $X_1, \ldots, X_n$ be a random sample of size $n$ and $\ell(\theta)$ the log
   = n/2,
   \end{align*}
 where $I_n$ is the Fisher information of this sample.
-
 1. Set the random seed as $909$ and generate a random sample of size $n = 10$ with $\theta = 5$. Implement a loglikelihood function and plot against $\theta$.
 1. Find the MLE of $\theta$ using the Newton--Raphson method with initial values on a grid starting from $-10$ to $30$ with increment $0.5$. Summarize the results.
 1. Improved the Newton--Raphson method by halving the steps if the likelihood is not improved.
