@@ -134,19 +134,56 @@ Choose $M^{(t)} = M$ for all $t$. An example is $M = g''(x_0)$.
 
 Rank-one or rank-two update. The celebrated BFGS is a rank-two update method. Box constraints can be allowed with L-BFGS-B.
 
-#### Coordinate Ascent
+#### Coordinate Descent
+
+Coordinate descent algorithms optimize a objective function with 
+respect to a single parameter or a block of parameters at a time, 
+iteratively cycling through all parameters until convergence is reached.
+How to determine the blocks of parameters is problem-specific.
+The method is ideal for problems that have a simple closed form 
+solution in a single/lower dimension but lack one in higher dimensions.
+% The method is also called backfitting or Gauss--Seidel iteration.
+It is very commonly used in fitting penalized regression.
+The concept also appears in many well-known estimation problems.
+The simple technique can be surprisingly efficient and scalable.
+
+
+Consider objective function
+\[
+f(\beta) = g(\beta) + \sum_{j=1}^{p}h_j(\beta_j),
+\]
+where $g$ is convex and differentiable and each $h_i$ is convex.
+The second part is usually non-smooth, but is separable.
+Coordinate descent start with some initial guess $\beta^{(0)}$, repeat 
+the following for $k=1,2,3...$:
+\begin{align*}
+  \beta_1^{(k)} & = \arg\min_{\beta_1}f(\beta_1,\beta_2^{(k-1)},\ldots,\beta_p^{(k-1)}),\\
+  \beta_2^{(k)} & = \arg\min_{\beta_2}f(\beta_1^{(k)},\beta_2, \beta_3^{(k-1)},\ldots,\beta_p^{(k-1)}),\\
+  & \ldots\\
+  \beta_p^{(k)} & = \arg\min_{\beta_p}f(\beta_1^{(k)},\ldots,\beta_{p-1}^{(k)},\beta_p).
+\end{align*}
+It can be shown that if we are at a point $\beta$ such that $f(\beta)$ 
+is minimized along each coordinate axis, we have found a global minimizer.
+
+
+Remarks:
+
+- Order of cycle through coordinates is arbitrary.
+- Can replace individual coordinates with blocks of coordinates.
+- Same idea has been applied to many non-convex problems.
+- As long as the objective function is monotone decreasing, the convergence is guaranteed.
+
 
 #### Conjugate Gradient
 
-#### Gauss-Seidel
-
 #### Gauss-Newton
+
+Non-linear least squares.
 
 ### Nelder-Mead (Simplex) Algorithm
 
 Not even the gradient is needed. 
 Possible moves are: reflection; expansion; outer contraction; inner contraction; shrinkage.
-
 
 
 Consider minimizing this simple function.
@@ -234,43 +271,6 @@ Inequalities are used to devise MM algorithms.
 
 ## An Example: LASSO with Coordinate Descent
 
-Coordinate descent algorithms optimize a objective function with 
-respect to a single parameter or a block of parameters at a time, 
-iteratively cycling through all parameters until convergence is reached.
-How to determine the blocks of parameters is problem-specific.
-The method is ideal for problems that have a simple closed form 
-solution in a single/lower dimension but lack one in higher dimensions.
-% The method is also called backfitting or Gauss--Seidel iteration.
-It is very commonly used in fitting penalized regression.
-The concept also appears in many well-known estimation problems.
-The simple technique can be surprisingly efficient and scalable.
-
-
-Consider objective function
-\[
-f(\beta) = g(\beta) + \sum_{j=1}^{p}h_j(\beta_j),
-\]
-where $g$ is convex and differentiable and each $h_i$ is convex.
-The second part is usually non-smooth, but is separable.
-Coordinate descent start with some initial guess $\beta^{(0)}$, repeat 
-the following for $k=1,2,3...$:
-\begin{align*}
-  \beta_1^{(k)} & = \arg\min_{\beta_1}f(\beta_1,\beta_2^{(k-1)},\ldots,\beta_p^{(k-1)}),\\
-  \beta_2^{(k)} & = \arg\min_{\beta_2}f(\beta_1^{(k)},\beta_2, \beta_3^{(k-1)},\ldots,\beta_p^{(k-1)}),\\
-  & \ldots\\
-  \beta_p^{(k)} & = \arg\min_{\beta_p}f(\beta_1^{(k)},\ldots,\beta_{p-1}^{(k)},\beta_p).
-\end{align*}
-It can be shown that if we are at a point $\beta$ such that $f(\beta)$ 
-is minimized along each coordinate axis, we have found a global minimizer.
-
-
-Remarks:
-- Order of cycle through coordinates is arbitrary.
-- Can replace individual coordinates with blocks of coordinates.
-- Same idea has been applied to many non-convex problems.
-- As long as the objective function is monotone decreasing, the convergence is guaranteed.
-
-
 In a linear regression setting, where $Y$ is the response vector and $X$ is the design matrix. Minimize objective function
 \[
 \min_{\beta \in R^p}\{\frac{1}{2n}\|Y - X \beta\|^2 + \sum_{j = 1}^p p_{\lambda}(|\beta_j|)\},
@@ -294,11 +294,11 @@ Common penalties:
 <!-- %\citep{zhang2010}. -->
 - Group penalties 
 <!-- %\citep{yuan2006}  -->
-- bilevel penalties
+- Bilevel penalties
 <!-- %\citep{huang2009gb,huang2012}. -->
 
 
-LASSO stands for "least absolute shrinkage and selection operator''. 
+LASSO stands for ``least absolute shrinkage and selection operator''. 
 There are two equivalent definitions.
 
 - minimize the residual sum of squares subject to the sum of the absolute value of the coefficients being less than a constant:
