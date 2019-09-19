@@ -1,0 +1,462 @@
+\section{Combinatorial Optimization}
+
+
+\begin{frame}
+  \frametitle{Combinatorial Optimization}
+  Motivation:
+  \begin{itemize}
+    \item There are hard optimization problems for which most methods including what we have discussed so far are useless.
+    \item These problems are usually combinatorial in nature. Maximization requires a discrete search of a very large space.
+    \item Problem: maximize $f(\vf \theta)$ with respect to $\vf \theta=(\theta_1,\ldots,\theta_p)$, where $\vf \theta \in \vf\Theta$ and $\vf\Theta$ consists of $N$ elements.
+        \begin{itemize}
+            \item Each $\vf\theta\in \vf\Theta$ is called a candidate solution.
+            \item Usually $N$ is a very large number depending on problem size $p$.
+            \item The difficulty of a particular size-$p$ problem can be characterized by the number of operations required to solve it in the worst case scenario using the best known algorithm.
+            \item Suppose a problem is $\mathcal{O}(p!)$. If it requires 1 minute to solve for $p=20$, it would take 12.1 years for $p=25$ and 207 million years for $p=30$.
+        \end{itemize}
+  \end{itemize}
+
+\end{frame}
+  
+
+
+\begin{frame}
+  What can we do:
+  \begin{itemize}
+  \item We have to take some sacrifices: we will abandon the global algorithms and focus on algorithms that can find a good local solution.
+  \item Heuristic strategies.
+  \end{itemize}
+  What we will learn:
+  \begin{itemize}
+  \item Local search methods
+  \item Simulated annealing
+  \item Genetic algorithms
+  \end{itemize}
+\end{frame}
+
+\subsection{Local Search}
+
+\begin{frame}
+  \frametitle{Motivating Example: Subset regression}
+% \begin{itemize}[itemsep=0ex]
+%  \item Maximize $f(\vf\theta)$, $\vf\theta\in\vf\Theta$, where
+%    $\vf\Theta$ is a finite set of candidate solutions.
+%  \end{itemize}
+% \begin{sample}
+  Suppose $\eno x p$ are predictors that can be used to construct a
+  linear model for $Y$.  Each candidate model is
+  \begin{align*}
+    Y = \sum_{j=1}^s \beta_{i_j} x_{i_j} + \err,
+  \end{align*}
+  where $1\le i_1<i_2<\ldots<i_s\le p$, $s\ge 0$.  The Akaike
+  information criterion (AIC) for the candidate model is
+  \begin{align*}
+    \text{AIC} = n \log\frac{\text{RSS}}{n} + 2s
+  \end{align*}
+  where $n$ is the sample size and RSS is the residual sum of
+  squares of model.  The best model is the one that minimizes AIC.
+  
+  To parameterize the model, set $\vf\theta=(\eno\theta
+  p)$, such that $\theta_i=1$ if $x_i$ is included as a predictor,
+  and 0 otherwise.  The set $\vf\Theta$ of all possible $\vf\theta$
+  has $2^p$ values.
+  % \end{sample}
+\end{frame}
+
+
+
+\begin{frame}
+  \frametitle{Local search}
+  First, define a neighborhood $\cN(\vf\theta)$ for each $\vf\theta$,
+  so that it
+  \begin{itemize}
+  \item contains candidate solutions that are ``near'' $\vf\theta$, and
+  \item reduces the number of changes to the current $\vf\theta$.
+  \end{itemize}
+  For example, if $\vf\Theta=\{\vf\theta = (\eno\theta p): \text{each
+  } \theta_i=0,1\}$, one may define $\cN(\vf\theta)$ to be the set of
+  $\vf\theta'$ which are different from $\vf\theta$ in at most one
+  coordinate.
+  
+  After neighborhoods are defined, at iteration $t$, choose
+  $\vf\theta_{t+1}$ from $\cN(\vf\theta_t)$ according to a certain
+  rule.  For example,
+  \begin{itemize}
+  \item steepest ascent:
+    $\vf\theta_{t+1} = \mathop{\arg\max}_{\vf\theta\in
+      \cN(\vf\theta_t)} f(\vf\theta)$;
+  \item ascent algorithm: $\vf\theta_{t+1}\in \cN(\vf\theta_t)$
+    uphill from $\vf\theta_t$, i.e.,
+    \begin{align*}
+      f(\vf\theta_{t+1})\ge f(\vf\theta_t).
+    \end{align*}
+  \end{itemize}
+
+\end{frame}
+
+
+\begin{frame}
+  To avoid trapping into a local maximum, two often used variants are
+  \begin{itemize}
+  \item random-starts local search: repeatedly run an ascent algorithm
+    to termination from a large number of randomly chosen
+    starting points.
+  \item steepest ascent/mildest descent: set to the least unfavorable
+    $\vf\theta_{t+1} \in \cN(\vf\theta_t)$;
+    \begin{itemize}
+    \item if $\vf\theta_t$ is a local maximum $\vf\theta_{t+1}$ is the
+      one with least decrease;
+    \item otherwise, $\vf\theta_{t+1}$ is the one with the largest
+      increase.
+    \end{itemize}
+  \end{itemize}
+
+\end{frame}
+
+
+\begin{frame}
+  To select a linear model to minimize AIC (or maximize $-$AIC),
+  
+  \begin{itemize}
+  \item randomly select a set of predictors
+  \item at iteration $t$, decrease the AIC by adding a predictor to the set of selected predictors or deleting a predictor that has been selected; continue the iterations until the AIC can not be
+    decreased;
+  \item repeat Steps 1 and 2 many times, and choose the set of
+    predictors at termination that has the lowest AIC.
+  \end{itemize}
+  
+\end{frame}
+
+\begin{frame}
+  %\begin{sample}[(Traveling salesman problem)]
+  A salesman must visit each of $p$ cities exactly once and return
+  to his starting city, using the shortest total travel distance.
+
+  A candidate solution is
+  \begin{align*}
+    \vf\theta = (i_1, i_2, \ldots, i_p, i_1)
+  \end{align*}
+  where $\eno i p$ is a permutation of 1, $\ldots$, $p$.
+  The objective function to be minimized is
+  \begin{align*}
+    f(\vf\theta) = d(i_1, i_2) + d(i_2, i_3) + \cdots +
+    d(i_{p-1}, i_p) + d(i_p,i_1).
+  \end{align*}
+  There are $(p-1)!/2$ all possible routes, since the point of
+  origin and direction of travel are arbitrary.  For a traveling
+  plan to visit $20$ cities, that amounts to more than 
+  $6\times 10^{16}$ possible routes.
+\end{frame}
+
+
+\begin{frame}
+  One could define $\cN(\vf\theta)$ as the set of sequences that
+  only differ from $\vf\theta$ at two entries.  In other words, each
+  sequence in $\cN(\vf\theta)$ is obtained by exchanging two entries
+  of $\vf\theta$.
+  
+  For example, if
+  \begin{align*}
+    \vf\theta = (1, 2, 5, 4, 6, 3, 1)
+  \end{align*}
+  then
+  \begin{align*}
+    (1, 2, 3, 4, 6, 5, 1)
+  \end{align*}
+  is a neighbor of $\vf\theta$, because it only has 3 and 5
+  exchanged; while
+  \begin{align*}
+    (1, 2, 4, 3, 6, 5, 1)
+  \end{align*}
+  is not a neighbor of $\vf\theta$, because it has 5, 4, and 3
+  rotated.
+\end{frame}
+
+
+\subsection{Simulated Annealing}
+
+\begin{frame}
+  \frametitle{Simulated annealing}
+  In most cases, the simulated annealing algorithm can be thought of
+  as a randomized local search algorithm.  It uses a ``temperature''
+  parameter to control the randomness of the search.  The algorithm
+  starts with a high temperature and cools down gradually so that a
+  global optimum may be reached.  This is analogous to the annealing
+  of metal or glass.
+  
+  In the following description, a global \emph{minimum} of
+  $f$ is being searched.  The algorithm is run in stages, such that
+  for the iterations within a stage, the temperature is a constant
+  $\tau_j$.
+\end{frame}
+
+
+\begin{frame}
+  Suppose iteration $t$ belongs to stage $j$.
+  \begin{enumerate}
+  \item[\bf 1.] Sample a candidate $\vf\theta^*\in \cN(\vf\theta)$
+    according to a \emph{proposal density\/} $g_t(\vf\theta\gv
+    \vf\theta_t)$; for different $t$, the proposal density $g_t$ can
+    be different.
+  \item[\bf 2.] Let $\Delta=f(\vf\theta^*)-f(\vf\theta_t)$.
+    \begin{enumerate}
+    \item[\bf a)] If $\Delta\le  0$, then set
+      $\vf\theta_{t+1}=\vf\theta^*$.
+    \item[\bf b)] If $\Delta>0$, then set
+      $\vf\theta_{t+1}=\vf\theta^*$ with probability
+      $e^{-\Delta/\tau_j}$, and $\vf\theta_{t+1}=\vf\theta_t$
+      otherwise.  This can be done as follows.  Sample $U\sim
+      \dunif(0,1)$.  Then
+      \begin{align*}
+        \vf\theta_{t+1}
+        =
+        \begin{cases}
+          \vf\theta^* & \text{if}\ \ U\le e^{-\Delta/\tau_j} \\
+          \vf\theta_t & \text{otherwise}.
+        \end{cases}
+      \end{align*}
+    \end{enumerate}
+  \item[\bf 3.] Repeat steps 1 and 2 a total of $m_j$ times.
+  \item[\bf 4.] Update $\tau_{j+1}=\alpha(\tau_j)$, $m_{j+1} =
+    \beta(m_j)$ and move to stage $j+1$, where $\alpha$ and $\beta$
+    are two deterministic functions that govern how to cool down the
+    temperature  and how long to stay at a given temperature.
+  \end{enumerate}
+  
+\end{frame}
+
+
+\begin{frame}
+  % \begin{sample}
+  Suppose $I$ is an image consisting of ``pixels'' $I(i,j)$,
+  $i,j=1,\ldots, N$.  The image is corrupted by noise $Z(i,j)$ and
+  only $J = I+Z$ is observed.   To reconstruct $I$, one way is
+  to minimize a function
+  \begin{align*}
+    f(I) = \sum_{i,j} |J(i,j) - I(i,j)|^2 + K(I),
+  \end{align*}
+  where $K(I)$ is a function that has large values if $I$ has many
+  ``irregularities''.  The idea is that, as long as the noise is not
+  too strong, the real image should be similar to $J$; on the other
+  hand, irregularities observed in $J$ are likely to be due to noise
+  and should be reduced.
+  
+  One way to use the simulated annealing to minimize $f(I)$ is as
+  follows.  In each iteration, only one pixel of $I$ can be updated.
+  That means two $I$ and $I'$ are neighbors only when they are
+  different at just one pixel.  Then at each iteration, choose a
+  pixel $I(i,j)$ and select a candidate value for it.  Update
+  $I(i,j)$ according to the rule in step 2 and move to the next
+  iteration.
+  % \end{sample}
+\end{frame}
+
+
+\begin{frame}
+  Some guidelines:
+  \begin{itemize}
+  \item R function
+    \begin{align*}
+      \texttt{optim}
+    \end{align*}
+    can implement some simple versions of simulated annealing;
+  \item the temperature $\tau_j$ should slowly decrease to 0;
+  \item the number $m_j$ of iterations at each temperature $\tau_j$
+    should be large and increasing in $j$;
+  \item reheating strategies that allow sporadic, systematic, or
+    interactive temperature increases to prevent getting stuck in a
+    local minimum at low temperatures can be effective.
+  \end{itemize}
+\end{frame}
+
+
+\subsection{Genetic Algorithm}
+
+\begin{frame}
+  \frametitle{Genetic algorithms}
+  First, each $\vf\theta\in\vf\Theta$ is a string of alphabets:
+  \begin{align*}
+    \vf\theta=(\eno \theta C),
+  \end{align*}
+  where each $\theta_i$ is a symbol from a finite set, such as $\{0,
+  1\}$, $\{0,1,2\}$, $\{\text{`a'}, \text{`b'}, ...\}$.
+  
+  Genetic algorithms regard the maximization of $f(\vf\theta)$ over
+  $\vf\Theta$ as a process of natural selection, with $f(\vf\theta)$
+  being a measure of fitness and $\vf\theta$ the genetic code, or
+  ``chromosome''.  It assumes that fitness is a result of some
+  ``good'' pieces of $\vf\theta$ and by inheriting these pieces plus
+  some mutations fitness is enhanced.
+
+  In a genetic algorithm, at each iteration $t$, at least two
+  candidate solutions $\vf\theta_{t,1}$, \ldots, $\vf\theta_{t,P}$
+  have to be tracked.  Each iteration consists of several steps.
+
+\end{frame}
+
+
+\begin{frame}
+  \begin{enumerate}
+  \item[\bf 1.] \textbf{Selection.}  Randomly select from
+    $\vf\theta_{t,1}$, \ldots, $\vf\theta_{t,P}$ to form a set of
+    pairs.  The selection should be based on a \emph{fitness
+      function\/} $\phi(\vf\theta)$.  In general, larger values of
+    $f(\vf\theta)$ result in larger values of $\phi(\vf\theta)$, and
+    higher chance for $\vf\theta$ to be selected.
+
+    There are many selection mechanisms:
+    \begin{itemize}
+    \item[\bf a)] select one parent $\vf\theta$ with probability
+      proportional to $\phi(\vf\theta)$ and the other parent
+      completely at random;
+    \item[\bf b)] select each parent independently with probability
+      proportional to $\phi(\vf\theta)$;
+    \end{itemize}
+
+    $\phi$ must be selected carefully: using
+    $\phi(\vf\theta_{t,i})=f(\vf\theta_{t,i})$ may result in rapid
+    convergence into a local maximum.  A common choice is
+    \begin{align*}
+      \phi(\vf\theta_{t,i}) = \frac{2r_i}{P(P+1)}
+    \end{align*}
+    where $r_i$ is the \emph{rank\/} of $f(\vf\theta_{t,i})$ in
+    $f(\vf\theta_{t,1})$, \ldots, $f(\vf\theta_{t,P})$.
+  \end{enumerate}
+\end{frame}
+
+
+\begin{frame}
+  \begin{enumerate}
+  \item[\bf 2.] \textbf{Breeding.}  For each pair, $(\vf\theta_a,
+    \vf\theta_b)$, generate one or more ``offspring'' $\vf\theta' =
+    c(\vf\theta_a, \vf\theta_b)\in\vf\Theta$, where $c$ is a random
+    operator.
+
+    Typically, $c$ is a ``crossover''.  If
+    \begin{gather*}
+      \vf\theta_a =  (\theta_{a1}, \ldots, \theta_{a C}), \\
+      \vf\theta_b = (\theta_{b1}, \ldots, \theta_{b C}),
+    \end{gather*}
+    then a crossover works as follows,
+    \begin{enumerate}
+    \item[\bf a)] randomly choose a position $1\le d\le C$; and
+    \item[\bf b)] combine $(\theta_{a1}, \ldots, \theta_{ad})$ and
+      $(\theta_{b,d+1}, \ldots, \theta_{b C})$ to form
+      \begin{align*}
+        \vf\theta'=(\theta_{a1}, \ldots, \theta_{ad},
+        \theta_{b,d+1}, \ldots, \theta_{b C}).
+      \end{align*}
+      If necessary, also take
+      \begin{align*}
+        \vf\theta''=
+        (\theta_{a,d+1}, \ldots, \theta_{a C},
+        \theta_{b1}, \ldots, \theta_{b d})
+      \end{align*}
+      to be another offspring.
+    \end{enumerate}
+  \end{enumerate}
+\end{frame}
+
+
+\begin{frame}
+  \begin{enumerate}
+  \item[\bf 3.] \textbf{Mutation.}  Make some random modifications to
+    each offspring.  Typically, if an offspring chromosome is
+    \begin{align*}
+      \vf\theta=(\eno \theta C)
+    \end{align*}
+    then for $i=1,\ldots,C$, with a small probability $0<p<1$
+    (mutation rate), change $\theta_i$ to a different value.
+  \end{enumerate}
+
+  The offspring produced at iteration $t$ are taken as the candidate
+  solutions for iteration $t+1$.
+
+\end{frame}
+
+
+\begin{frame}
+  \frametitle{Initialization.}
+
+  Usually the first generation consists of
+  completely random individuals.
+
+  %\frametitle{Parameters}
+  \begin{itemize}
+  \item Large values of the size of a generation, $P$, are preferred.
+    For binary encoding of $\vf\theta$, one suggestion is to have
+    $C\le P\le 2C$, where $C$ is the chromosome length.  In most real
+    applications, population sizes have ranged between 10 and 200.
+  \item Mutation rates are typically very low, in the neighborhood of
+    1\%.
+  \end{itemize}
+\end{frame}
+
+\begin{frame}
+  \frametitle{Termination.}  A genetic algorithm is usually terminated
+  after a maximum number of iterations.  Alternatively, the algorithm
+  can be stopped once the genetic diversity in the current generation
+  is sufficiently low.
+\end{frame}
+
+
+\begin{frame}
+  In many problems, like the traveling salesman problem, it is natural
+  to write $\vf\theta$ as a permutation of $1, 2, \ldots, p$.
+  \begin{itemize}
+  \item Standard crossover usually produces invalid sequences
+  \end{itemize}
+  For example, if
+  \begin{align*}
+    \vf\theta_a
+    &
+      = \{7, 5, 2, 6, 3, 1, 9, 4, 8\} \\
+    \vf\theta_b
+    &
+      = \{9, 1, 2, 3, 8, 6, 7, 5, 4\}
+  \end{align*}
+  and if the crossover point is between 2nd and 3rd positions, then it
+  produces
+  \begin{align*}
+    \{7, 5, 2, 3, 8, 6, 7, 5, 4\}
+  \end{align*}
+  an invalid traveling route.
+\end{frame}
+
+
+\begin{frame}
+  A remedy is order crossover: pick a number of positions from one
+  parent and get the values at those positions, say $\eno i s$.  Next
+  identify those values from the 2nd parent.  Suppose the set of
+  values are found at $j_1<j_2<\ldots<j_s$.  Put $i_1$ at $j_1$, $i_2$
+  at $j_2$, \ldots, $i_s$ at $j_s$ while keeping the values of the 2nd
+  on other locations unchanged.
+
+  Example: Consider parents $(752631948)$ and $(912386754)$ and random
+  positions $(4, 6, 7)$. The offsprings are
+  $(612389754)$ and $(352671948)$.
+
+  The drawback of the operation is that it destroys some important
+  structures of the parent routes, in particular, the links.
+
+\end{frame}
+
+
+\begin{frame}
+  Edge-recombination crossover uses a different idea.  It generates an
+  offspring whose edges belong to those of the parent routes.  By edge
+  it means a link into or out of a city in a route.  For example,
+  the above two parents have the following links, the order of numbers
+  in each link is unimportant.
+  \begin{gather*}
+    (1, 2), (1, 3), (1, 9),
+    (2, 3), (2, 5), (2,6), (3, 6), (3, 8), \\
+    (4, 5), (4, 8), (4, 9), (5, 7), (6,7),(6,8), (7,8)
+  \end{gather*}
+
+  First, choose one of the initial cities of the parents as the initial
+  city of the offspring.  At $k$-th step, if $\eno ik$ have been
+  chosen as the first $k$ cities on the route, then choose among
+  cities that are linked to $i_k$ \emph{and\/} are different from
+  $\eno i{k-1}$ as the $(k+1)$st city of the offspring.
+\end{frame}

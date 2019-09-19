@@ -72,10 +72,10 @@ Given initial values $x_0$ and $x_1$, the iteration is
 ### Fixed Point Iteration
 
 A fixed point of a function is a point whose evaluation by that 
-function equals to itself, i.e., $x=G(x)$.
+function equals to itself, i.e., $x = G(x)$.
 
 Fixed point iteration: the natural way of hunting for a fixed point 
-is to use $x_{t+1}=G(x_t)$.
+is to use $x_{t+1} = G(x_t)$.
 
 ```{definition contractive}
 A function $G$ is contractive on $[a,b]$ if
@@ -134,19 +134,56 @@ Choose $M^{(t)} = M$ for all $t$. An example is $M = g''(x_0)$.
 
 Rank-one or rank-two update. The celebrated BFGS is a rank-two update method. Box constraints can be allowed with L-BFGS-B.
 
-#### Coordinate Ascent
+#### Coordinate Descent
+
+Coordinate descent algorithms optimize a objective function with 
+respect to a single parameter or a block of parameters at a time, 
+iteratively cycling through all parameters until convergence is reached.
+How to determine the blocks of parameters is problem-specific.
+The method is ideal for problems that have a simple closed form 
+solution in a single/lower dimension but lack one in higher dimensions.
+% The method is also called backfitting or Gauss--Seidel iteration.
+It is very commonly used in fitting penalized regression.
+The concept also appears in many well-known estimation problems.
+The simple technique can be surprisingly efficient and scalable.
+
+
+Consider objective function
+\[
+f(\beta) = g(\beta) + \sum_{j=1}^{p}h_j(\beta_j),
+\]
+where $g$ is convex and differentiable and each $h_i$ is convex.
+The second part is usually non-smooth, but is separable.
+Coordinate descent start with some initial guess $\beta^{(0)}$, repeat 
+the following for $k=1,2,3...$:
+\begin{align*}
+  \beta_1^{(k)} & = \arg\min_{\beta_1}f(\beta_1,\beta_2^{(k-1)},\ldots,\beta_p^{(k-1)}),\\
+  \beta_2^{(k)} & = \arg\min_{\beta_2}f(\beta_1^{(k)},\beta_2, \beta_3^{(k-1)},\ldots,\beta_p^{(k-1)}),\\
+  & \ldots\\
+  \beta_p^{(k)} & = \arg\min_{\beta_p}f(\beta_1^{(k)},\ldots,\beta_{p-1}^{(k)},\beta_p).
+\end{align*}
+It can be shown that if we are at a point $\beta$ such that $f(\beta)$ 
+is minimized along each coordinate axis, we have found a global minimizer.
+
+
+Remarks:
+
+- Order of cycle through coordinates is arbitrary.
+- Can replace individual coordinates with blocks of coordinates.
+- Same idea has been applied to many non-convex problems.
+- As long as the objective function is monotone decreasing, the convergence is guaranteed.
+
 
 #### Conjugate Gradient
 
-#### Gauss-Seidel
-
 #### Gauss-Newton
+
+Non-linear least squares.
 
 ### Nelder-Mead (Simplex) Algorithm
 
 Not even the gradient is needed. 
 Possible moves are: reflection; expansion; outer contraction; inner contraction; shrinkage.
-
 
 
 Consider minimizing this simple function.
@@ -234,43 +271,6 @@ Inequalities are used to devise MM algorithms.
 
 ## An Example: LASSO with Coordinate Descent
 
-Coordinate descent algorithms optimize a objective function with 
-respect to a single parameter or a block of parameters at a time, 
-iteratively cycling through all parameters until convergence is reached.
-How to determine the blocks of parameters is problem-specific.
-The method is ideal for problems that have a simple closed form 
-solution in a single/lower dimension but lack one in higher dimensions.
-% The method is also called backfitting or Gauss--Seidel iteration.
-It is very commonly used in fitting penalized regression.
-The concept also appears in many well-known estimation problems.
-The simple technique can be surprisingly efficient and scalable.
-
-
-Consider objective function
-\[
-f(\beta) = g(\beta) + \sum_{j=1}^{p}h_j(\beta_j),
-\]
-where $g$ is convex and differentiable and each $h_i$ is convex.
-The second part is usually non-smooth, but is separable.
-Coordinate descent start with some initial guess $\beta^{(0)}$, repeat 
-the following for $k=1,2,3...$:
-\begin{align*}
-  \beta_1^{(k)} & = \arg\min_{\beta_1}f(\beta_1,\beta_2^{(k-1)},\ldots,\beta_p^{(k-1)}),\\
-  \beta_2^{(k)} & = \arg\min_{\beta_2}f(\beta_1^{(k)},\beta_2, \beta_3^{(k-1)},\ldots,\beta_p^{(k-1)}),\\
-  & \ldots\\
-  \beta_p^{(k)} & = \arg\min_{\beta_p}f(\beta_1^{(k)},\ldots,\beta_{p-1}^{(k)},\beta_p).
-\end{align*}
-It can be shown that if we are at a point $\beta$ such that $f(\beta)$ 
-is minimized along each coordinate axis, we have found a global minimizer.
-
-
-Remarks:
-- Order of cycle through coordinates is arbitrary.
-- Can replace individual coordinates with blocks of coordinates.
-- Same idea has been applied to many non-convex problems.
-- As long as the objective function is monotone decreasing, the convergence is guaranteed.
-
-
 In a linear regression setting, where $Y$ is the response vector and $X$ is the design matrix. Minimize objective function
 \[
 \min_{\beta \in R^p}\{\frac{1}{2n}\|Y - X \beta\|^2 + \sum_{j = 1}^p p_{\lambda}(|\beta_j|)\},
@@ -294,11 +294,11 @@ Common penalties:
 <!-- %\citep{zhang2010}. -->
 - Group penalties 
 <!-- %\citep{yuan2006}  -->
-- bilevel penalties
+- Bilevel penalties
 <!-- %\citep{huang2009gb,huang2012}. -->
 
 
-LASSO stands for "least absolute shrinkage and selection operator''. 
+LASSO stands for ``least absolute shrinkage and selection operator''. 
 There are two equivalent definitions.
 
 - minimize the residual sum of squares subject to the sum of the absolute value of the coefficients being less than a constant:
@@ -366,7 +366,8 @@ Consider estimating the location parameter of a Cauchy distribution with a known
   \quad x \in R, \quad \theta \in R.
 \end{align*}
 Let $X_1, \ldots, X_n$ be a random sample of size $n$ and $\ell(\theta)$ the log-likelihood function of $\theta$ based on the sample.
-  - Show that
+
+1. Show that
   \begin{align*}
   \ell(\theta)
   &= -n\ln \pi - \sum_{i=1}^n \ln [1+(\theta-X_i)^2], \\
@@ -380,15 +381,14 @@ Let $X_1, \ldots, X_n$ be a random sample of size $n$ and $\ell(\theta)$ the log
   = n/2,
   \end{align*}
 where $I_n$ is the Fisher information of this sample.
-- Set the random seed as $20180909$ and generate a random sample of size $n = 10$ with $\theta = 5$. Implement a loglikelihood function and plot against $\theta$.
-- Find the MLE of $\theta$ using the Newton--Raphson method with initial values on a grid starting from $-10$ to $30$ with increment $0.5$. Summarize the results. 
-- Improved the Newton--Raphson method by halving the steps if the likelihood is not improved.
-- Apply fixed-point iterations using
+1. Set the random seed as $909$ and generate a random sample of size $n = 10$ with $\theta = 5$. Implement a loglikelihood function and plot against $\theta$.
+1. Find the MLE of $\theta$ using the Newton--Raphson method with initial values on a grid starting from $-10$ to $30$ with increment $0.5$. Summarize the results.
+1. Improved the Newton--Raphson method by halving the steps if the likelihood is not improved.
+1. Apply fixed-point iterations using
 $G(\theta)=\alpha \ell'(\theta) + \theta$,
 with scaling choices of $\alpha \in \{1, 0.64, 0.25\}$ and the same initial values as above. 
-- First use Fisher scoring to find the MLE for $\theta$, then refine the estimate by running Newton-Raphson method. 
-Try the same starting points as above.
-- Comment on the results from different methods (speed, stability, etc.).
+1. First use Fisher scoring to find the MLE for $\theta$, then refine the estimate by running Newton-Raphson method. Try the same starting points as above.
+1. Comment on the results from different methods (speed, stability, etc.).
 
 ### Many local maxima
 Consider the probability density function with parameter $\theta$:
@@ -401,16 +401,16 @@ A random sample from the distribution is
 x <- c(3.91, 4.85, 2.28, 4.06, 3.70, 4.04, 5.46, 3.53, 2.28, 1.96,
        2.53, 3.88, 2.22, 3.47, 4.82, 2.46, 2.99, 2.54, 0.52)
 ```
-- Find the the log-likelihood function of $\theta$ based on the sample and plot it between $-\pi$ and $\pi$.
-- Find the method-of-moments estimator of $\theta$.  That is, the estimator $\tilde\theta_n$ is value of $\theta$ with
+1. Find the the log-likelihood function of $\theta$ based on the sample and plot it between $-\pi$ and $\pi$.
+1. Find the method-of-moments estimator of $\theta$.  That is, the estimator $\tilde\theta_n$ is value of $\theta$ with
 \begin{align*}
   \E (X \mid \theta) = \bar X_n,
 \end{align*}
 where $\bar X_n$ is the sample mean. This means you have to first find the expression for $\E (X \mid \theta)$.
-- Find the MLE for $\theta$ using the Newton--Raphson method initial value $\theta_0 = \tilde\theta_n$.
-- What solutions do you find when you start at 
+1. Find the MLE for $\theta$ using the Newton--Raphson method initial value $\theta_0 = \tilde\theta_n$.
+1. What solutions do you find when you start at 
 $\theta_0 = -2.7$ and $\theta_0 = 2.7$?
-- Repeat the above using 200 equally spaced starting values
+1. Repeat the above using 200 equally spaced starting values
 between $-\pi$ and $\pi$.  Partition the values into sets of attraction. That is, divide the set of starting values into separate groups, with each group corresponding to a separate unique outcome of the optimization.
 
 ### Modeling beetle data

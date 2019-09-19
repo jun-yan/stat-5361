@@ -1,0 +1,1780 @@
+\section{Non-Stochastic Optimization}
+
+
+\subsection{Some Background}
+
+\begin{frame}
+  %\small
+  %\setcounter{page}{0}
+  \frametitle{Non-stochastic Optimization}
+  What we will learn:
+  \begin{itemize}
+    \item Some basics about statistical inference
+    \item Univariate problems
+        \begin{itemize}
+            \item Newton's method
+            \item Fisher scoring
+            \item Secant method
+            \item Fixed-point method
+            \item Connections of the above
+        \end{itemize}
+    \item Multivariate problems
+        \begin{itemize}
+            \item Newton's method
+            \item Newton-like methods
+            %\item Coordinate descent
+        \end{itemize}
+    %\item Penalized regression problems
+  \end{itemize}
+
+  \end{frame}
+
+
+  \begin{frame}
+  \frametitle{Background: likelihood inference}
+    \begin{itemize}
+        \item Let $\eno {\vf x} n$ be an i.i.d.\ sample from
+            \begin{align*}
+            f(\vf x\gv \vf\theta^*),
+            \end{align*}
+            with the true parameter value $\vf\theta^*$ being unknown.
+
+        \item The likelihood function is
+            \begin{align*}
+            L(\vf\theta) = \prod_{i=1}^n f(\vf x_i\gv \vf\theta),
+            \end{align*}
+
+        \item The \emph{maximum likelihood estimator\/} (MLE) of the parameter value is the maximizer of $L(\vf\theta)$. MLE has the invariate property.
+
+        \item Usually it is easier to work with the \emph{log likelihood function\/}
+            \begin{align*}
+            l(\vf\theta) = \log L(\vf\theta).
+            \end{align*}
+      \end{itemize}
+
+  \end{frame}
+
+  \begin{frame}
+  \begin{itemize}
+    \item Typically, maximization of $l(\vf\theta)$ is done by solving
+  \begin{align*}
+    l'(\vf\theta) = 0.
+  \end{align*}
+
+  \begin{itemize}
+  \item $l'(\vf\theta)$ is called the \emph{score function\/}.
+  \item For each possible parameter value $\vf\theta$, $l(\vf\theta)$
+    is a random variable, because it depends on the observed values of
+    $\eno {\vf x} n$.
+  \end{itemize}
+
+  \item For any $\vf\theta$,
+  \begin{gather*}
+    \mean_{\vf\theta}\Cbr{l'(\vf\theta)}=0,
+    \\
+    \mean_{\vf\theta}\Cbr{l'(\vf\theta)l'(\vf\theta)\ts} = -
+    \mean_{\vf\theta}\Cbr{l''(\vf\theta)}.
+  \end{gather*}
+  where $\mean_{\vf\theta}$ is the expectation with respect to
+  $f(\vf x\gv\vf\theta)$. The equality holds true under mild regularity conditions.
+
+  \item
+  \begin{align*}
+    I(\vf\theta)=\mean_{\vf\theta}
+    \Cbr{l'(\vf\theta)l'(\vf\theta)\ts}
+  \end{align*}
+  is known as the \emph{Fisher information\/}.
+  \end{itemize}
+
+  \end{frame}
+
+   \begin{frame}
+
+  \begin{itemize}
+    \item The importance of the Fisher information $I(\vf\theta)$ is
+  that it sets the limit on how accurate an unbiased estimate of
+  $\vf\theta$ can be.
+
+    \item As $n\toi$, the asymptotic distribution of
+  $\sqrt{n}(\vest\theta_{\rm MLE}-\vf\theta^*)$ is $N_p(\vf 0,
+  nI(\vf\theta^*)^{-1})$. Since $\theta^*$ is unknown, the asymptotic covariance matrix $I(\vf\theta^*)^{-1})$ needs to be estimated.
+  \begin{itemize}
+  \item If $\dim(\vf\theta)=1$, $I(\vf\theta)$ is a nonnegative
+    number.
+  \item If $\dim(\vf\theta)>1$, $I(\vf\theta)$ is a nonnegative
+    definite matrix.
+  \end{itemize}
+
+    \item The \emph{observed Fisher information\/} is
+  \begin{align*}
+    -l''(\vf\theta).
+  \end{align*}
+  The expected Fisher information $I(\vf\theta)$ may not be easily computed. The observed Fisher information is a good approximation to $I(\vf\theta)$ that improves as $n$ gets bigger.
+  \end{itemize}
+
+%For exponential family of distributions, the log-likelihood is concave and the observed information must be positive definite.  However, this is not the case more generally, i.e. for families such as curved exponential families the log-likelihood doesn't have to be concave.
+
+  \end{frame}
+
+  \begin{frame}
+  Besides MLEs, there are other likelihoods for parameter estimation.
+  Suppose $\vf\theta$ has two parts: $\vf\theta = (\vf\phi,\vf\mu)$
+  and we are only interested in $\vf\phi$.  The \emph{profile
+    likelihood\/} for $\vf\phi$ is
+  \begin{align*}
+    L(\vf\phi) := \max_{\vf\mu} L(\vf\phi,\vf\mu).
+  \end{align*}
+  \begin{itemize}
+  \item $\vf\mu$ is the nuisance parameter.
+  \item Need to maximize $L(\vf\phi, \vf\mu)$ for every fixed
+    $\vf\phi$.  Also need to maximize $L(\vf\phi)$.
+  \end{itemize}
+
+    %\begin{sample*}
+    %\end{sample*}
+
+
+  \end{frame}
+
+
+
+
+
+  \begin{frame}
+  \frametitle{A general method}
+  Suppose $g(\vf x)$ is a differentiable function, where
+  \begin{align*}
+    \vf x = (\eno x n).
+  \end{align*}
+  To find its maximum (or minimum), one method is to solve the
+  equation
+  \begin{align*}
+    g'(\vf x)&=0  \\
+    \text{where}\quad
+    g'(\vf x)& = \Grp{\pd g{x_1}, \ldots, \pd g{x_n}}\ts.
+  \end{align*}
+
+  Then the maximization is equivalent to solving
+  \begin{align*}
+    f(\vf x)=0,
+  \end{align*}
+  where $f = g'$.
+
+
+  For maximum likelihood estimation, $g$ is the log likelihood function $l$, and $\vf x$ is the corresponding parameter vector $\vf \theta$.
+
+
+  \end{frame}
+
+
+
+
+
+
+
+
+\subsection{Univariate Problems}
+\begin{frame}{}
+\begin{block}{\center Univariate Problems}
+\end{block}
+\end{frame}
+
+
+\begin{frame}
+  \frametitle{Optimization: Univariate case}
+  \begin{itemize}
+    \item Goal: optimize a real-valued function $g$ with respect to its argument, a $p$ dimensional vector $\vf x$. We will first consider the case $p=1$.
+    \item We will limit consideration mainly to smooth and differentiable functions.
+    %\item Note that there is maximizing a function is equivalent to minimizing its negative.
+    \item Root finding methods. Solving unconstrained nonlinear equations.
+    \item Iterative algorithms: starting value, updating equation, stopping rule/convergence criterion.
+  \end{itemize}
+
+
+  %\begin{sample*}
+  Using bisection method to maximize
+    \begin{align*}
+      g(x) = \frac{\log x}{1+x}.
+    \end{align*}
+    or to sovle
+    \begin{align*}
+       f(x) = g'(x)=\frac{1+\nth x - \log x}{(1+x)^2}=0.
+    \end{align*}
+  %\end{sample*}
+\end{frame}
+
+% \begin{frame}
+%   \begin{figure}
+%     \begin{center}
+%       \animategraphics[controls,loop,width=0.95\textwidth]{10}{animation/bisection}{0}{9}
+%     \end{center}
+%   \end{figure}
+% \end{frame}
+
+
+\begin{frame}
+  \frametitle{Newton's method}
+  This is a fast approach to finding roots of a differentiable
+  function $f(x)$.  First, set initial value $x_0$.  Then for
+  $t=0,1,\ldots$, compute
+  \begin{align*}
+    x_{t+1} = x_t + h_t, \text{ with } h_t=
+    - \frac{f(x_t)}{f'(x_t)}.
+  \end{align*}
+  Continue the iterations until $x_t$ converges.
+  \begin{itemize}
+  \item Also known as Newton-Raphson iteration.
+  \item Need to specify $x_0$.
+  \item If $f(x)=0$ has multiple solutions, the end result depends
+    on $x_0$.
+  \end{itemize}
+
+
+  \end{frame}
+
+  \begin{frame}
+  Newton's method require computing the derivative of a function.
+  Algorithms are available to find root(s) of a univariate function
+  without having to compute its derivative.  For example, in R, one
+  can use $\texttt{uniroot}$.
+
+  Newton's method can be applied to optimize $g$ by applying to
+  \begin{align*}
+    f=g'.
+  \end{align*}
+  \begin{itemize}
+  \item Both $g'$ (\emph{gradient\/}) and $g''$ (\emph{Hessian\/}) are
+    needed.
+  \item Many variants of Newton's method avoid the computation of
+    the Hessian, which can be difficult especially for multivariate
+    functions.
+  \end{itemize}
+
+  \end{frame}
+
+  \begin{frame}
+  %\begin{sample*}
+    To maximize
+    \begin{align*}
+      g(x) = \frac{\log x}{1+x},
+    \end{align*}
+    first find
+    \begin{gather*}
+      f(x) = g'(x)=\frac{1+\nth x - \log x}{(1+x)^2}, \\
+      f'(x) = g''(x) = - \frac{3+4/x+1/x^2 - 2\log x}{(1+x)^3}.
+    \end{gather*}
+    So in the Newton's method,
+    \begin{align*}
+      h_t = \frac{(x_t + 1)(1+1/x_t - \log x_t)}{
+        3+4/x_t+1/x_t^2 - 2\log x_t
+      }.
+    \end{align*}
+    Note that to solve $f(x)=0$, one can instead solve $1+1/x - \log
+    x=0$.  Treat this as a new $f$ function.  Then in the Newton's
+    method,
+    \begin{align*}
+      h_t = x_t - \frac{x_t^2 \log x_t}{1+x_t}
+      \quad\implies\quad
+      x_{t+1} = 2x_t - \frac{x_t^2 \log x_t}{1+x_t}.
+    \end{align*}
+  %\end{sample*}
+\end{frame}
+
+% \begin{frame}
+%   \begin{figure}
+%     \begin{center}
+%       \animategraphics[controls,loop,width=0.95\textwidth]{10}{animation/newtonraphson}{0}{9}
+%     \end{center}
+%   \end{figure}
+% \end{frame}
+
+% \begin{frame}
+%   \begin{figure}
+%     \begin{center}
+%       \animategraphics[controls,loop,width=0.95\textwidth]{10}{animation/newtonraphson_fail}{0}{9}
+%     \end{center}
+%   \end{figure}
+%  \end{frame}
+
+
+
+ \begin{frame}[t]
+  %\begin{sample*}
+    To maximize the log likelihood $l(\theta)$, Newton's method
+    computes
+    \begin{align*}
+      \theta_{t+1} = \theta_t - \frac{l'(\theta_t)}{l''(\theta_t)}
+    \end{align*}
+\noindent Example: consider $x_1,\ldots,x_n \sim\mbox{ i.i.d. } N(\mu,\sigma^2)$.\\
+    \vspace{1cm}
+
+  \end{frame}
+
+  \begin{frame}[t]
+\noindent Example: consider the model on shift
+    \begin{align*}
+      p(x\gv \theta) = p(x-\theta).
+    \end{align*}
+    Given observations $\eno x n$ i.i.d. $\sim p(x\gv \theta)$
+    \begin{gather*}
+      l(\theta) = \sum_{i=1}^n \log p(x_i - \theta) \\
+      l'(\theta) = -\sum_{i=1}^n \frac{p'(x_i-\theta)}{p(x_i-\theta)}
+      \\
+      l''(\theta) = \sum_{i=1}^n
+      \frac{p''(x_i-\theta)}{p(x_i-\theta)} -
+      \sum_{i=1}^n \Cbr{\frac{p'(x_i-\theta)}{p(x_i-\theta)}}^2.
+    \end{gather*}
+
+    Note that we need to update $\theta$ in the iterations, not $\eno
+    x n$.
+  %\end{sample*}
+
+  \end{frame}
+
+  \begin{frame}
+  In R, to \emph{minimize\/} a function, one can use
+  \begin{align*}
+    \texttt{z = nlminb(x0, g, gr.g, hess.g)}
+  \end{align*}
+  here \texttt{x0} is the initial value, \texttt{g} is the function
+  being minimized, \texttt{gr.g} its gradient and \texttt{hess.g} its
+  Hessian. (Unconstrained and box-constrained optimization using PORT routines).
+
+  In the above function, the derivatives $g'$ and $g''$ have to
+  be analytically calculated.  One can also use
+  \begin{align*}
+    \texttt{z = nlminb(x0, g, gr.g)}
+  \end{align*}
+  without inputing the analytic expression of $g''$, or, even simpler,
+  \begin{align*}
+    \texttt{z = nlminb(x0, g)}
+  \end{align*}
+  without inputing the analytic expressions of either derivatives.  In
+  these cases, numerical approximations of derivatives will be
+  computed during the iterations.
+
+  Other functions for optimization in R include \texttt{optim}, \texttt{optimize}, \texttt{nlm} and \texttt{constrOptim}.
+
+  \end{frame}
+
+  \begin{frame}
+  For profile likelihood
+  \begin{align*}
+    L(\vf\phi) = \max_{\vf\mu} L(\vf\phi, \vf\mu)
+  \end{align*}
+  we need to optimize $L(\vf\phi, \vf\mu)$ for each given $\vf\phi$.
+
+  In R, in order to get $\min_x g(x,y)$ for each fixed $y$, one can do
+  the following.  First, define \texttt{g(x,y)}, \texttt{gr.g(x,y)},
+  etc.  Then call, say,
+  \begin{align*}
+    &
+    \texttt{nlminb(x0, g, gr.g, hess.g, y=1)}, \quad \text{or} \\
+    &
+    \texttt{nlminb(x0, g, gr.g, y=.3)}, \quad \text{or} \\
+    &
+    \texttt{nlminb(x0, g, y=-1)}
+  \end{align*}
+
+  If one only wants minimization for $x\in [a,b]$, use,
+  \begin{align*}
+    \texttt{nlminb(x0, ..., lower=a, upper=b)}
+  \end{align*}
+
+  \end{frame}
+
+  \begin{frame}
+  \frametitle{Fisher scoring}
+  This is a variant of Newton's method specific for MLE.
+  Recall $-l''(\theta)$ is the observed
+  Fisher information at $\theta$.  To maximize $l(\theta)$, an
+  alternative is to replace $-l''(\theta_t)$ with $I(\theta_t)$ to get
+  \begin{align*}
+    \theta_{t+1} = \theta_t + \frac{l'(\theta_t)}{I(\theta_t)}.
+  \end{align*}
+
+  To \emph{minimize\/} $-l(\theta)$, one still can use
+  \begin{align*}
+    \texttt{z = nlminb(x0, f, grf, fs)}
+  \end{align*}
+  where \texttt{f} is $-l(\theta)$, \texttt{grf} is $-l'(\theta)$, and
+  \texttt{fs} is $I(\theta)$ instead of $-l''(\theta)$.
+
+  Generally, use Fisher scoring in the beginning to make rapid
+  improvements, and Newton's method for refinement near the end.
+
+  \end{frame}
+
+  \begin{frame}
+  %\begin{sample*}
+    Continuing the example on $p(x\gv\theta)=p(x-\theta)$,
+    to use Fisher scoring, we need to compute
+    \begin{align*}
+      I(\theta) = -\mean_\theta[l''(\theta)].
+    \end{align*}
+
+    We already know
+    \begin{align*}
+      l''(\theta) = \sum_{i=1}^n
+      \frac{p''(x_i-\theta)}{p(x_i-\theta)} -
+      \sum_{i=1}^n \Cbr{\frac{p'(x_i-\theta)}{p(x_i-\theta)}}^2.
+    \end{align*}
+    Therefore
+    \begin{align*}
+      I(\theta)
+      = - n \mean_\theta\Sbr{
+        \frac{
+          p''(X-\theta)
+        }{p(X-\theta)}
+        - \Cbr{
+          \frac{p'(X-\theta)}{p(X-\theta)}}^2
+      }.
+    \end{align*}
+
+    \end{frame}
+
+
+
+    \begin{frame}
+    Since under parameter $\theta$, $X$ has density $p(x-\theta)$,
+    the last $\mean_\theta[...]$ equals
+    \begin{align*}
+      &
+      \int \Sbr{
+        \frac{
+          p''(x-\theta)
+        }{p(x-\theta)}
+        - \Cbr{
+          \frac{p'(x-\theta)}{p(x-\theta)}}^2
+      } p(x-\theta)\,\, \dd x \\
+      &=
+      \int p''(x-\theta)\,\, \dd x - \int
+      \frac{[p'(x-\theta)]^2}{p(x-\theta)}\,\, \dd x \\
+      &=
+      \frac{\dd^2}{\dd\theta^2} \int p(x-\theta)\,\, \dd x -
+      \int \frac{\Cbr{p'(x)}^2}{p(x)}\,\, \dd x \\
+      &=
+      \frac{\dd^2}{\dd\theta^2} 1 -
+      \int \frac{\Cbr{p'(x)}^2}{p(x)}\,\, \dd x
+      =
+      -\int \frac{\Cbr{p'(x)}^2}{p(x)}\,\, \dd x.
+    \end{align*}
+    Therefore,
+    \begin{align*}
+      I(\theta)
+      &
+      = n \int \frac{\Cbr{p'(x)}^2}{p(x)}\,\, \dd x.
+    \end{align*}
+    So, in this case, Fisher information is a constant.
+  %%\end{sample*}
+
+  \end{frame}
+
+  \begin{frame}
+  \frametitle{Secant method}
+  Approximating $f'(x_t)$ by
+  \begin{align*}
+    \frac{f(x_t) - f(x_{t-1})}{x_t - x_{t-1}},
+  \end{align*}
+  the Newton's method turns into the secant method
+  \begin{align*}
+    x_{t+1} = x_t - \frac{f(x_t)(x_t- x_{t-1})}{f(x_t) - f(x_{t-1})}.
+  \end{align*}
+  \begin{itemize}
+  \item Need to specify $x_0$ and $x_1$.
+  \end{itemize}
+
+\end{frame}
+
+% \begin{frame}
+%   \begin{figure}
+%     \begin{center}
+%       \animategraphics[controls,loop,width=0.95\textwidth]{10}{animation/secant}{0}{9}
+%     \end{center}
+%   \end{figure}
+% \end{frame}
+
+\begin{frame}
+  \frametitle{Fixed point iteration}
+  Compute
+  \begin{align*}
+    x_{t+1} = x_t + \alpha f(x_t), \quad t=0,1,\ldots,
+  \end{align*}
+  where $\alpha\not=0$ is a tuning parameter so that
+  \begin{align*}
+    |1+\alpha f'(x)|\le \lambda < 1, \text{ all } x
+  \end{align*}
+  or more generally,
+  \begin{align*}
+    |x - y + \alpha [f(x) - f(y)]| \le \lambda|x-y|, \quad\text{ any }
+    x, y
+  \end{align*}
+  with $0\le \lambda < 1$ a constant, i.e., $F(x) = x+\alpha f(x)$ is
+  a \emph{contraction\/}.
+
+  If such $\alpha$ exists, the speed of convergence depends on
+  $\lambda$.  The smaller $\lambda$ is, the faster the convergence.
+
+\end{frame}
+
+
+% \begin{frame}
+%   \begin{figure}
+%     \begin{center}
+%       \animategraphics[controls,loop,width=0.95\textwidth]{10}{animation/fixedpoint2}{0}{19}
+%     \end{center}
+%   \end{figure}
+% \end{frame}
+
+% \begin{frame}
+%   \begin{figure}
+%     \begin{center}
+%       \animategraphics[controls,loop,width=0.95\textwidth]{10}{animation/fixedpoint0}{0}{19}
+%     \end{center}
+%   \end{figure}
+% \end{frame}
+
+
+% \begin{frame}
+%   \begin{figure}
+%     \begin{center}
+%       \animategraphics[controls,loop,width=0.95\textwidth]{10}{animation/fixedpoint1}{0}{19}
+%     \end{center}
+%   \end{figure}
+% \end{frame}
+
+
+% \begin{frame}
+%   \begin{figure}
+%     \begin{center}
+%       \animategraphics[controls,loop,width=0.95\textwidth]{10}{animation/fixedpoint3}{0}{19}
+%     \end{center}
+%   \end{figure}
+% \end{frame}
+
+
+\begin{frame}
+  \frametitle{Some Details on Fixed point iteration}
+  Definition: A fixed point of a function is a point whose evaluation by that function equals to itself, i.e., $x=G(x)$.\\
+
+  Fixed point iteration: the natural way of hunting for a fixed point is to use $x_{t+1}=G(x_t)$.\\
+
+  Definition: A function $G$ is contractive on $[a,b]$ if
+  \begin{align*}
+    (1).\,\, & G(x)\in [a,b] \mbox{ whenever } x\in [a,b],\\
+    (2).\,\, & |G(x_1) - G(x_2)| \leq \lambda |x_1-x_2| \mbox{ for all } x_1,x_2\in [a,b] \mbox{ and some } \lambda\in [0,1).
+  \end{align*}
+
+  Theorem: if $G$ is contractive on $[a,b]$, then there is a unique fixed point $x^*\in [a,b]$, and the fixed point iteration convergence to it when starting inside the interval. \\
+
+  Convergence: $|x_{t+1}-x_{t}|=|G(x_t)-G(x_{t-1})|\leq \lambda |x_t - x_{t-1}|\leq \lambda^{t}|x_1-x_0| \rightarrow 0$, as $t\rightarrow \infty$. It follows that $\{x_t\}$ convergent to a limit $x^*$.\\
+
+
+
+ \end{frame}
+
+ \begin{frame}
+  \frametitle{Connection between fixed-point method and Newton methods}
+
+  Root-finding problems using fixed point iteration: for solving $f(x)=0$, we can simply let $G(x)=x+\alpha f(x)$, where $\alpha \neq 0$ is a constant.
+
+  Required Lipschitz condition: $|x - y + \alpha [f(x) - f(y)]| \le \lambda|x-y|$, for some $\lambda \in [0,1)$ and for all $x,y\in [a,b]$. This holds if $|G'(x)|\leq \lambda$ for some $\lambda \in [0,1)$ and for all $x\in [a,b]$, i.e., $|1+\alpha f'(x)|\leq\lambda$. (use mean value theorem.)\\
+
+
+  Newton methods: $G(x) = x - f(x)/f'(x)$. So it is as if $\alpha_t$ is chosen adaptively as $\alpha_t=-1/f'(x_t)$. This leads to a faster convergence order (quadratic).
+
+  \end{frame}
+
+
+ \begin{frame}
+  \frametitle{Convergence Order}
+
+Define $\varepsilon_t=x_t - x^*$. A method has convergence order $\beta$ if
+$$
+\lim_{t\rightarrow \infty}\varepsilon_t =0, \qquad
+\lim_{t\rightarrow \infty}\frac{|\varepsilon_{t+1}|}{|\varepsilon_t|^\beta} = c,
+$$
+for some constant $c\neq 0$ and $\beta >0$.
+
+\begin{itemize}
+    \item For Newton's method, $\beta=2$. (If it converges.)
+    \item For Secant method, $\beta\approx 1.62$.
+    \item For fixed point iteration, $\beta = 1$.
+\end{itemize}
+
+
+  \end{frame}
+
+
+
+ \begin{frame}[t]
+  \frametitle{Convergence Order}
+
+\noindent For Newton's method: suppose $f$ has two continuous derivatives and $f'(x^*)\neq 0$. There then exists a neighborhood of $x^*$ within which $f'(x)\neq 0$ for all $x$. By Taylor expansion,
+$$
+0 = f(x^*) = f(x_t) + f'(x_t)(x^*-x_t) +\frac{1}{2}f''(q)(x^*-x_t)^2,
+$$
+for some $q$ between $x^*$ and $x_t$. Rearranging terms, we find that $$
+\frac{\varepsilon_{t+1}}{\varepsilon_{t}^2} = \frac{f''(q)}{2f'(x_t)}\rightarrow \frac{f''(x^*)}{2f'(x^*)}.
+$$
+  \end{frame}
+
+ \begin{frame}[t]
+  \frametitle{Convergence Order}
+
+\noindent For fixed point iteration: let $G$ be a continuous function on the closed interval $[a,b]$ with $G:[a,b]\rightarrow[a,b]$ and suppose that $G'$ is continuous on the open interval $(a,b)$ with $|G'(x)|\leq k < 1$ for all $x\in (a,b)$. If $g'(x^*)\neq 0$, then for any $x_0\in [a,b]$, the fixed point iteration converges linearly to the fixed point $x^*$. This is because\\
+$$
+|x_{t+1}-x^*| = |G(x_t)-G(x^*)| = |G'(q)||x_t-x^*|,
+$$
+for some $q$ between $x_t$ and $x^*$. This implies that
+$$
+\frac{|\varepsilon_{t+1}|}{|\varepsilon_{t}|} \rightarrow |G'(x^*)|.
+$$
+
+  \end{frame}
+
+
+
+ \begin{frame}[t]
+  \frametitle{Stopping Rules}
+\begin{itemize}
+\item Absolute convergence criterion:
+$$
+\|x_{t+1} - x_t\| < \epsilon,
+$$
+where $\epsilon$ is a chosen tolerance.
+
+\item Relative convergence criterion
+$$
+\frac{\|x_{t+1}-x_{t}\|}{\|x_t\|}<\epsilon.
+$$
+If $x_t$ close to zero,
+$$
+\frac{\|x_{t+1}-x_{t}\|}{\|x_t\|+\epsilon}<\epsilon.
+$$
+\item Many other rules depending on the algorithm.
+\end{itemize}
+ \end{frame}
+
+
+\subsection{Multivariate Problems}
+
+\begin{frame}{}
+\begin{block}{\center Multivariate Problems}
+\end{block}
+\end{frame}
+
+
+  \begin{frame}
+  \frametitle{Multivariate case}
+  Let $g$ now be a function in $\vf x = (\eno x p)\ts$.
+
+  \frametitle{Newton's method}
+  The generalization is straightforward: to
+  maximize $g(\vf x)$, set
+  \begin{align*}
+    \vf x_{t+1} = \vf x_t - [g''(\vf x_t)]^{-1} g'(\vf x_t).
+  \end{align*}
+  \begin{itemize}
+  \item $g''(\vf x)$ is a $p\times p$ matrix with the $(i,j)$th
+    entry equal to
+    \begin{align*}
+      \Pdd {g(\vf x)}{x_i}{x_j};
+    \end{align*}
+  \item $g'(\vf x)$ is a $p\times 1$ vector with the $i$th entry equal
+    to
+    \begin{align*}
+      \pd {g(\vf x)}{x_i}.
+    \end{align*}
+  \end{itemize}
+
+  \end{frame}
+
+  \begin{frame}
+  \frametitle{Fisher scoring} For MLE, the generalization is
+  straightforward.  Simply use
+  \begin{align*}
+    \vf\theta_{t+1} = \vf\theta_t + I(\vf\theta_t)^{-1}
+    l'(\vf\theta_t).
+  \end{align*}
+
+  \frametitle{Newton-like methods}
+  These methods in each iteration approximate $g''(\vf x_t)$ by some
+  $p\times p$ matrix $\vf M_t = \vf M_t(\vf x_t)$ to get
+  \begin{align*}
+    \vf x_{t+1} = \vf x_t - \vf M_t^{-1} g'(\vf x_t).   \tag{1}
+  \end{align*}
+
+  Of course, $\vf M_t$ should be easier to compute than $g''(\vf
+  x_t)$.
+
+  Fisher scoring is a Newton-like method, because it uses
+  \begin{align*}
+    \vf M_t=-I(\vf\theta_t)
+  \end{align*}
+  in place of $-l''(\vf\theta_t)$.
+
+  \end{frame}
+
+  \begin{frame}
+  \frametitle{Steepest ascent methods}  In (1), set
+  \begin{align*}
+    \vf M_t = -\alpha_t^{-1}\vf I_p,
+  \end{align*}
+  so that
+  \begin{align*}
+    \vf x_{t+1} = \vf x_t + \alpha_t g'(\vf x_t),
+  \end{align*}
+  where $\alpha_t>0$ is the step size at $t$ which can shrink to
+  ensure ascent.  If at step $t$, the original step turns
+  out to be downhill, the updating can backtrack by halving
+  $\alpha_t$.
+\end{frame}
+
+
+% \begin{frame}
+%   \begin{figure}
+%     \centering
+%     % Requires \usepakuc13001age{graphicx}
+%     \includegraphics[width=4in,height=4in]{animation/pers_gradient1.pdf}
+%     % \caption{}\label{}
+%   \end{figure}
+% \end{frame}
+
+
+% \begin{frame}
+%   \begin{figure}
+%     \begin{center}
+%       \animategraphics[controls,loop,width=0.95\textwidth]{10}{animation/gradientdescent}{0}{19}
+%     \end{center}
+%   \end{figure}
+% \end{frame}
+
+\begin{frame}
+  \frametitle{Discrete Newton and Fixed-point methods}
+  In fixed-point methods, usually $\vf M_t$ is fixed to be
+  $\vf M$, e.g., $g''(\vf x_0)$. This amounts to applying univariate scaled fixed-point iteration to each component. \\
+
+  In discrete Newton methods, $g''(\vf x_t)$ is approximated as follows.
+  Compute matrix $\vf M_t$ with the $(i,j)\th$ entry equal to
+  \begin{align*}
+    \vf M_t(i,j) = \frac{g_i'(\vf x_t + h_t(i,j) \vf e_j) -
+      g_i'(\vf x_t)}{h_t(i,j)}
+  \end{align*}
+  for some constant $h_t(i,j)\not=0$, where
+  \begin{align*}
+    g_i'(\vf x) = \pd{g(\vf x)}{x_i}.
+  \end{align*}
+  If $h_t(i,j)$ is small, then
+  \begin{align*}
+    \vf M_t(i,j)\approx \frac{\partial^2 g(\vf x_t)}{\partial
+      x_i \partial x_j}
+  \end{align*}
+  and so $\vf M_t$ approximates $g''(\vf x_t)$.
+
+  \end{frame}
+
+  \begin{frame}
+  However, since  $g''(\vf x_t)$ is symmetric, instead of using $\vf
+  M_t$ directly, use the symmetric
+  \begin{align*}
+    (\vf M_t + \vf  M_t\ts)/2
+  \end{align*}
+  as the approximation of $g''(\vf x_t)$.
+  \begin{itemize}
+  \item No need to calculate second order derivatives
+  \item Inefficient: all $p^2$ entries have to be updated each time.
+  \end{itemize}
+
+  \end{frame}
+
+  \begin{frame}
+  \frametitle{Quasi-Newton methods}
+  These methods aim to achieve the following goals.
+  \begin{itemize}
+  \item Each step satisfies the secant condition
+    \begin{align*}
+      g'(\vf x_{t+1}) - g'(\vf x_t) = \vf M_{t+1}(\vf x_{t+1} - \vf
+      x_t).
+    \end{align*}
+  \item No need to compute second order derivatives.
+  \item Maintain symmetry of $\vf M_t$.
+  \item Aim to update $\vf M_t$ efficiently.
+  \end{itemize}
+
+  \end{frame}
+
+  \begin{frame}
+  There is a unique rank-one method that satisfies the
+  secant condition and maintains the symmetry of $\vf M_t$: after
+  getting
+  \begin{align*}
+    \vf x_{t+1} = \vf x_t - \vf M_t^{-1} g'(\vf x_t)
+  \end{align*}
+  compute
+  \begin{align*}
+    \vf z_t= \vf x_{t+1} - \vf x_t, &\quad
+    \vf y_t= g'(\vf x_{t+1}) - g'(\vf x_t), \\
+    \vf v_t= \vf y_t - \vf M_t \vf z_t, &\quad
+    c_t= \nth{\vf v_t\ts \vf z_t}.
+  \end{align*}
+  Then update
+  \begin{align*}
+    \vf M_{t+1} = \vf M_t + c_t \vf v_t \vf v_t\ts.
+  \end{align*}
+  Note $\vf M_{t+1}-\vf M_t$ is of rank one. We can verify the secant condition is satisfied by multiplying both sides by $\vf z_t$. 
+
+
+  \end{frame}
+
+%  \begin{frame}
+%
+%  \noindent Proof
+%  \begin{align*}
+%    \M_{t+1} (\x_{t+1}-\x_t) & = (\M_t +c_t \v_t\v_t\ts)\z_t\\
+%    & = \M_t\z_t + c_t\v_t\v_t\ts\z_t\\
+%    & = \M_t\z_t + \v_t\\
+%    & = \y_t\\
+%    & = g'(\x_{t+1}) - g'(\x_t).
+%  \end{align*}
+%
+%  \end{frame}
+
+  \begin{frame}
+  There are several rank-two method satisfying the secant condition
+  and the symmetry requirement.  The Broyden class updates $\vf M_t$
+  as follows.  After getting $\vf x_{t+1}$ and $\vf z_t$, $\vf y_t$ as
+  above, compute
+  \begin{align*}
+    \vf d_t = \frac{\vf y_t}{\vf z_t\ts\vf y_t} -
+    \frac{\vf M_t \vf z_t}{\vf z_t\ts \vf M_t \vf z_t}.
+  \end{align*}
+  Then update
+  \begin{align*}
+    \vf M_{t+1}&=
+    \vf M_t - \frac{\vf M_t \vf z_t(\vf M_t \vf z_t)\ts}{\vf z_t\ts\vf
+      M_t \vf z_t} + \frac{\vf y_t \vf y_t\ts}{\vf z_t\ts\vf y_t}
+    +
+    \delta_t (\vf z_t\ts\vf M_t\vf z_t)\vf d_t\vf d_t\ts,
+  \end{align*}
+  where $\delta_t$ is a parameter.
+
+  A popular method to solve unconstrained nonlinear optimization
+  problems is the Broyden-Fletcher-Goldfarb-Shanno (BFGS) method,
+  with $\delta_t\equiv 0$.
+
+  In R, \texttt{optim} can be called to minimize a function, using
+  the BFGS method or its variant, the ``L-BFGS-B'' method. ``L'' stands for limited memory, and ``B'' stands for box constraint.
+
+  \end{frame}
+
+  \begin{frame}
+  \frametitle{Approximating Hessian for MLE}
+  For MLE, the Hessian $l''(\vest\theta_{\rm MLE})$ is critical
+  because it provides estimates of standard error and covariance.
+  \begin{itemize}
+  \item Quasi-Newton methods may provide poor approximation because it
+    is based on the idea of using poor approximation of the Hessian to
+    find the root for $l'(\vf\theta)=0$.
+  \item Use the discrete multivariate Newton method with
+    \begin{align*}
+      \vf M_t(i,j) = \frac{l'_i(\vf\theta_t + h_{ij}\vf e_j) -
+        l'_i(\vf\theta_t - h_{ij}\vf e_j)}{2h_{ij}}.
+    \end{align*}
+  \end{itemize}
+
+  \end{frame}
+
+  \begin{frame}
+  \frametitle{Gauss-Newton method}
+  \noindent Example: nonlinear regression.
+  In many cases, we want to maximize
+  \begin{align*}
+    g(\vf\theta) = - \sum_{i=1}^n (y_i - f_i(\vf\theta))^2,
+  \end{align*}
+  where each $f_i(\vf\theta)$ is differentiable.
+  Recall that for linear regression:
+  \begin{align*}
+    y_i = \vf x_i\ts \vf\theta + \err, \quad i=1,\ldots,n
+  \end{align*}
+  the LS estimator of $\vf\theta$ maximizes $g(\vf\theta)$ with
+  $f_i(\vf\theta) = \vf x_i\ts\vf\theta$ and equals
+  \begin{align*}
+    \vest\theta = (\vf X\ts\vf X)^{-1} \vf X\ts\vf y
+  \end{align*}
+  where
+  \begin{align*}
+    \vf X = \begin{pmatrix}
+      \vf x_1\ts \\[-1ex] \vdots \\[-1ex] \vf x_n\ts
+    \end{pmatrix},
+    \quad
+    \vf y =
+    \begin{pmatrix}
+      y_1 \\[-1ex] \vdots \\[-1ex] y_n
+    \end{pmatrix}.
+  \end{align*}
+
+  \end{frame}
+
+  \begin{frame}
+  The Gauss-Newton method applies a similar idea to the nonlinear
+  case.  Let $\vf\theta^*$ be the (unknown) maximizer of
+  $g(\vf\theta)$.
+  Given any candidate $\vf\theta$, the function
+  \begin{align*}
+    h(\vf u) &= - \sum_{i=1}^n (y_i - f_i(\vf\theta+\vf u))^2.
+  \end{align*}
+  is maximized by $\vf\beta = \vf\theta^* -
+  \vf\theta$.  Of course, $\vf\beta$ is unknown.  However, if
+  $\vf\theta$ is near $\vf\theta^*$, then $\vf\beta\approx 0$, so by
+  Taylor expansion of $h(\vf u)$, it may be close to the maximizer of
+  \begin{align*}
+    - \sum_{i=1}^n (y_i - f_i(\vf\theta) - f_i'(\vf\theta)\ts
+    \vf u)^2.
+  \end{align*}
+
+\end{frame}
+
+\begin{frame}
+  Treat $y_i - f_i(\vf\theta)$ the same way as
+  $y_i$ in the linear regression, and $f_i'(\vf\theta)$ the same way
+  as $\vf x_i$, then
+  \begin{align*}
+    \vf\theta^* - \vf\theta \approx
+    (\vf A\ts\vf A)^{-1} \vf A\ts \vf z
+  \end{align*}
+  where
+  \begin{gather*}
+    \vf z = \vf z(\vf\theta)=
+    \begin{pmatrix}
+      y_1 - f_1(\vf\theta) \\\vdots\\ y_n - f_n(\vf\theta)
+    \end{pmatrix},\quad
+    \vf A = \vf A(\vf\theta) = \begin{pmatrix}
+      f_1'(\vf\theta)\ts\\\vdots\\f_n'(\vf\theta)\ts
+    \end{pmatrix}.
+  \end{gather*}
+  The update rule thus is
+  \begin{align*}
+    \vf\theta_{t+1} = \vf\theta_t + (\vf A_t\ts\vf A_t)^{-1}
+    \vf A_t\ts\vf z_t,
+  \end{align*}
+  where $\vf z_t = \vf z(\vf\theta_t)$ and $\vf A_t = \vf
+  A(\vf\theta_t)$.
+
+  In R, the Gauss-Newton method is the default method of the function
+  \texttt{nls}.
+\end{frame}
+
+
+
+
+\begin{frame}{Practical Issues}
+\begin{itemize}
+\item Initial value
+\item Convergence criteria: based on a distance measures for vectors
+\item Multiple local optima
+  \begin{itemize}
+  \item Multiple initial values
+  \item Compare the objective function value at convergences
+  \end{itemize}
+\item Trade-off between efficiency and robustness
+\end{itemize}
+\end{frame}
+
+
+%
+%\subsection{High-Dimensional Data and Penalized Regression}
+%
+%
+%  \begin{frame}
+%  \frametitle{Penalized Regression}
+%\frametitle{High-dimensional data}
+%High-dimensional data arise in many diverse fields of scientific research.
+%\begin{itemize}
+%    \item Microarry gene expression data
+%    \item Array-based SNP data for genome wide association studies
+%    \item Copy number variation data
+%    \item ......
+%    \item Data from different platforms in one project.
+%    \item Financial data
+%\end{itemize}
+%
+%An important and ubiquitous problem in genetic studies is to identify genetic determinants affecting a certain phenotype or clinical outcome.
+%
+%Applications in various other fields......
+%
+%  \end{frame}
+%
+%  \begin{frame}
+%  \frametitle{Regression Setup}
+%$$
+%y_i=x_{i1}\beta_1+...+x_{ip}\beta_p+\epsilon_i, \qquad 1\leq i\leq n
+%$$
+%\begin{itemize}
+%    \item Response: $\by=(y_1,...,y_n)^\top$
+%    \item Predictors: $\bx_j=(x_{1j},...,x_{nj})^\top$, for $j=1,...,p$.
+%    \item Residuals: $\epsilon=(\epsilon_1,...,\epsilon_n)^\top$,
+%    \item Design matrix: $\bX_{n\times p}=(\bx_1,...,\bx_p)$.
+%    \item Regression coefficients: $\bbeta=(\beta_1,...,\beta_p)^\top$.\\
+%        True regression coefficients: $\bbeta^{o}=(\beta_1^{o},...,\beta_p^{o})^\top$.
+%    \item Oracle set: $\mathcal{O}=\{j: \beta_j^{o}\neq 0\}$.
+%    \item Underlying model dimension: $d^{0}=\|\mathcal{O}\|=\#\{j: \beta_j^{o}\neq 0\}$
+%\end{itemize}
+%
+%
+%    \end{frame}
+%
+%    \begin{frame}
+%    \frametitle{Centering and Standardization}
+%Without loss of generality, we assume that the response and predictors are centered and the predictors are standardized as follows.
+%
+%\begin{align*}
+%&\sum_{i=1}^{n}y_i=0,\\
+%&\sum_{i=1}^{n}x_{ij}=0, 1\leq j \leq p,\\
+%&\sum_{i=1}^{n}x_{ij}^2=n,1\leq j \leq p.
+%\end{align*}
+%
+%\begin{itemize}
+%    \item Then there is no intercept in the model.
+%    \item Each predictor is standardized to have the same magnitude in $L_2$. So the corresponding regression coefficients are ``comparable''.
+%    \item After model fitting, the results can be readily transformed back to the original scale.
+%\end{itemize}
+%
+%
+%
+%\end{frame}
+%
+%\begin{frame}
+%\frametitle{Penalized Least Squares}
+%
+%We consider the penalized least squares (PLS) method
+%
+%\[\mbox{min}_{\bbeta \in R^p}\{\frac{1}{2n}\|\by - \bX \bbeta\|^2 + \sum_{j = 1}^p p_{\lambda}(|\beta_j|)\},\]
+%where $\|.\|$ denotes the $L_2$-norm. $p_{\lambda}(.)$ is a penalty function indexed by the regularization parameter $\lambda \geq 0$.
+%
+%Common penalties:
+%\begin{itemize}
+%    \item $L_0$ penalty (subset selection) and $L_2$ penalty (ridge regression).
+%    \item Bridge or $L_\gamma$ penalty, $\gamma >0$ %\citep{Frank1993}.
+%    \item $L_1$ penalty or Lasso %\citep{tib1996}.
+%    \item SCAD penalty %\citep{fan2001}.
+%    \item MCP penalty %\citep{zhang2010}.
+%    \item Group penalties %\citep{yuan2006} and bilevel penalties \citep{huang2009gb,huang2012}.
+%\end{itemize}
+%
+%
+%\end{frame}
+%
+%\begin{frame}
+%\frametitle{Bridge Penalties}
+%
+%\vspace{1cm}
+%\begin{figure}
+%\vspace{-0.2in}
+%\begin{center}
+%\includegraphics[height=2.2in]{C:/Users/kuc13001/Dropbox/Teaching/Fall2012/STAT905-LectureNotes/figs/bridge.pdf}
+%\end{center}%
+%\end{figure}%
+%
+%
+%
+%
+%
+%
+%\end{frame}
+%
+%\begin{frame} \frametitle{Lasso}
+%Lasso stands for ``least absolute shrinkage and selection operator''. There are two equivalent definitions.
+%\begin{itemize}
+%    \item minimize the residual sum of squares subject to the sum of the absolute value of the coefficients being less than a constant:
+%\[\hat{\beta}=\arg\min\left\{\|\by-\bX\bbeta\|^2\right\} \text{ subject to } \sum_{j}|\beta_j| \leq t.
+%\]
+%    \item minimize the penalized sum of squares:
+%\[\hat{\beta}=\arg\min\{\|\by-\bX\bbeta\|^2 + \lambda\sum_{j}|\beta_j|\}.
+%\]
+%    \item[]
+%    \begin{itemize}
+%\item Because of the nature of $L_1$ penalty or constraint, Lasso is able to estimate some coefficients as exactly $0$ and hence performs variable selection.
+%\item The lasso enjoys some of the favorable properties of both subset selection and ridge regression. It produces interpretable models and exhibits the stability of ridge regression.
+%\end{itemize}
+%\end{itemize}
+%
+%
+%
+%
+%
+%
+%
+%\end{frame}
+%
+%\begin{frame} \frametitle{Lasso}
+%%The motivation for the Lasso came from an interesting proposal of \citet{breiman1995}.
+%Breiman's \emph{non-negative garotte} minimizes
+%
+%$$\sum_{i=1}^{n}(y_{i}-\sum_{j}c_j\what{\beta}_j^{LS}x_{ij})^2 \ subject \ to \ c_j \geq 0, \ \sum c_j \leq t.$$
+%
+%\begin{itemize}
+%    \item The garotte starts with the OLS estimates and shrinks them by non-negative factors whose sum is constrained.
+%    \item It depends on both the sign and the magnitude of OLS. In contrast, the lasso avoids the explicit use of the OLS estimates.
+%\end{itemize}
+%
+%
+%Lasso is also closely related to the wavelet soft-thresholding method by Donoho and Johnstone, forward stagewise regression, and boosting methods.
+%
+%
+%
+%
+%
+%
+%\end{frame}
+%
+%\begin{frame} \frametitle{Solution Path}
+%
+%\begin{itemize}
+%    \item For each given $\lambda$, we solve the PLS problem. Therefore, for $\lambda\in[\lambda_{\min},\lambda_{\max}]$, we have a solution path
+%        $$
+%        \{\what{\bbeta}_{n}(\lambda): \lambda\in[\lambda_{\min},\lambda_{\max}]\}.
+%        $$
+%    \item To examine the solution path, we can plot each component of $\what{\bbeta}_{n}(\lambda)$ versus $\lambda$.
+%    \item In practice, we usually need to determine a value of $\lambda$, say, $\lambda_*$, and use $\what{\bbeta}_{n}(\lambda^*)$ as the final estimator. This model selection step is usually done using some information criterion or cross validation techniques.
+%    \item Thus it is important to have fast algorithms for computing the whole solution path (or for a grid of $\lambda$ values).
+%    \item There are multiple packages in R for computing the Lasso path: \textit{ncvreg}, \textit{glmnet}, \textit{lars}....
+%    \item Note that the solution path can also be indexed by the constraint value $t$.
+%\end{itemize}
+%
+%
+%
+%
+%
+%
+%
+%
+%\end{frame}
+%
+%\begin{frame} \frametitle{Comparing Lasso and Ridge: Example}
+%
+%Simulation:
+%$$
+%y_i=\sum_{j=1}^{p}x_{ij}\beta_j+\epsilon_i, \qquad 1\leq i\leq n
+%$$
+%where $\epsilon \sim N(0,\sigma^2)$.
+%\begin{itemize}
+%    \item First generate $z_{ij}$'s and $w$ independently from $N(0,\tau^2)$. Then compute
+%    \begin{align*}
+%    &x_{ij}=z_{ij}+w, 1\leq j \leq 4\\
+%    &x_{i5}=z_{i5} + 2w, x_{i6} = z_{i6} + w
+%    \end{align*}
+%    \item We set $n=100$, $p=100$, $\sigma=1.5$, $\tau=1$ and
+%    \begin{align*}
+%    &(\beta_1,\beta_2,\beta_3)=(2,1,-1)\\
+%    & \beta_j=0, j\geq 4.
+%    \end{align*}
+%\end{itemize}
+%
+%
+%
+%
+%
+%%
+%%
+%%\end{frame} \begin{frame} \frametitle{Comparing Lasso and Ridge: Example}
+%%
+%%
+%%\begin{figure}
+%%\vspace{-0.2in}
+%%\begin{center}
+%%\includegraphics[height=2.5in]{C:/Users/KUC13001/Dropbox/Teaching/Fall2012/STAT905-LectureNotes/figs/lasso-sim1.pdf}
+%%\caption{}
+%%\end{center}%
+%%\end{figure}%
+%
+%
+%
+%
+%
+%
+%
+%\end{frame}
+%
+%\begin{frame} \frametitle{Comparing Lasso and Ridge: Example}
+%
+%
+%\begin{figure}
+%\vspace{-0.2in}
+%\begin{center}
+%\includegraphics[height=2.5in]{C:/Users/kuc13001/Dropbox/Teaching/Fall2012/STAT905-LectureNotes/figs/lasso-sim2.pdf}
+%\caption{}
+%\end{center}%
+%\end{figure}%
+%
+%
+%
+%
+%
+%
+%\end{frame}
+%
+%\begin{frame} \frametitle{Comparing Lasso and Ridge: Example}
+%
+%
+%\begin{figure}
+%\vspace{-0.2in}
+%\begin{center}
+%\includegraphics[height=2.5in]{C:/Users/kuc13001/Dropbox/Teaching/Fall2012/STAT905-LectureNotes/figs/ridge-sim.png}
+%\end{center}%
+%\end{figure}%
+%
+%
+%
+%
+%
+%
+%
+%
+%\end{frame}
+%
+%\begin{frame} \frametitle{Comparing Lasso and Ridge: Example}
+%Prostate dataset:
+%\begin{itemize}
+%    \item lweight: Log prostate weight
+%    \item age: The man's age
+%    \item lbph: Log of the amount of benign hyperplasia
+%    \item svi: Seminal vesicle invasion: 1 = yes, 0 =No
+%    \item lcp: Log of capular penetration
+%    \item gleason: Gleason score
+%    \item pgg45: Percent of Gleason scores 4 or 5
+%    \item lpsa: Log PSA
+%\end{itemize}
+%
+%%\begin{verbatim}
+%%library(ncvreg)
+%%data(prostate)
+%%X=as.matrix(prostate[,1:8])
+%%y=prostate$lpsa
+%%fit=ncvreg(X,y, gamma=1000, alpha=1.0)
+%%plot(fit)
+%%\end{verbatim}
+%
+%
+%
+%
+%
+%
+%
+%
+%\end{frame}
+%
+%\begin{frame} \frametitle{Comparing Lasso and Ridge: Example}
+%
+%\begin{figure}
+%\vspace{-0.2in}
+%\begin{center}
+%\includegraphics[height=2.5in]{C:/Users/kuc13001/Dropbox/Teaching/Fall2012/STAT905-LectureNotes/figs/ridgelasso-prostate.pdf}
+%\end{center}%
+%\end{figure}%
+%
+%
+%
+%
+%
+%
+%\end{frame}
+%
+%
+%\begin{frame}[fragile] \frametitle{Comparing Lasso and Ridge: Example}
+%
+%Add some artificial noise variables:
+%\begin{verbatim}
+%library(ncvreg)
+%data(prostate)
+%X <- as.matrix(prostate[,1:8])
+%y <- prostate$lpsa
+%n=length(y)
+%p=100
+%X1 <- matrix(rnorm(n*p), nrow=n, ncol=p)
+%X=cbind(X, X1)
+%par(mfrow=c(1,2), mar=c(7,4.2,7,1))
+%fit <- ncvreg(X,y, gamma=1000, alpha=1.0)
+%plot(fit,main=expression(paste("LASSO path")), cex=0.6)
+%fit <- ncvreg(X,y, lambda.min=0.01, gamma=1000, alpha=0.05)
+%plot(fit,main=expression(paste("Ridge path")), cex=0.6)
+%\end{verbatim}
+%
+%\end{frame}
+%
+%\begin{frame} \frametitle{Comparing Lasso and Ridge: Example}
+%
+%
+%\begin{figure}
+%\vspace{-0.2in}
+%\begin{center}
+%\includegraphics[height=2.5in]{C:/Users/kuc13001/Dropbox/Teaching/Fall2012/STAT905-LectureNotes/figs/ridgelasso-prostate2.pdf}
+%\end{center}%
+%\end{figure}%
+%
+%
+%
+%
+%
+%
+%
+%
+%
+%
+%
+%
+%\end{frame}
+%
+%\begin{frame} \frametitle{Orthogonal Design in PLS}
+%
+%Insight about the nature of the penalization methods can be gleaned from the orthogonal design case. When the design matrix multiplied by $n^{-1/2}$ is orthonormal, i.e. $\bX\t \bX = n\bI_p$, the penalized least squares problem reduces to the minimization of
+%\[\frac{1}{2n}\|\by - \bX\hbbeta^{LS}\|^2 + \frac{1}{2}\|\hbbeta^{LS} - \bbeta\|^2 + \sum_{j=1}^p p_{\lambda}(|\beta_j|),\]
+%where $\hbbeta^{LS} = n^{-1}\bX\t \by$ is the OLS estimate.
+%\vspace{0.5cm}
+%
+%Now the optimization problem is \emph{separable} in $\beta_j$'s. It suffices to consider the univariate PLS problem
+%\[\hat{\theta}(z) = \arg \min_{\theta \in R}\{\frac{1}{2}(z - \theta)^2 + p_{\lambda}(|\theta|)\}.\]
+%
+%
+%
+%
+%
+%
+%\end{frame}
+%
+%\begin{frame} \frametitle{Orthogonal Design: PLS}
+%The PLS estimator $\hat{\theta}(z)$ possesses the properties:
+%
+%\begin{itemize}
+%\item sparsity if $\min_{t\geq 0}\{t + p'_{\lambda}(t)\} > 0$;
+%
+%\item approximate unbiasedness if $p'_{\lambda}(t) = 0$ for large $t$;
+%
+%\item continuity if and only if $\arg\min_{t \geq 0}\{ t + p'_{\lambda}(t)\} = 0$.
+%\end{itemize}
+%\vspace{0.5cm}
+%
+%\begin{itemize}
+%    \item In general for penalty functions, the singularity at the origin(i.e. $p'_{\lambda}(0+) > 0$) is needed for generating sparsity in variable selection and the concavity is needed to reduce the bias.
+%    \item These conditions are applicable for general PLS problems and more.
+%\end{itemize}
+%
+%
+%
+%%
+%%\end{frame} \begin{frame} \frametitle[t]{Orthogonal Design in PLS}
+%%\noindent Sketch of Proof:
+%
+%
+%
+%
+%
+%
+%
+%
+%\end{frame}
+%
+%\begin{frame} \frametitle{Orthogonal Design in Lasso}
+%\begin{itemize}
+%    \item Under orthogonal design, i.e., $\bX\t\bX=n\bI_p$, Lasso estimation can be greatly simplified as discussed above. The problem becomes solving
+%$$
+%\what{\beta}_j=\arg\min_{\beta_j} \frac{1}{2}(\what{\beta}_j^{LS}-\beta_j)^2+\lambda \|\beta_j\|_1.
+%$$
+%    \item Solution: the Lasso estimator is given by the soft-thresholding operator:
+%$$
+%\what{\beta}_j=\mathcal{S}(\what{\beta}_j^{LS};\lambda),
+%$$
+%where
+%\begin{align*}
+%\mathcal{S}(z;\lambda)=\text{sgn}(z)(|z|-\lambda)_+
+%=\left\{ \begin{array}{ll}
+%         z-\lambda, & \text{if  } z>\lambda\\
+%         0,         & \text{if  } |z|\leq \lambda\\
+%         z+\lambda, & \text{if  } z< -\lambda.\end{array} \right.
+%\end{align*}
+%$\mathcal{S}(\cdot;\lambda)$ is called the soft-thresholding operator.
+%
+%\end{itemize}
+%
+%
+%
+%%
+%%
+%%
+%%\end{frame} \begin{frame} \frametitle[t]{Orthogonal Design in Lasso}
+%%\begin{blokuc13001}{Take-Home Exercise}
+%%Verify the expression of $\what{\beta}_j$\\
+%%%2. What is the solution of ridge regression in orthogonal design?
+%%\end{blokuc13001}
+%%
+%
+%
+%
+%
+%
+%
+%\end{frame}
+%
+%\begin{frame} \frametitle{Soft-thresholding}
+%
+%\begin{itemize}
+%    \item Suppose we wish to recover an unknown function $f$ on [0,1] from noisy data
+%\[d_i = f(t_i) + \sigma z_i, \qquad i = 0,\cdots, n-1\]
+%where $t_i = i/n$, $z_i \sim N(0,1)$. The term de-noising is to optimize the mean-squared error $n^{-1} E\|\hat{f} - f\|_2^2$.
+%    \item Donoho and Johnstone proposed a soft-thresholding estimator
+%\[\hat{\beta_j}=\text{sgn}(\hat{\beta_j^o})(|\hat{\beta_j^o}|-\gamma)^+.\]
+%    \item They applied it to the coefficients of a wavelet transform of a function measured with noise, then back transformed to obtain a smooth estimate of the function.
+%    \item They proved many optimality results for the soft-thresholding estimator, one of which shows that asymptotically the estimator comes as close as subset selection to the performance of an ideal subset selector - one that used information about the actual parameters
+%\end{itemize}
+%
+%
+%%
+%%
+%%\end{frame} \begin{frame} \frametitle{More on Soft-thresholding}
+%%
+%%They proved many optimality results for the soft-thresholding estimator, one of which shows that asymptotically the estimator comes as close as subset selection to the performance of an ideal subset selector - one that used information about the actual parameters with the asymptotic risk equaling to
+%%\[(2\log p + 1)(\sigma^2 + R_{DP}),\]
+%%where $R_{DP}$ is a lower bound on the risk that we can hope to attain.
+%%
+%%
+%%
+%
+%
+%
+%
+%
+%%
+%%\end{frame} \begin{frame} \frametitle{Definition of Lasso}
+%%
+%%Suppose that we have data $(\textbf{x}^{i},y_{i})$, $i=1,2,\ldots,N$, where $\textbf{x}^{i}=(x_{i1},\ldots,x_{ip})^{T}$, $y_{i}s$ are the responses. We assume that the $x_{ij}$ are standardized so that $\sum_{i}x_{ij}/N=0$, $\sum_{i}x_{ij}^{2}/N=1$.\\
+%%
+%%Letting $\hat{\beta}=(\hat{\beta}_{1},\ldots,\hat{\beta}_{1})^{T}$, the lasso estimate $(\hat{\alpha},\hat{\beta})$ is defined by
+%%
+%%\[(\hat{\alpha},\hat{\beta})=argmin\{\sum_{i=1}^{N}(y_{i}-\alpha-\sum_{j}\beta_jx_{ij})^2\},\]
+%%subject to $\sum_{j}|\beta_j| \leq t$.
+%%
+%%
+%
+%
+%%
+%%\end{frame} \begin{frame} \frametitle{Continued}
+%%Here $t\geq 0$ is a tuning parameter. Now, for all $t$, the solution for $\alpha$ is $\hat{\alpha}=\bar{y}.$ We can assume without loss of generality that $\bar{y}=0$ and hence omit $\alpha$.
+%%
+%%The parameter $t \geq 0$ controls the amount of shrinkage that is applied to the estimates. Let $\hat{\beta}_j^{o}$ be the full least squares estimates and let $t_0=\sum|\hat{\beta}_j^{o}|$. Values of $t<t_{0}$, will cause shrinkage of the solutions towards $0$, and some coefficients may be exactly equal to $0$. For example, if $t = t_0/2$, the effect will be roughly similar to finding the best subset of size $p/2$.
+%%
+%
+%
+%%
+%%\end{frame} \begin{frame} \frametitle{Orthonormal design case}
+%%Insight about the nature of the shrinkage can be gleaned from the orthonormal design case. Let $\bX$ be the $n\times p$ design matrix with $ij$th entry $x_{ij}$, and suppose that $\bX^{T} \bX=I$, the identity matrix.
+%%\begin{itemize}
+%%\item The solutions for lasso can be shown to be
+%%
+%%$$\hat{\beta_j}=sign(\hat{\beta_j^o})(|\hat{\beta_j^o}|-\gamma)^+$$
+%%
+%%where $\gamma$ is determined by the condition $\sum_{j}|\beta_j| = t.$
+%%
+%%\item Best subset selection of size $k$ reduces to choosing the $k$ largest coefficients in absolute value and setting the rest to $0$.
+%%\end{itemize}
+%%
+%
+%
+%
+%
+%\end{frame}
+%
+%\begin{frame} \frametitle{Hard-thresholding}
+%
+%\begin{itemize}
+%    \item The Hard-thresholding operator is defined by
+%\begin{align*}
+%\mathcal{H}(z;\lambda)=\text{sgn}(z)(|z|-\lambda)_+
+%=\left\{ \begin{array}{ll}
+%         z, & \text{if  } |z|>\lambda\\
+%         0,         & \text{if  } |z|\leq \lambda
+%         \end{array} \right.
+%\end{align*}
+%    \item It is the solution to
+%$$
+%\mathcal{H}(z;\lambda)=\arg\min_{b}\left\{\frac{1}{2}(z-b)^2+\lambda^2-(|b|-\lambda)^2I(|b|<\lambda)\right\}
+%$$
+%    \item This corresponds to the best subset selection. Note that the BSS of size $k$ reduces to choosing the $k$ largest coefficients in absolute value and setting the rest to $0$.
+%\end{itemize}
+%
+%
+%
+%
+%
+%
+%
+%\end{frame}
+%
+%\begin{frame} \frametitle{Comparison}
+%
+%\begin{figure}
+%\vspace{-0.2in}
+%\begin{center}
+%\includegraphics[height=2.5in]{C:/Users/kuc13001/Dropbox/Teaching/Fall2012/STAT905-LectureNotes/figs/thresholding.pdf}
+%\end{center}%
+%\end{figure}%
+%
+%
+%
+%
+%
+%
+%
+%
+%\end{frame}
+%
+%\begin{frame} \frametitle{More on Orthogonal Design}
+%\begin{itemize}
+%\item Ridge regression can be viewed as minimizing
+%$$\sum_{i=1}^{n}(y_i-\sum_{j}\beta_j x_{ij})^2 \text{  subject to  } \sum_{j}\beta_{j}^2 \leq t,$$
+%Under orthogonal design, the solution is given by
+%$$
+%\frac{1}{1+\gamma}\hat{\beta}_j^{LS},
+%$$
+%where $\gamma$ is determined by $t$.
+%
+%\item The non-negative garotte solution is given by  $$(1-\frac{\gamma}{(\hat{\beta}_j^{LS})^2})_+\hat{\beta}_j^{LS}.$$
+%\end{itemize}
+%
+%
+%
+%
+%%
+%%\end{frame} \begin{frame} \frametitle{Comparison}
+%%\begin{figure}
+%%\begin{center}
+%%%Plots of four estimates
+%%%\begin{tabular}{cc}
+%%\includegraphics[height=2in]{C:/Users/KUC13001/Dropbox/Teaching/Fall2012/STAT905-LectureNotes/figs/Fig_1.eps}
+%%%\end{tabular}
+%%\end{center}%
+%%\end{figure}%
+%
+%
+%%
+%%
+%%\end{frame} \begin{frame} \frametitle[t]{Homework}
+%%\begin{blokuc13001}{Take-Home Exercise}
+%%(1) Verify the expression of the hard-thresholding solution. \\
+%%(2) Verify the expression of ridge regression in orthogonal design.\\
+%%(3) Verify the expression of nonnegative garrote in orthogonal design.
+%%\end{blokuc13001}
+%
+%
+%
+%
+%
+%
+%
+%
+%
+%
+%\end{frame} \begin{frame} \frametitle{Geometry of Lasso}
+%
+%The residual sum of squared error term $\sum_{i=1}^{n}(y_i-\sum_{j}\beta_j x_{ij})^2$ equals the following quadratic function plus a constant
+%
+%$$(\beta-\hat{\beta}^{LS})^T\bX^T \bX(\beta-\hat{\beta}^{LS})$$
+%
+%\begin{itemize}
+%    \item The contour of the above function is elliptical.
+%    \item These ellipsoids are centered at the OLS estimates.
+%    \item For Lasso, the $L_1$ constraint region is a ???.
+%    \item For ridge, the $L_2$ constraint region is a ???.
+%    \item[] %There are no corners for the contours to hit and hence zero solutions will rarely result.
+%    \item Can you explain their different behaviors now?
+%\end{itemize}
+%
+%
+%
+%
+%\end{frame}
+%
+%\begin{frame} \frametitle{Geometry of Lasso}
+%
+%\begin{figure}
+%\begin{center}
+%%\begin{tabular}{cc}
+%\includegraphics[height=2.5in]
+%%[trim=0.000000in 0.000000in 0.000000in -0.189256in, height=2.25in, width=4in]%
+%{C:/Users/kuc13001/Dropbox/Teaching/Fall2012/STAT905-LectureNotes/figs/lassoridge.pdf}
+%%\end{tabular}
+%\end{center}%
+%\end{figure}%
+%
+%
+%
+%
+%
+%
+%
+%
+%\end{frame}
+%
+%\begin{frame} \frametitle{Geometry of Lasso}
+%
+%\begin{itemize}
+%  \item Another way of compare lasso and ridge is from a Bayesian perspective %\citep{Casella2008}:
+%\end{itemize}
+%
+%\begin{figure}
+%\begin{center}
+%%\begin{tabular}{cc}
+%\includegraphics[height=2.5in]
+%%[trim=0.000000in 0.000000in 0.000000in -0.189256in, height=2.25in, width=4in]%
+%{C:/Users/kuc13001/Dropbox/Teaching/Fall2012/STAT905-LectureNotes/figs/lasso-bayes.png}
+%%\end{tabular}
+%\end{center}%
+%\end{figure}%
+%
+%
+%
+%
+%
+%
+%%
+%%\end{frame} \begin{frame} \frametitle{More on Two-predictor Case}
+%%
+%%Suppose that $p=2$, and assume that the least squares estimates $\hat{\beta_j^{LS}}$ are both positive. Then we can show that the lasso estimates are
+%%
+%%$$\hat{\beta}=(\hat{\beta_j^{LS}}-\gamma)^+$$
+%%
+%%where $\gamma$ is chosen so that $\hat{\beta_1}+\hat{\beta_2}=t$. This formula holds for $t\leq \hat{\beta_1^{LS}}+\hat{\beta_2^{LS}}$ and is valid even if the predictors are correlated. Solving for $\gamma$ yields
+%%
+%%$$\hat{\beta}_1=\Big(\frac{t}{2}+\frac{\hat{\beta}_1^{LS}-\hat{\beta}_2^{LS}}{2}\Big)^+,\ \hat{\beta}_2=\Big(\frac{t}{2}-\frac{\hat{\beta}_1^{LS}-\hat{\beta}_2^{LS}}{2}\Big)^+$$
+%%
+%%
+%%\end{frame} \begin{frame} \frametitle{More on Two-predictor Case}
+%%\begin{itemize}
+%%    \item In contrast, the form of ridge regression shrinkage depends on the correlation of the predictors.
+%%
+%%    \item Example: 100 data points from the model $y=6x_1+3x_2$ with no noise. Here $x_1$ and $x_2$ are standard normal variates with correlation $\rho$.
+%%
+%%    \item The curves in the next frame show the ($\beta_1,\beta_2$) pairs as the bound on the lasso or ridge parameters is varied; starting with the bottom broken curve and moving upwards, the correlation $\rho$ is 0, 0.23, 0.45, 0.68, and 0.90.
+%%\end{itemize}
+%%
+%%
+%%\end{frame} \begin{frame} \frametitle{More on Two-predictor Case}
+%%\begin{figure}
+%%\begin{center}
+%%\begin{tabular}{cc}
+%%\includegraphics[height=2.0in]
+%%%[trim=0.000000in 0.000000in 0.000000in -0.189256in, height=2.25in, width=4in]%
+%%{C:/Users/KUC13001/Dropbox/Teaching/Fall2012/STAT905-LectureNotes/figs/Fig_3.eps}
+%%
+%%\end{tabular}
+%%%Fig.3. Lasso (---------) and ridge regression (- - - -) for the two-predictor example.
+%%\end{center}%
+%%\end{figure}%
+%%
+%%
+%%
+%
+%
+%
+%
+%\end{frame}
+%
+%\begin{frame} \frametitle{Computation Algorithms}
+%
+%Lasso is a convex programming problem. Several algorithms have been proposed for computing $L_1$-penalized estimates.
+%
+%\begin{itemize}
+%    \item Convex optimization algorithms %\citep{Osborne2000}.
+%    \item Least angle regression (LARS) %\citep{efron2004lars}.
+%    \item Coordinate descent %\citep{fried2007}.
+%    \item Others......
+%\end{itemize}
+%
+%Here we first focus on the \emph{coordinate descent algorithm}, which is simple, stable and efficient for a variety of high-dimensional models.
+%
+%
+%
+%
+%
+%
+%
+%\end{frame}
+%
+%\begin{frame} \frametitle{Coordinate Descent Algorithm}
+%
+%\begin{itemize}
+%  \item Coordinate descent algorithms optimize a target function with respect to a single parameter at a time, iteratively cycling through all parameters until convergence is reached.
+%  \item They are ideal for problems that have a simple closed form solution in a single dimension but lack one in higher dimensions.
+%  \item The method is also called backfitting or \emph{Gauss-Seidel iteration}.
+%\end{itemize}
+%
+%
+%
+%
+%
+%
+%
+%
+%\end{frame}
+%
+%\begin{frame} \frametitle{Coordinate Descent Algorithm: Derivation}
+%
+%
+%\begin{figure}
+%%\vspace{-0.2in}
+%\begin{center}
+%\includegraphics[height=3in]{C:/Users/kuc13001/Dropbox/Teaching/Fall2012/STAT905-LectureNotes/figs/pcd-1.pdf}
+%\end{center}%
+%\end{figure}%
+%
+%
+%
+%
+%
+%
+%\end{frame}
+%
+%\begin{frame} \frametitle{Coordinate Descent Algorithm}
+%
+%
+%\begin{figure}
+%%\vspace{-0.2in}
+%\begin{center}
+%\includegraphics[height=2.5in]{C:/Users/kuc13001/Dropbox/Teaching/Fall2012/STAT905-LectureNotes/figs/pcd-2.pdf}
+%\end{center}%
+%\end{figure}%
+%
+%\end{frame}
+%
+%\begin{frame} \frametitle{Coordinate Descent Algorithm}
+%
+%The efficiency of coordinate descent algorithms comes from several
+%sources
+%\begin{itemize}
+%    \item one dimension problem is usually easy to solve and often has explicit solution.
+%    \item many matrix operations may be avoided and the updates can be computed very rapidly.
+%    \item if the problem is convex, then the algorithm is guaranteed to converge to a global minimum.
+%    \item if we are computing a continuous path of solutions, our initial values will never be far from the solution and few iterations will be required.
+%\end{itemize}
+%
+%
+%
+%
+%\end{frame}
+%
+%\begin{frame} \frametitle{Pathwise Solution}
+%
+%The coordinate descent algorithm can be used repeatedly to
+%compute $\what{\bbeta}(\lambda)$ on a grid of $\lambda$ values. Let $\lambda_{\max}$ be the smallest value for which all coefficients are 0 and $\lambda_{\min}$ be the minimum value of $\lambda$.
+%\begin{itemize}
+%    \item We can use $\lambda_{\max}=\max_{1\leq j\leq p}|\bx_j\t\by|/n$. If the design matrix is full rank, $\lambda_{\min}$ can be $0$; otherwise, we use $\lambda_{\min}=\epsilon\lambda_{\max}$ for some small $\epsilon$, e.g., $\epsilon=1e-4$.
+%    \item Let $\lambda_0>\lambda_1\cdots\lambda_K$ be a grid of decreasing $\lambda$ values, where $\lambda_0=\lambda_{\max}$ and $\lambda_K=\lambda_{\min}$.
+%    \item Start at $\lambda_0$ for which $\what{\bbeta}$ has the solution $0$ (or close to 0), and proceed along the grid using the value of $\what{\bbeta}$ at the previous point of $\lambda$ in the grid as the initial values for the current point. This is called warm start.
+%\end{itemize}
+%
+%
+%
+%
+%
+%\end{frame}
+
+

@@ -1,0 +1,139 @@
+\documentclass[11pt]{beamer}
+
+\usepackage{animate}
+
+\usepackage{graphicx, latexsym, ifthen, graphics}
+\usepackage{latexsym, amsmath, amsthm, amsfonts, amssymb,mathrsfs, graphics, epsfig}
+%\usepackage[loadonly]{enumitem}
+\usepackage{fancybox,fancyhdr}
+\usepackage{multirow}
+\usepackage{verbatim}
+\usepackage{amssymb,amsmath,amsfonts,amsthm,stmaryrd}
+\usepackage{lmodern}
+%\usepackage{colornames}
+\usepackage{latexsym}
+\usepackage{epsfig}
+\usepackage{amssymb, amsmath, multicol}
+\usepackage{latexsym, epsfig, amssymb, amsmath, amsthm, graphicx, mathrsfs}
+\usepackage{pgf,pgfarrows,pgfnodes,pgfautomata,pgfheaps,pgfshade}
+\usepackage[english]{babel}
+\usepackage{color, xcolor}
+\usepackage{graphicx}
+\usepackage{subfigure}
+%\usepackage{multimedia}
+\usepackage{epstopdf}
+\usepackage{wasysym}
+\usepackage{natbib}
+
+\usepackage{algorithmic}
+%\DeclareCaptionStyle{ruled}{labelfont=bf,labelsep=period}
+\newlength\algoindent\settowidth\algoindent{1. }
+\renewcommand\algorithmicrequire{\textbf{Parameters:}}
+\newcommand\INSTATE[1][1]{\STATE\hspace{#1\algoindent}}
+
+\newtheorem{thm}{Theorem}
+
+%\usepackage[natbib=true, bibstyle=authoryear, citestyle=authoryear-comp]{biblatex}
+\bibliographystyle{chicago}
+
+\usepackage{tikz}
+\usetikzlibrary{arrows}
+\tikzstyle{block}=[draw opacity=0.7,line width=1.4cm]
+
+\include{definitions}
+
+
+\usetheme[secheader]{Boadilla}
+\renewcommand\mathfamilydefault{\rmdefault}
+\setbeamercovered{transparent}
+\renewcommand{\theequation}{%\thesection.
+\arabic{equation}%
+}
+\renewcommand{\thefootnote}{\fnsymbol{footnote}}
+\makeatother
+
+
+\title[STAT 5361]{STAT 5361: Statistical Computing}	% for title page
+
+\author[Jun Yan]{Jun~Yan}
+
+\institute[University of Connecticut]{
+  Department of Statistics\\ University of Connecticut
+}
+
+\date{} %\today}
+
+% The main document
+
+\begin{document}
+
+\begin{frame}
+\thispagestyle{empty}
+  \titlepage
+  %\BLANK %cover the logo
+\end{frame}
+
+\begin{frame}[t,allowframebreaks]{Outline}
+
+\begin{small}
+\thispagestyle{empty}
+  %\setcounter{tocdepth}{2}
+  \tableofcontents
+  %\LOGOTHD
+\end{small}
+\end{frame}
+
+
+%Lecture 1: optimization
+\include{01_optimization}
+
+% %Lecture 2: Combinatorial optimization
+\include{02_combOpt}
+
+% %Lecture 3: Intro to HD
+% %\include{latex/Lectures/Lecture1/Lecture1}
+
+% %Lecture 4: HD regression
+% %\include{latex/Lectures/Lecture3/Lecture3}
+
+% %Lecture 5: Matrix Decomposition, SPCA, SSVD (For reading)
+% %\include{latex/Lectures/Lecture9/Lecture9}
+
+% %Lecture 6: EM, MM, ADMM
+% \include{latex/03_EM}
+
+% %Lecture 7: Simulation Basics
+% \include{latex/04_simbasic}
+
+% %Lecture 8:
+% \include{latex/05_path}
+
+% %Lecture 9:
+% \include{latex/06_mcinteg}
+
+% %Lecture 10:
+% \include{latex/07_impsamp}
+
+% %Lecture 11:
+% \include{latex/08_mccv}
+
+% %Lecture 12:
+% \include{latex/09_mcss}
+
+% \include{latex/10_boot}
+
+% \include{latex/11_regreg}
+
+% \subsection{Reference}
+
+% \begin{frame}[t,allowframebreaks]{References}
+% \def\newblock{}
+% %\tiny{\bibliography{thesis}}
+% \scriptsize{
+% \bibliography{/Users/kuc13001/Dropbox/Research/Reference/kun-bibtex}{}
+% }
+% \bibliographystyle{rss}
+% \end{frame}
+
+
+\end{document}

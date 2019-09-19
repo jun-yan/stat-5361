@@ -36,16 +36,17 @@ Wang, a PhD student in Statistics at the time, can be enlighting:
 - <https://github.com/wenjie2wang/2018-04-06-siam>
 
 
-If you have used R, but never paid attention to R programming styles, a style clinic would be a necessary step. A good place to start is Google's R style guide at <https://google.github.io/styleguide/Rguide.xml>. From my experience, the two most commonly overlooked styles for beginners are spacing and indentation. Appropriate spacing and indentation would immediately make crowdly piled code much more eye-friendly. Such styles can be automatically enforced by R packages such as **formatr** or **lintr**. Two important styles that cannot be automatically corrected are naming and documentation. As in any programming languate, naming of R objects (variables, functions, files, etc.) shoud be informative, concise, and consistent with certain naming convention. Documentation needs to be sufficient, concise, and kept close to the code; tools like R package **roxygen2** can be very helpful. See Hadley Wichham's online book <http://style.tidyverse.org/> for more detailed tips.
+If you have used R, but never paid attention to R programming styles, a style clinic would be a necessary step. A good place to start Hadley Wickham's tidyverse style guide at <http://style.tidyverse.org/>. From my experience, the two most commonly overlooked styles for beginners are spacing and indentation. Appropriate spacing and indentation would immediately make crowdly piled code much more eye-friendly. Such styles can be automatically enforced by R packages such as **formatr** or **lintr**. Two important styles that cannot be automatically corrected are naming and documentation. As in any programming languate, naming of R objects (variables, functions, files, etc.) shoud be informative, concise, and consistent with certain naming convention. Documentation needs to be sufficient, concise, and kept close to the code; tools like R package **roxygen2** can be very helpful.
 
 
-For intermediate R users who want a skill lift, The __Advanced R Programming__ book [@wickham2019advanced] by Hadley Wickham is available at <https://adv-r.hadley.nz/>. The source that generated the book is kindly made available at GitHub: <https://github.com/hadley/adv-r>. It is a great learning experience to complile the book from the source, during which you may pick up many necessary skills.
+For intermediate R users who want a skill lift, The __Advanced R Programming__ book [@wickham2019advanced] by Hadley Wickham is available at <https://adv-r.hadley.nz/>. The source that generated the book is kindly made available at GitHub: <https://github.com/hadley/adv-r>. It is a great learning experience to complile the book from the source, during which you may pick up many necessary skills. To make R work efficiently, a lot of skills are needed. Even an experienced user would find unified resources of efficient R programming [@gillespie2016efficient] useful:
+<https://csgillespie.github.io/efficientR/>.
 
 
 The homework, exam, and project will be completed by __R Markdown__. Following the step by step the instructions in Yihui Xie's online book on __bookdown__ [@xie2016bookdown].at <https://bookdown.org/yihui/bookdown/>, you will be amazed how quickly you can learn to produce cool-looking documents and even book manuscripts. If you are a keener, you may as well follow Yihui's __blogdown__ [@xie2017blogdown], see the online book <https://bookdown.org/yihui/blogdown/>, to build your own website using R Markdown.
 
 
-All your source code will be version controlled by __git__ and archived on __GitHub__. RStudio has made using git quite straightforward. The online tutorial by Jenny Bryan, Happy Git and GitHub for the useR, is a very useful tool to get started
+All your source code will be version controlled by __git__ and archived on __GitHub__. RStudio has made using git quite straightforward. The online tutorial by Jenny Bryan, Happy Git and GitHub for the useR at <https://happygitwithr.com/>, is a very useful tool to get started
 
 ## A Teaser Example: Likelihood Estimation
 
@@ -185,18 +186,18 @@ The relative error of $f(x)$ is $\delta_x = [f(x) - x] / x$. The basic formula f
 \[
 f(x \circ y) = (1+ \epsilon_m) (x \circ y) 
 \]
-where $\circ$ is an operator (e.g., add, subtract, multiple, divide, etc.), $(x \circ y)$ is the exact result, and $\epsilon_m$ is the smallest positive floating-point number $z$ such that $1 + z \ne 1$. __Add demonstration from Section 1.3 of @gray2001advanced; see also [notes] (https://people.eecs.berkeley.edu/~demmel/cs267/lecture21/lecture21.html). __
+if $f(x \circ y)$ does not overflow or underflow, where $\circ$ is an operator (e.g., add, subtract, multiple, divide, etc.), $(x \circ y)$ is the exact result, and $\epsilon_m$ is the smallest positive floating-point number $z$ such that $1 + z \ne 1$. __Add demonstration from Section 1.3 of @gray2001advanced; see also [notes] (https://people.eecs.berkeley.edu/~demmel/cs267/lecture21/lecture21.html). __
 
 
 
 (Section 1.4 from Gray)
 Consider computing $x + y$, where $x$ and $y$ have the same sign. Let $\delta_x$ and $\delta_y$ be the relative error in the floating point representation of $x$ and $y$, respectively (e.g., $\delta_x = [f(x) - x]/x$, so $f(x) = x(1 + \delta_x)$). What the computer actually calculates is the sum of the floating point representations $f (x) + f (y)$, which may not have an exact floating point representation, in which case it is rounded to the nearest representable number $f(f(x) + f(y))$. Let $\delta_s$ be the relative error of the $f(f(x) + f(y))$. Then,
 \begin{align*}
-&\,\, |f(f(x)+f(y)) - x+y)| \\ 
-&= |f(f(x)+f(y)) - f(x) - f(y) + f(x)-x+f(y)-y| \\
-&\le |\delta_s[f(x) + f(y)]| + |\delta_x x| + |\delta_y y|\\
-&\le |x+y|(\epsilon_m + \epsilon^2_m) + |x+y| \epsilon_m \\
-&\approx 2\epsilon_m |x+y|,
+\phantom{ = } & |f(f(x) + f(y)) - (x+y)| \\ 
+= & |f(f(x) + f(y)) - f(x) - f(y) + f(x) - x + f(y) - y| \\
+\le & |\delta_s[f(x) + f(y)]| + |\delta_x x| + |\delta_y y|\\
+\le & |x+y|(\epsilon_m + \epsilon^2_m) + |x+y| \epsilon_m \\
+\approx & 2\epsilon_m |x+y|,
 \end{align*}
 where the higher order terms in $\epsilon_m$ have been dropped, since they are usually negligible. Thus $2\epsilon_m$ is an (approximate) bound on the relative error in a single addition of two numbers with the same sign.
 
@@ -216,7 +217,7 @@ f(s_3) = (x_1 + x_2 + x_3) + x_1 (\epsilon_1 + \epsilon_2 + \epsilon_3) + x_2 (\
 \end{align*}
 The cumulative error is approximately
 \begin{align*}
-&\phantom{=} \| f(s_3) - (x_1 + x_2 + x_3)\| \\
+&\phantom{ = } \| f(s_3) - (x_1 + x_2 + x_3)\| \\
 &\sim \| x_1 (\epsilon_1 + \epsilon_2 + \epsilon_3) + x_2 (\epsilon_2 + \epsilon_3) + x_3(\epsilon_3) \|\\
 &\le \|x_1\| (\|\epsilon_1\| + \|\epsilon_2\| + \|\epsilon_3\|) + \|x_2\| (\|\epsilon_2\| + \|\epsilon_3\|) + \|x_3\| \|\epsilon_3\| \\
 &\le (3 \|x_1\| + 2\|x_2\| + \|x_3\|) \epsilon_m.
@@ -279,7 +280,11 @@ cbind(exp(-x), sapply(-x, fexp2))
 In numerical analysis, the condition number of a function with respect to an argument measures how much the output value of the function can change for a small change in the input argument. This is used to measure how sensitive a function is to changes or errors in the input, and how much error in the output results from an error in the input. 
 
 
-The condition number is an application of the derivative, and is formally defined as the value of the asymptotic worst-case relative change in output for a relative change in input. The ``function'' is the solution of a problem and the ``arguments'' are the data in the problem. The condition number is frequently applied to questions in linear algebra, in which case the derivative is straightforward but the error could be in many different directions, and is thus computed from the geometry of the matrix. More generally, condition numbers can be defined for non-linear functions in several variables.
+The condition number is an application of the derivative, and is formally defined as the value of the asymptotic worst-case relative change in output for a relative change in input. The "function" is the solution of a problem and the "arguments" are the data in the problem. In particular, $C(x)$ is called the condition number of a function $f$ at a given point $x$ if it satisfies the condition
+\[
+|\mbox{relative change in } f(x)| \sim C(x)|\mbox{relative change in } x| .
+\]
+The condition number is frequently applied to questions in linear algebra, in which case the derivative is straightforward but the error could be in many different directions, and is thus computed from the geometry of the matrix. More generally, condition numbers can be defined for non-linear functions in several variables.
 
 
 A problem with a low condition number is said to be well-conditioned, while a problem with a high condition number is said to be ill-conditioned. The condition number is a property of the problem. Paired with the problem are any number of algorithms that can be used to solve the problem, that is, to calculate the solution. Some algorithms have a property called backward stability. In general, a backward stable algorithm can be expected to accurately solve well-conditioned problems. Numerical analysis textbooks give formulas for the condition numbers of problems and identify the backward stable algorithms. In the exponential function example, the first implementation is unstable for large negative $x$ while the second is stable.
@@ -298,8 +303,8 @@ F(x; \mu, \sigma, \xi) =
 \end{equation*}
 for $\mu \in R$, $\sigma > 0$, $\xi \in R$.
 ```{r gev, fig.asp = 1, out.width='50%', fig.show='hold', fig.cap='Two implementations of GEV distribution function when $\\xi$ is close to zero.'}
-curve(evir::pgev(1, xi = x),    1e-20, .01, log="x", n = 1025)
-curve(texmex::pgev(1, 0, 1, x), 1e-20, .01, log="x", n = 1025)
+curve(evir::pgev(1, xi = x),    -1e-14, 1e-14, n = 1025)
+curve(texmex::pgev(1, 0, 1, x), -1e-14, 1e-14, n = 1025)
 ```
 Figure \@ref(fig:gev) shows a comparison of evaluating the GEV distribution function at $x = 1$ for $\mu = 0$, $\sigma = 1$, and a sequence of $\xi$ values near zero using two implementations.
 
@@ -309,7 +314,7 @@ Figure \@ref(fig:gev) shows a comparison of evaluating the GEV distribution func
 from his GitHub repository to a local space on your own computer. Build the book using RStudio. During the building process, you may see error messages due to missing tools on your computer. Read the error messages carefully and fix them, until you get the book built. You may need to install some R packages, some fonts, some latex packages, and some building tools for R packages. On Windows, some codes for parallel computing may not work and need to be swapped out. Document the problems you encountered and how you solved them in an R Markdown file named `README.Rmd`. Push it to your homework GitHub repository so that it can help other students to build the book. 
 
 
-2. Use **bookdown** or **rmarkdown** to produce a report for the following task. Consider approximation of the distribution function of $N(0, 1)$,
+1. Use **bookdown** or **rmarkdown** to produce a report for the following task. Consider approximation of the distribution function of $N(0, 1)$,
 \begin{equation}
 \Phi(t) = \int_{-\infty}^t \frac{1}{\sqrt{2\pi}} e^{-y^2 / 2} \dd y,
 (\#eq:cdf)
@@ -318,17 +323,16 @@ by the Monte Carlo methods:
 \begin{equation}
 \hat\Phi(t) = \frac{1}{n} \sum_{i=1}^n I(X_i \le t),
 \end{equation}
-where $X_i$'s are iid $N(0, 1)$ variables.
-Experiment with the approximation at $n \in \{10^2, 10^3, 10^4\}$ at $t \in \{0.0, 0.67, 0.84, 1.28, 1.65, 2.32, 2.58, 3.09, 3.72\}$ to form a table.
+where $X_i$'s are a random sample from $N(0, 1)$, and $I(\cdot)$ is the indicator function. Experiment with the approximation at $n \in \{10^2, 10^3, 10^4\}$ at $t \in \{0.0, 0.67, 0.84, 1.28, 1.65, 2.32, 2.58, 3.09, 3.72\}$ to form a table.
 
 
     The table should include the true value for comparison.
 Further, repeat the experiment 100 times. Draw box plots of the 100 approximation errors at each $t$ using **ggplot2** [@R-ggplot2] for each $n$. The report should look like a manuscript, with a title, an abstract, and multiple sections. It should contain at least one math equation, one table, one figure, and one chunk of R code. The template of our Data Science Lab can be helpful: <https://statds.org/template/>, the source of which is at <https://github.com/statds/dslab-templates>.
 
 
-3. Explain how `.Machine$double.xmax`, `.Machine$double.xmin`, `.Machine$double.eps`, and `.Machine@double.neg.eps` are defined using the 64-bit double precision floating point arithmetic.
+1. Explain how `.Machine$double.xmax`, `.Machine$double.xmin`, `.Machine$double.eps`, and `.Machine@double.neg.eps` are defined using the 64-bit double precision floating point arithmetic.
 
-4. first 10-digit prime number occurring in consecutive digits of $e$ [http://mathworld.wolfram.com/news/2004-10-13/google/](http://mathworld.wolfram.com/news/2004-10-13/google/)
+1. Find the first 10-digit prime number occurring in consecutive digits of $e$ [http://mathworld.wolfram.com/news/2004-10-13/google/](http://mathworld.wolfram.com/news/2004-10-13/google/). __Hint__: How can $e$ be represented to an arbitrary precision?
 
 ## Course Project
 
