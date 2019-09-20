@@ -1,0 +1,11 @@
+^packrat$
+^\.travis\.yml$
+^docs$
+^stat5361-book\.rds$
+^slides\.pdf$
+^syllabus\.tex$
+^_bookdown_files$
+^book_output$
+^style\.css$
+^packrat/
+^\.Rprofile$

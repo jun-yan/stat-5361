@@ -279,7 +279,7 @@ ruinProbAppr <- function(n, lambda, a, b, p, x, theta,
 ```
 
 Now we compare the performance at several values of $\theta$.
-```{r runiProb_comp}
+```{r runiProb_comp, cache = TRUE}
 ## Compare different theta values
 theta <- c(mean(c(thd0, th0)), (1:2) * th0)
 nrep <- 50
