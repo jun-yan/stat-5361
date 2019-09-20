@@ -26,7 +26,7 @@ and
 H_0: \mbox{ the data follows a normal distribution.}
 \]
 Note that the first hypothesis is a simple hypothesis while the second one is a composite hypothesis.
-```{r gofNaive}
+```{r gofNaive, cache=TRUE}
 do1rep <- function(n) {
   x <- rnorm(n, mean = 2, sd = 2)
   p1 <- ks.test(x, "pnorm", mean = 2, sd = 2)$p.value
@@ -49,7 +49,7 @@ Compare the histograms of the p-values obtained from applying `ks.test()` to $N(
 
 
 A parametric bootstrap procedure can be employed for such tests. The test statistic remain the same, but its null distribution is approximated from parametric bootstrap. 
-```{r gof-pb, cache = TRUE}
+```{r gof-pb, cache=TRUE}
 my.ks.normal <- function(x, B = 1000) {
   ## mle
   mu <- mean(x)
@@ -102,8 +102,7 @@ Faster alternatives are possible with the multiplier CLT
 
 To ensure that the bootstrap samples replicate both the marginal and the dependence features ofthe data, @Heff:Tawn:cond:2004 proposed a two-step bootstrap algorithm. A nonparametric bootstrap is employed first, ensuring the preservation of the dependence structure; then a parametric step is carried out to assess the uncertainty in the estimation of the parametric marginal models. The precise procedure is as follows. The original data are first transformed to have Gumbel margins using the fitted marginal models from the original data. A nonparametric bootstrap sample is then obtained by sampling with replacement from the transformed data. We then change the marginal values of this bootstrap sample, ensuring that the marginal distributions are all Gumbel and preserving the associations between the ranked points in each component. Specifically, for each $i$, $i = 1, \ldots, d$, where $d$ is the multivariate dimension, replace the ordered sample of component $Y_i$ with an ordered sample of the same size from the standard Gumbel distribution. The resulting sample is then transformed back to the original margins by using the marginal model that was estimated from the original data. The bootstrap samples obtained this way have desired univariate marginal distributions and dependence structure entirely consistent with the data as determined by the associations between the ranks of the components of the variables.
 
-```{r bootHT}
-
+```{r bootHT, cache=TRUE}
 bootHT <- function(rkmat) {
   nr <- nrow(rkmat)
   nc <- ncol(rkmat)
@@ -165,7 +164,7 @@ only slightly stronger conditions.
 
 
 For illustration, consider a scalar. We first look at the unconditional version; that is, the observed data is not fixed.
-```{r multScalar}
+```{r multScalar, cache=TRUE}
 n <- 100
 nrep <- 1000
 
@@ -191,7 +190,7 @@ qqline(clt[3,])
 
 Now we look at the conditional version where the observed data are conditioned on.
 
-```{r cmult}
+```{r cmult, cache=TRUE}
 ## Conditional multiplier CLT
 x <- rexp(n) ## given one sample
 cclt1rep <- function(x) {
@@ -210,7 +209,7 @@ qqline(cclt[2,])
 ```
 
 The process version retains the dependence structure which saves much computing time in many applications such as goodness-of-fit tests.
-```{r multProc, cache = TRUE}
+```{r multProc, cache=TRUE}
 uu <- (1:(2 * n) + 0.5) / (2 * n + 1)
 tt <- qexp(uu)
 
