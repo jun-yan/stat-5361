@@ -6,8 +6,15 @@
 
 _bookdown_files/
 book_output/*
+
 docs/*
 index.knit.md
 packages.bib
 stat5361-book.rds
 packrat/lib*/
+
+
+*/*.aux
+*/*.log
+*/*.bbl
+

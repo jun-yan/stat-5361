@@ -302,10 +302,10 @@ LASSO stands for ``least absolute shrinkage and selection operator''.
 There are two equivalent definitions.
 
 - minimize the residual sum of squares subject to the sum of the absolute value of the coefficients being less than a constant:
-  \[\hat{\beta}=\arg\min\left\{\|Y- X \beta\|^2\right\} \text{ subject to } \sum_{j}|\beta_j| \leq t.
+  \[\hat{\beta}=\arg\min\left\{\frac{1}{2n}\|Y- X \beta\|^2\right\} \text{ subject to } \sum_{j}|\beta_j| \leq t.
   \]
 - minimize the penalized sum of squares:
-  \[\hat{\beta}=\arg\min\{\|Y- X\beta\|^2 + \lambda\sum_{j}|\beta_j|\}.
+  \[\hat{\beta}=\arg\min\{\frac{1}{2n}\|Y- X\beta\|^2 + \lambda\sum_{j}|\beta_j|\}.
   \]
 
 
@@ -337,7 +337,7 @@ Note that $\tilde r_{ij}$'s are the partial residual with respect to
 the $j$th covariate.
 The standardized covariates and completion of squares lead to
 \[
-L_j(\beta_j; \lambda) = \frac{1}{2}(\beta_j - \tilde z_j)^2 + \lambda |\beta_j| + \frac{1}{n} \sum_{i=1}^n \tilde r_{ij}^2 - \frac{1}{2} \tilde z_j^2.
+L_j(\beta_j; \lambda) = \frac{1}{2}(\beta_j - \tilde z_j)^2 + \lambda |\beta_j| + \frac{1}{2n} \sum_{i=1}^n \tilde r_{ij}^2 - \frac{1}{2} \tilde z_j^2.
 \]
 This is just a univariate quadratic programming problem.
 The solution is
@@ -436,4 +436,30 @@ where $N_t$ denotes the population size at time $t$.
 - Fit the population growth model to the beetles data using the Gauss-Newton approach, to minimize the sum of squared errors between model predictions and observed counts.
 - Show the contour plot of the sum of squared errors.
 - In many population modeling application, an assumption of lognormality is adopted. That is , we assume that $\log N_t$ are independent and normally distributed with mean $\log f(t)$ and variance $\sigma^2$. Find the maximum likelihood estimators of $\theta = (r, K, \sigma^2)$ using any suitable method of your choice. Estimate the variance your parameter estimates.
+
+### Coordinate descent for penalized least squares
+Consider the penalized least squares problem with $L_1$ penalty (LASSO).
+
+- Verify the soft-threshold solution.
+- Find $\lambda_{\max}$ such that for any $\lambda > \lambda_\max$, the solution is $\beta = 0$.
+- Write a function to implement the soft-threshold solution for a given input ``z`` and ``lambda``.
+- Write a function ``pen_ls`` to implement the coordinate descent method for LASSO solution. The inputs of the function should include a response vector ``y``, a model matrix ``xmat`` (with pre-standardized columns), and a penalty parameter ``lambda``. The output is a vector of estimated $\beta$.
+- Test your ``pen_ls`` on a simulated dataset generated for a fixed $\lambda$. 
+```{r gen_data}
+gen_data <- function(n, b) {
+  p <- length(b)
+  x <- matrix(rnorm(n * p), n, p)
+  colnames(x) <- paste0("x", 1:p)
+  y <- c(x %*% b)
+  return(data.frame(y, x))
+}
+
+n <- 200
+b <- c(1, 1, 1, rep(0, 7))
+set.seed(920)
+dat <- gen_data(n, b)
+```
+- Plot a solution path for a sequence of $\lambda$ values from $\lambda_\max$ to zero.
+
+
 
