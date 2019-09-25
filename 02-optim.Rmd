@@ -446,11 +446,11 @@ Consider the penalized least squares problem with $L_1$ penalty (LASSO).
 - Write a function ``pen_ls`` to implement the coordinate descent method for LASSO solution. The inputs of the function should include a response vector ``y``, a model matrix ``xmat`` (with pre-standardized columns), and a penalty parameter ``lambda``. The output is a vector of estimated $\beta$.
 - Test your ``pen_ls`` on a simulated dataset generated for a fixed $\lambda$. 
 ```{r gen_data}
-gen_data <- function(n, b) {
+gen_data <- function(n, b, sigma = 1) {
   p <- length(b)
   x <- matrix(rnorm(n * p), n, p)
   colnames(x) <- paste0("x", 1:p)
-  y <- c(x %*% b)
+  y <- c(x %*% b) + rnorm(n, sd = sigma)
   return(data.frame(y, x))
 }
 
