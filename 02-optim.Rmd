@@ -132,7 +132,11 @@ Choose $M^{(t)} = M$ for all $t$. An example is $M = g''(x_0)$.
 
 #### Quasi-Newton
 
-Rank-one or rank-two update. The celebrated BFGS is a rank-two update method. Box constraints can be allowed with L-BFGS-B.
+Quasi-Newton methods avoids Hessian matrix by constructing approximations of
+the inverse Hessian. The inverse Hessian is built up from gradient information obtained at various points.
+
+
+Rank-two update. The celebrated BFGS is a rank-two update method. Box constraints can be allowed with L-BFGS-B.
 
 #### Coordinate Descent
 
@@ -455,7 +459,7 @@ gen_data <- function(n, b, sigma = 1) {
 }
 
 n <- 200
-b <- c(1, 1, 1, rep(0, 7))
+b <- c(1, -1, 2, rep(0, 7))
 set.seed(920)
 dat <- gen_data(n, b)
 ```
