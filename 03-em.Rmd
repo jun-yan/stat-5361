@@ -368,6 +368,10 @@ sufficient statistic to changes in hypothesized parameter value.
 
 ## Acceleration
 
+Can we obtain fast convergence without sacrificing the stability of EM?
+
+
+
 ## Example: Hidden Markov Model
 A hidden Markov model (HMM) is a dependent mixture model.
 The model consists of two parts:
@@ -452,7 +456,7 @@ p(s_{t - 1} = j, s_t = k | x_1, \ldots, x_T)
 (\#eq:condexv)
 \end{equation}
 
-__equation labels cannot contain colon, underscore__
+__equation labels cannot contain underscore__
 
 Equations \@ref(eq:condexu) and \@ref(eq:condexv), respectively,
 give the needed conditional expectation in the E-step for $u_j(t)$ 
@@ -563,7 +567,7 @@ set.seed(1205)
 dat <- regmix_sim(n, pi, bet, sig)
 ## regmix_em(y = dat[,1], xmat = dat[,-1], 
 ##           pi.init = pi / pi / length(pi),
-##           beta.init = bet * 0,
+##           beta.init = matrix(rnorm(6), 2, 3),
 ##           sigma.init = sig / sig, 
 ##           control = list(maxit = 500, tol = 1e-5))
 ```

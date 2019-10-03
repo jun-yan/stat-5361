@@ -9,3 +9,5 @@
 ^style\.css$
 ^packrat/
 ^\.Rprofile$
+^.*\.Rproj$
+^\.Rproj\.user$
