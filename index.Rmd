@@ -64,7 +64,7 @@ Package **MASS** provides a function `fitdistr()` to obtain the MLE for univaria
 MASS::fitdistr(x, densfun = "gamma")
 ```
 
-For distributions not in the provided list, the `densfun` needs to be a function returning a density evaluated at its first arguments, in which case, the `start` argument needs to be a named list to feed to the optimizer. For example, pretend that someone has a fancy distribution which is just a rename of the gamma distribution. Its density function is defined based on the gamma density `dgamma`.
+For distributions not in the provided list, the `densfun` needs to be a function returning a density evaluated at its first arguments, in which case, the `start` argument needs to be a named list to feed to the optimizer. For example, pretend that someone has a fancy distribution which is just a rename of the gamma distribution. Its density function is defined based on the gamma density `dgamma()`.
 ```{r fancy}
 dfancy <- function(x, shape, scale, log = FALSE) {
   dgamma(x, shape = shape, scale = scale, log = log)
