@@ -39,7 +39,7 @@ hist(u)
 ks.test(u, "punif")
 ```
 
-In \proglang{R}, check \code{?RNG}.
+In `R`, check `?RNG`.
 
 We assume that generation from $U(0,1)$ has been solved for all 
 practical purposes and focus on turning uniform variables to 

@@ -519,7 +519,7 @@ where
 p_{ij}^{(k+1)}&=E(z_{ij}\mid y_{i},\bx_{i};\bPsi^{(k)})
 =\frac{\pi_{j}^{(k)}\phi(y_{i}-\bx_{i}^{\top}\bbeta_{j}^{(k)};0,\sigma^{2^{(k)}})}{\sum_{j=1}^{m}\pi_{j}^{(k)}\phi(y_{i}-\bx_{i}^{\top}\bbeta_{j}^{(k)};0,\sigma^{2^{(k)}})}.
 \end{align*}
-The M-Step maximizes $Q(\boldsymbol{\Psi} \mid \boldsymbol{\Psi}^{(k)})$ to obtain 
+The M-Step maximizes $Q(\boldsymbol{\Psi} \mid \boldsymbol{\Psi}^{(k)})$ to obtain
 \begin{align*}
    \pi_{j}^{(k+1)} &=\frac{\sum_{i=1}^{n}p_{ij}^{(k+1)}}{n}\\
     \boldsymbol{\beta}_{j}^{(k+1)}&=\left(\sum_{i=1}^{n}\bx_i\bx_{i}^{\top}p_{ij}^{(k+1)}\right)^{-1}\left(\sum_{i=1}^{n}\bx_ip_{ij}^{(k+1)}y_i\right),\qquad j=1,\ldots,m;\\
@@ -576,9 +576,9 @@ dat <- regmix_sim(n, pi, bet, sig)
 Use the SQUAREM package to accelerate the EM algorithm of the finite mixture regression.
 See Ravi Varadhan's [article](https://higherlogicdownload.s3.amazonaws.com/AMSTAT/a8c53bb5-2075-48c8-baae-f2c3ab55357b/UploadedImages/LIDA-IG-newsletter-January2018.pdf) for his example.
 
-1. Write a function `regmix_em1step` to implement the one-step EM iteration.
+1. Write a function `regmix_em1step()` to implement the one-step EM iteration.
 
-1. Wrap your implementation of the EM algorithm to a function that uses `regmix_em1step`.
+1. Wrap your implementation of the EM algorithm to a function that uses `regmix_em1step()`.
 
 1. Call `SQUAREM::squarem()` with appropriate inputs to find the MLE.
 
@@ -593,7 +593,7 @@ This model has three sets of parameters
 initial distribution $\delta$, transition probability matrix $\Gamma$,
 and Poisson means $\lambda = (\lambda_1, \ldots, \lambda_m)$.
 Suppose the observed data is a vector $x$.
-Write a function `poisson.hmm.em` that implements the EM
+Write a function `poisson.hmm.em()` that implements the EM
 algorithm for this model with these argument:
 
 - `x`: the observed data;
