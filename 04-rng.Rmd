@@ -119,6 +119,98 @@ The expected number of trials until a variable is accepted is $M$.
 
 Among choices of $g$, $g_i$'s, the optimal sampler minimizes $M$.
 
+
+```{r normtail}
+rNormTail <- function(n, c) {
+    lambda <- (c + sqrt(c * c + 4)) / 2
+    alpha <- exp(0.5 * lambda * lambda - lambda * c) /
+        sqrt(2 * pi) / lambda / (1 - pnorm(c))
+    x <- rep(NA, n)
+    for (i in 1:n) {
+        while (TRUE) {
+            cand <- rexp(1, lambda)
+            ratio <- dnorm(cand + c) / (1 - pnorm(c)) / dexp(cand, lambda) / alpha
+            u <- runif(1)
+            if (u < ratio) break
+        }
+        x[i] <- cand
+    }
+    x + c
+}
+
+
+rNormTail.f <- function(n, c, batSize = n) {
+    lambda <- (c + sqrt(c * c + 4)) / 2
+    alpha <- exp(0.5 * lambda * lambda - lambda * c) /
+        sqrt(2 * pi) / lambda / (1 - pnorm(c))
+    x <- rep(NA, n)
+    ndone <- 0
+    while (TRUE) {
+        cand <- rexp(batSize, lambda)
+        ratio <- dnorm(cand + c) / (1 - pnorm(c)) / dexp(cand, lambda) / alpha
+        u <- runif(n)
+        accept <- u < ratio
+        naccpt <- sum(accept)
+        ntodo <- n - ndone
+        ngood <- min(ntodo, naccpt)
+        sample <- cand[accept][1:ngood]
+        x[ndone + 1:ngood] <- sample
+        ndone <- ndone + ngood
+        if (ndone == n) break
+    }
+    x + c
+}
+
+cc <- 7
+n <- 1000
+
+x1 <- qnorm(runif(n, pnorm(cc), 1))
+x2 <- rNormTail(n, cc)
+x3 <- rNormTail.f(n, cc)
+
+hist(x1, freq=FALSE)
+curve(dnorm(x) / (1 - pnorm(cc)), 7, max(x1), add=TRUE)
+
+
+library(microbenchmark)
+microbenchmark(x1 <- qnorm(runif(n, pnorm(cc), 1)),
+               x2 <- rNormTail(n, cc),
+               x3 <- rNormTail.f(n, cc, n),
+               x4 <- rNormTail.f(n, cc, n / 2))
+```
+
+### Sampling Importance Sampling
+
+```{r sir}
+##' Sampling importance resampling
+##'
+##' @param n desired sample size
+##' @param density target density
+##' @param envolope density of the sampler
+##' @param sampler random number generation of the sampler
+##' @param m sample size to draw from the sampler
+##' @return vector of random sample from the target density
+sir <- function(n, density, envolope, sampler, m = 20 * n) {
+    y <- sampler(m)
+    weight <- density(y) / envolope(y)
+    weight <- weight / sum(weight)
+    ## resample
+    sample(y, size = n, replace = TRUE, prob = weight)
+}
+
+n <- 5000
+## sample from normal using cauchy as sampler
+x <- sir(n, dnorm, dcauchy, rcauchy)
+hist(x, prob = TRUE)
+curve(dnorm(x), add = TRUE, col="darkblue")
+length(unique(x)) # not equal to n
+
+## sample from cauchy using normal as sampler: bad!
+y <- sir(n, dcauchy, dnorm, rnorm)
+hist(y, xlim = c(-7, 7), prob = TRUE)
+curve(dcauchy(x), add = TRUE, col = "darkblue")
+```
+
 <!-- \begin{example} -->
 <!--    Uni-modal beta from uniform. -->
 <!-- \end{example} -->
@@ -423,6 +515,7 @@ Among choices of $g$, $g_i$'s, the optimal sampler minimizes $M$.
 <!-- Comparison with rejection method. -->
 <!-- Both have a proposal density. -->
 <!-- The goals (outputs) are different. -->
+
 
 ## Stochastic Processes
 A stochastic or random process is a collection of random variables indexed by certain set. The indexing set is often a subset of time or space. When the indexing set is multidimensional, the stochastic process is also called a random field.
