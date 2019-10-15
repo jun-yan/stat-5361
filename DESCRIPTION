@@ -19,6 +19,7 @@ Imports:
     copula,
     evir,
     HI,
+    microbenchmark,
     modelr,
     texmex,
     tidyverse
