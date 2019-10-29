@@ -3,7 +3,7 @@
 ## Introduction
 Evaluate integral
 \begin{equation*}
-  E_f[ h(X)] = \int_{\mathcal{X}} h(x) f(x) \dif x.
+  E_f[ h(X)] = \int_{\mathcal{X}} h(x) f(x) \dd x.
 \end{equation*}
 If sampling from $f$ can be done,
 approximate by sample average
@@ -67,6 +67,7 @@ sd(mcAppr)
 ```
 
 What if the stock price process $S(t)$ is not a geometric Brownian motion?
+
 ## Particle Filtering for State Space Models
 
 Consider a simple state space model
