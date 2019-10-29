@@ -1,5 +1,72 @@
 # Monte Carlo Integration {#mcinteg}
 
+## Introduction
+Evaluate integral
+\begin{equation*}
+  E_f[ h(X)] = \int_{\mathcal{X}} h(x) f(x) \dif x.
+\end{equation*}
+If sampling from $f$ can be done,
+approximate by sample average
+\begin{equation*}
+  \bar h_n = \frac{1}{n}\sum_{j=1}^n h(X_j),
+\end{equation*}
+where $X_1, \ldots, X_n$ are a random sample from $f$.
+The convergence is enforced by the SLLN.
+The speed of the convergence can be assessed if $E h^2(X) < \infty$
+with the CLT.
+```{r mcinteg}
+f <- function(x) log(abs(x)) * exp(- (x + 1)^2 / 8)
+integrate(f, -Inf, Inf)
+
+## Monte Carlo approximation
+nrep <- 1000
+n <- 10000
+## normal sampler
+## i.n <- replicate(nrep, sqrt(8 * pi) * mean(log(abs(rnorm(n, -1, 2)))))
+i.n <- replicate(nrep, {x <- rnorm(n, -1, 2); mean(f(x) / dnorm(x, -1, 2))})
+mean(i.n)
+sd(i.n)
+
+## cauchy sampler
+i.c <- replicate(nrep, {x <- rcauchy(n, -1, 2); mean(f(x) / dcauchy(x, -1, 2))})
+mean(i.c)
+sd(i.c)
+```
+
+The order of the Monte Carlo error is $\sqrt{\Var[h(X)] / n}$.
+The error of estimating $E_f[ h(X)]$ declines at the rate of $n^{-1/2}$.
+This is slower than the quadrature method with $n$ quadrature 
+points, which has a rate of $O(n^{-k}$ for $k \ge 2$ typically.
+
+
+
+## Option Pricing
+
+```{r blackSholes}
+blackScholes <- function(strike, time, S0, rfrate, sigma) {
+    crit <- (log(strike / S0) - (rfrate - sigma^2 / 2) * time)/ sigma / sqrt(time)
+    S0 * pnorm(sigma * sqrt(time) - crit) -
+        strike * exp(- rfrate * time) * pnorm(-crit)
+}
+
+S0 <- strike <- time <- 1
+rfrate <- 0.06
+sigma <- 0.1
+## analytic solution
+blackScholes(strike, time, S0, rfrate, sigma)
+## Monte Carlo approximation
+myApprox <- function(nsim, strike, time, S0, rfrate, signma) {
+    wt <- rnorm(nsim, sd = sqrt(time) * sigma)
+    value <- mean(pmax(S0 * exp((rfrate - sigma^2 / 2) * time + wt) - strike, 0))
+    exp(-rfrate * time) * value
+}
+
+mcAppr <- replicate(nrep, myApprox(n, strike, time, S0, rfrate, sigma))
+mean(mcAppr)
+sd(mcAppr)
+```
+
+What if the stock price process $S(t)$ is not a geometric Brownian motion?
 ## Particle Filtering for State Space Models
 
 Consider a simple state space model
