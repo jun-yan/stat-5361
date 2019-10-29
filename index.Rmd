@@ -303,8 +303,8 @@ F(x; \mu, \sigma, \xi) =
 \end{equation*}
 for $\mu \in R$, $\sigma > 0$, $\xi \in R$.
 ```{r gev, fig.asp = 1, out.width='50%', fig.show='hold', fig.cap='Two implementations of GEV distribution function when $\\xi$ is close to zero.'}
-curve(evir::pgev(1, xi = x),    -1e-14, 1e-14, n = 1025)
-curve(texmex::pgev(1, 0, 1, x), -1e-14, 1e-14, n = 1025)
+curve(evir::pgev(1, xi = x),    -1e-13, 1e-13, n = 1025)
+curve(texmex::pgev(1, 0, 1, x), -1e-13, 1e-13, n = 1025)
 ```
 Figure \@ref(fig:gev) shows a comparison of evaluating the GEV distribution function at $x = 1$ for $\mu = 0$, $\sigma = 1$, and a sequence of $\xi$ values near zero using two implementations.
 
