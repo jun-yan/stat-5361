@@ -478,6 +478,31 @@ apply(sim, 1, sd)
 
 ### Stratified Sampling
 
+
+```{r raoblack}
+#' X ~ Lognormal(0, 1)
+#' Y | X ~ lognormal(9 + 3 log X, 1)
+#' Find E(Y / X)
+
+myraoblack <- function(n) {
+    x <- rlnorm(n, 0, 1)
+    y <- rlnorm(n, 9 + 3 * log(x), 1)
+    ## vanilla version
+    v1 <- mean(y / x)
+    ## Rao-Blackwell version
+    y.x <- exp(9 + 3 * log(x) + 1 / 2)
+    v2 <- mean(y.x / x)
+    c(v1, v2)
+}
+
+sim <- replicate(200, myraoblack(5000))
+apply(sim, 1, mean)
+apply(sim, 1, sd)
+
+````
+
+
+
 ```{r stratlin}
 #' @title Generating multivariate normal subject to linear constraint
 #' @param U a vector of U(0, 1) random variables
