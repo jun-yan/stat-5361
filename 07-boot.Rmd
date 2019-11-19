@@ -1,6 +1,30 @@
 # Bootstrap {#boot}
 
+
 ## Principles of Bootstrap
+
+Example from Efron's original 1979 paper.
+```{r boot-median}
+median.boot <- function(x, nboot) {
+  tx <- median(x)
+  sx <- sd(x)
+  n <- length(x)
+  do1rep <- function(x) {
+    x.b <- sample(x, length(x), replace = TRUE)
+    abs(median(x.b) - tx) / sx
+  }
+  r.sample <- replicate(nboot, do1rep(x))
+  c(mean = mean(r.sample) * sqrt(n), sd = sd(r.sample))
+}
+
+x <- rnorm(13)
+
+median.boot(x, 50)
+
+sim <- replicate(200, median.boot(rnorm(13), 100))
+summary(t(sim))
+```
+
 
 ## Parametric Bootstrap
 
