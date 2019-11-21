@@ -118,7 +118,88 @@ of the empirical distribution and the fitted parametric distribution.
 Faster alternatives are possible with the multiplier CLT
 [@Koja:Yan:good:2012].
 
+
+
+Chi-squared test is another goodness-of-fit test. Here is an example of
+testing for generalized Pareto distribution.
+```{r chisq}
+n <- 100
+theta <- c(scale = 1, shape = .2)
+x <- eva::rgpd(n, scale = theta[1], shape = theta[2])
+fit <- eva::gpdFit(x, threshold = 0)
+
+my_chisq_test <- function(x, p = seq(0.1, .9, by = .1), B = 1000) {
+  getstat <- function(x, thetahat, p) {
+    qx <- quantile(x, p)
+    p <- eva::pgpd(qx, scale = thetahat[1], shape = thetahat[2])
+    pp <- diff(c(0, p, 1))
+    freq <- diff(n * c(0, p, 1))
+    chisq.test(freq, pp)$statistic
+  }
+  ## observed stat
+  thetahat <- eva::gpdFit(x, threshold = 0)$par.ests
+  stat <- getstat(x, thetahat, p)
+  ## bootstrap stat
+  stat.b <- double(B)
+  n <- length(x)
+  for (i in 1:B) {
+    x.b <- eva::rgpd(n, scale = thetahat[1], shape = thetahat[2])
+    thetahat.b <- eva::gpdFit(x.b, threshold = 0)$par.ests
+    stat.b[i] <- getstat(x.b, thetahat.b, p)
+  }
+  p.value <- (sum(stat.b >= stat) + 0.5) / (B + 1)
+  list(statistics = stat, p.value = p.value, 
+       estimate = thetahat,
+       stat.sim = stat.b)
+}
+
+## my_chisq_test(x)
+
+## replicated p-value should follow U(0, 1) under H0
+##  pvals <- replicate(200, my_chisq_test(eva::rgpd(n, scale = theta[1], shape = theta[2])))
+```
+
 ## Block bootstrap
+
+```{r blkboot}
+n <- 200
+x <- arima.sim(list(ar = 0.5), n) + 2
+
+nmblk <- function(n, l) {
+    b <- n / l # assuming that is an integer
+    idx <- sample(seq(1, n - l + 1, by = l), b, replace = TRUE)
+    c(outer(0:(l - 1), idx, "+"))
+}
+
+mvblk <- function(n, l) {
+    b <- n / l
+    idx <- sample(1:(n - l + 1), b, replace = TRUE)
+    c(outer(0:(l - 1), idx, "+"))
+}
+      
+
+blkboot <- function(tseries, statistic, R, l) {
+    n <- length(tseries)
+    ## observed statistic
+    stat <- statistic(tseries)
+    ## nonmoving block bootstrap
+    nm.stat <- replicate(R, statistic(tseries[nmblk(n, l)]))
+    ## moving block bootstrap
+    mv.stat <- replicate(R, statistic(tseries[mvblk(n, l)]))
+    list(stat = stat, nm.stat = nm.stat, mv.stat = mv.stat)
+}
+
+## an experiment
+ar1 <- function(x) cor(x[-1], x[-length(x)])
+
+do1rep <- function(n, theta, l) {
+    x <- arima.sim(list(ar = theta), n)
+    bt <- blkboot(x, ar1, 1000, l)
+    c(bt$stat, sd(bt$nm.stat), sd(bt$mv.stat))
+}
+
+sim <- replicate(200, do1rep(100, 0.5, 10))
+```
 
 ## Semiparametric bootstrap
 @Heff:Tawn:cond:2004 applied a semiparametric bootstrap method [@Davi:Hink:boot:1997] in multivariate extreme value modeling. The challenge here is that, although univariate margins are fitted fine with generalized extreme value (GEV) distributions, an extreme-value dependence structure may be too strong an assumption to be practical. How does one obtain bootstrap samples of a semiparametric model where the marginal models are specified but the dependence structure is not?
