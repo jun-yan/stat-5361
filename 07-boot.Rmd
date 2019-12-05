@@ -121,42 +121,67 @@ Faster alternatives are possible with the multiplier CLT
 
 
 Chi-squared test is another goodness-of-fit test. Here is an example of
-testing for generalized Pareto distribution.
+testing for generalized Pareto distribution. The correct degrees of freedom
+depends on the estimation method [@chernoff1954use].
 ```{r chisq}
-n <- 100
+n <- 500
 theta <- c(scale = 1, shape = .2)
 x <- eva::rgpd(n, scale = theta[1], shape = theta[2])
 fit <- eva::gpdFit(x, threshold = 0)
 
-my_chisq_test <- function(x, p = seq(0.1, .9, by = .1), B = 1000) {
-  getstat <- function(x, thetahat, p) {
-    qx <- quantile(x, p)
-    p <- eva::pgpd(qx, scale = thetahat[1], shape = thetahat[2])
-    pp <- diff(c(0, p, 1))
-    freq <- diff(n * c(0, p, 1))
-    chisq.test(freq, pp)$statistic
-  }
-  ## observed stat
-  thetahat <- eva::gpdFit(x, threshold = 0)$par.ests
-  stat <- getstat(x, thetahat, p)
-  ## bootstrap stat
-  stat.b <- double(B)
-  n <- length(x)
-  for (i in 1:B) {
-    x.b <- eva::rgpd(n, scale = thetahat[1], shape = thetahat[2])
-    thetahat.b <- eva::gpdFit(x.b, threshold = 0)$par.ests
-    stat.b[i] <- getstat(x.b, thetahat.b, p)
-  }
-  p.value <- (sum(stat.b >= stat) + 0.5) / (B + 1)
-  list(statistics = stat, p.value = p.value, 
-       estimate = thetahat,
-       stat.sim = stat.b)
+my_chisq_test <- function(x, bins = seq(0.1, 0.9, by = 0.1), B = 1000,
+                          method = c("ml", "minchisq")) {
+    getstat <- function(x, thetahat, bins) {
+        pp <- diff(c(0, bins, 1))
+        qx <- quantile(x, bins)
+        p <- eva::pgpd(qx, scale = thetahat[1], shape = thetahat[2])
+        freq <- diff(n * c(0, p, 1))
+        chisq.test(x = freq, p = pp)$statistic
+    }
+    min_chisq <- function(x, init, bins) {
+        fit <- optim(init,
+                     function(th) getstat(x, th, bins))
+        fit
+    }
+    ## observed stat
+    n <- length(x)
+    thetahat <- eva::gpdFit(x, threshold = 0)$par.ests
+    if (method == "minchisq") thetahat <- min_chisq(x, thetahat, bins)$par
+    stat <- getstat(x, thetahat, bins)
+    if (B <= 0) return(stat)
+
+    ## bootstrap stat
+    stat.b <- double(B)
+      for (i in 1:B) {
+        x.b <- eva::rgpd(n, scale = thetahat[1], shape = thetahat[2])
+        thetahat.b <- eva::gpdFit(x.b, threshold = 0)$par.ests
+        stat.b[i] <- getstat(x.b, thetahat.b, bins)
+      }
+      p.value <- (sum(stat.b >= stat) + 0.5) / (B + 1)
+      list(statistics = stat, p.value = p.value, 
+           estimate = thetahat,
+           stat.sim = stat.b)
 }
 
-## my_chisq_test(x)
+my_chisq_test(x)$p.value
+y <- rlnorm(500)
+my_chisq_test(y)$p.value
 
 ## replicated p-value should follow U(0, 1) under H0
-##  pvals <- replicate(200, my_chisq_test(eva::rgpd(n, scale = theta[1], shape = theta[2])))
+## pvals <- replicate(500, my_chisq_test(eva::rgpd(n, scale = theta[1], shape = theta[2]))$p.value)
+
+## compare the distribution of the testing statistic with chi-squared
+stat.ch <- replicate(2000, my_chisq_test(eva::rgpd(n, scale=theta[1], shape=theta[2]), B = 0,
+                                         method = "minchisq"))
+stat.ml <- replicate(2000, my_chisq_test(eva::rgpd(n, scale=theta[1], shape=theta[2]), B = 0,
+                                         method = "ml"))
+
+## hist(stat.ml, prob=TRUE, breaks = 30)
+plot(density(stat.ml))
+kdens <- density(stat.ch)
+lines(kdens$x, kdens$y, col = "blue")
+curve(dchisq(x, df = 7), add = TRUE, col = "red")
+curve(dchisq(x, df = 9), add = TRUE, col = "purple")
 ```
 
 ## Block bootstrap
