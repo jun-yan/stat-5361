@@ -143,6 +143,7 @@ my_chisq_test <- function(x, bins = seq(0.1, 0.9, by = 0.1), B = 1000,
                      function(th) getstat(x, th, bins))
         fit
     }
+    method <- match.arg(method)
     ## observed stat
     n <- length(x)
     thetahat <- eva::gpdFit(x, threshold = 0)$par.ests
