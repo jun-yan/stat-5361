@@ -156,6 +156,7 @@ my_chisq_test <- function(x, bins = seq(0.1, 0.9, by = 0.1), B = 1000,
       for (i in 1:B) {
         x.b <- eva::rgpd(n, scale = thetahat[1], shape = thetahat[2])
         thetahat.b <- eva::gpdFit(x.b, threshold = 0)$par.ests
+        if (method == "minchisq") thetahat.b <- min_chisq(x.b, thetahat.b, bins)$par
         stat.b[i] <- getstat(x.b, thetahat.b, bins)
       }
       p.value <- (sum(stat.b >= stat) + 0.5) / (B + 1)
@@ -172,9 +173,9 @@ my_chisq_test(y)$p.value
 ## pvals <- replicate(500, my_chisq_test(eva::rgpd(n, scale = theta[1], shape = theta[2]))$p.value)
 
 ## compare the distribution of the testing statistic with chi-squared
-stat.ch <- replicate(2000, my_chisq_test(eva::rgpd(n, scale=theta[1], shape=theta[2]), B = 0,
+stat.ch <- replicate(1000, my_chisq_test(eva::rgpd(n, scale=theta[1], shape=theta[2]), B = 0,
                                          method = "minchisq"))
-stat.ml <- replicate(2000, my_chisq_test(eva::rgpd(n, scale=theta[1], shape=theta[2]), B = 0,
+stat.ml <- replicate(1000, my_chisq_test(eva::rgpd(n, scale=theta[1], shape=theta[2]), B = 0,
                                          method = "ml"))
 
 ## hist(stat.ml, prob=TRUE, breaks = 30)
