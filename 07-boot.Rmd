@@ -4,7 +4,7 @@
 ## Principles of Bootstrap
 
 Example from Efron's original 1979 paper.
-```{r boot-median}
+```{r boot-median, cache=TRUE}
 median.boot <- function(x, nboot) {
   tx <- median(x)
   sx <- sd(x)
@@ -123,7 +123,7 @@ Faster alternatives are possible with the multiplier CLT
 Chi-squared test is another goodness-of-fit test. Here is an example of
 testing for generalized Pareto distribution. The correct degrees of freedom
 depends on the estimation method [@chernoff1954use].
-```{r chisq, cashe=TRUE}
+```{r chisq, cache=TRUE}
 n <- 500
 theta <- c(scale = 1, shape = .2)
 x <- eva::rgpd(n, scale = theta[1], shape = theta[2])

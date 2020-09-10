@@ -14,7 +14,7 @@ where $X_1, \ldots, X_n$ are a random sample from $f$.
 The convergence is enforced by the SLLN.
 The speed of the convergence can be assessed if $E h^2(X) < \infty$
 with the CLT.
-```{r mcinteg}
+```{r mcinteg, cache=TRUE}
 f <- function(x) log(abs(x)) * exp(- (x + 1)^2 / 8)
 integrate(f, -Inf, Inf)
 
@@ -42,7 +42,7 @@ points, which has a rate of $O(n^{-k}$ for $k \ge 2$ typically.
 
 ## Option Pricing
 
-```{r blackSholes}
+```{r blackSholes, cache=TRUE}
 blackScholes <- function(strike, time, S0, rfrate, sigma) {
     crit <- (log(strike / S0) - (rfrate - sigma^2 / 2) * time)/ sigma / sqrt(time)
     S0 * pnorm(sigma * sqrt(time) - crit) -
