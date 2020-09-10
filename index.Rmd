@@ -330,9 +330,17 @@ where $X_i$'s are a random sample from $N(0, 1)$, and $I(\cdot)$ is the indicato
 Further, repeat the experiment 100 times. Draw box plots of the 100 approximation errors at each $t$ using **ggplot2** [@R-ggplot2] for each $n$. The report should look like a manuscript, with a title, an abstract, and multiple sections. It should contain at least one math equation, one table, one figure, and one chunk of R code. The template of our Data Science Lab can be helpful: <https://statds.org/template/>, the source of which is at <https://github.com/statds/dslab-templates>.
 
 
-1. Explain how `.Machine$double.xmax`, `.Machine$double.xmin`, `.Machine$double.eps`, and `.Machine@double.neg.eps` are defined using the 64-bit double precision floating point arithmetic.
+1. Explain how `.Machine$double.xmax`, `.Machine$double.xmin`,
+   `.Machine$double.eps`, and `.Machine@double.neg.eps` are defined
+   using the 64-bit double precision floating point arithmetic. Give
+   the 64-bit representation for these machine constants as well as
+   the double precision number 1.0, 0.0, and $\pi$.
 
-1. Find the first 10-digit prime number occurring in consecutive digits of $e$ [http://mathworld.wolfram.com/news/2004-10-13/google/](http://mathworld.wolfram.com/news/2004-10-13/google/). __Hint__: How can $e$ be represented to an arbitrary precision?
+1. Find the first 10-digit prime number occurring in consecutive
+   digits of $e$
+   [http://mathworld.wolfram.com/news/2004-10-13/google/](http://mathworld.wolfram.com/news/2004-10-13/google/). __Hint__:
+   How can $e$ be represented to an arbitrary precision?
+   
 
 ## Course Project
 
