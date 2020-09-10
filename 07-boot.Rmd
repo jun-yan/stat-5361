@@ -123,7 +123,7 @@ Faster alternatives are possible with the multiplier CLT
 Chi-squared test is another goodness-of-fit test. Here is an example of
 testing for generalized Pareto distribution. The correct degrees of freedom
 depends on the estimation method [@chernoff1954use].
-```{r chisq}
+```{r chisq, cashe=TRUE}
 n <- 500
 theta <- c(scale = 1, shape = .2)
 x <- eva::rgpd(n, scale = theta[1], shape = theta[2])
@@ -188,7 +188,7 @@ curve(dchisq(x, df = 9), add = TRUE, col = "purple")
 
 ## Block bootstrap
 
-```{r blkboot}
+```{r blkboot, cache=TRUE}
 n <- 200
 x <- stats::arima.sim(list(ar = 0.5), n) + 2
 
