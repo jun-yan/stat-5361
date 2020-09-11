@@ -1,6 +1,6 @@
 Package: stat5361
 Title: Statistical Computing Notes
-Version: 2019.8.0.9000
+Version: 2020.9.10.1300
 Authors@R: 
     c(person(given = "Jun",
              family = "Yan",
@@ -17,7 +17,6 @@ Encoding: UTF-8
 LazyData: true
 Imports:
     copula,
-    eva,
     evir,
     HI,
     microbenchmark,
