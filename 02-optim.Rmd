@@ -287,7 +287,7 @@ Inequalities are used to devise MM algorithms.
 
 In a linear regression setting, where $Y$ is the response vector and $X$ is the design matrix. Minimize objective function
 \[
-\min_{\beta \in R^p}\left{{\frac{1}{2n}\|Y - X \beta\|^2 + \sum_{j = 1}^p p_{\lambda}(|\beta_j|)\right\},
+\min_{\beta \in R^p}\left\{\frac{1}{2n}\|Y - X \beta\|^2 + \sum_{j = 1}^p p_{\lambda}(|\beta_j|)\right\},
 \]
 where $\|\cdot\|$ denotes the $L_2$-norm, and 
 $p_{\lambda}(\cdot)$ is a penalty function indexed by the 
