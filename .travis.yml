@@ -15,8 +15,11 @@ r_github_packages:
 
 addons:
   apt:
+    update: true
+    sources:
+      - sourceline: 'ppa:opencpu/imagemagick'
     packages:
-      - libgsl-dev
+      - libmagick++-dev
 
 script:
   - make html
