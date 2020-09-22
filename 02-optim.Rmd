@@ -205,6 +205,16 @@ optim(c(1, 1), f1, control = list(trace = TRUE))
 untrace(f1)
 ```
 
+It is possible that the Nelder--Mead algorithm converges to points
+that are not local optima. See Example 2.9 in the GH book.
+
+Questions:
+1. How is the initial simplex constructed?
+2. How to set the stopping criteria? 
+
+Advanced methods are available in R package \texttt{neldermead}.
+
+
 ### Optimization with R
 
 See [conversation with John Nash about r optim and r optimx](https://www.ibm.com/developerworks/library/ba-optimR-john-nash/index.html).
@@ -277,7 +287,7 @@ Inequalities are used to devise MM algorithms.
 
 In a linear regression setting, where $Y$ is the response vector and $X$ is the design matrix. Minimize objective function
 \[
-\min_{\beta \in R^p}\{\frac{1}{2n}\|Y - X \beta\|^2 + \sum_{j = 1}^p p_{\lambda}(|\beta_j|)\},
+\min_{\beta \in R^p}\left{{\frac{1}{2n}\|Y - X \beta\|^2 + \sum_{j = 1}^p p_{\lambda}(|\beta_j|)\right\},
 \]
 where $\|\cdot\|$ denotes the $L_2$-norm, and 
 $p_{\lambda}(\cdot)$ is a penalty function indexed by the 
@@ -305,13 +315,15 @@ Common penalties:
 LASSO stands for ``least absolute shrinkage and selection operator''. 
 There are two equivalent definitions.
 
-- minimize the residual sum of squares subject to the sum of the absolute value of the coefficients being less than a constant:
-  \[\hat{\beta}=\arg\min\left\{\frac{1}{2n}\|Y- X \beta\|^2\right\} \text{ subject to } \sum_{j}|\beta_j| \leq t.
+- minimize the residual sum of squares subject to the sum of the
+  absolute value of the coefficients being less than a constant:
+  \[
+  \hat{\beta}=\arg\min\left\{\frac{1}{2n}\|Y- X \beta\|^2\right\} \text{ subject to } \sum_{j}|\beta_j| \leq t.
   \]
 - minimize the penalized sum of squares:
-  \[\hat{\beta}=\arg\min\{\frac{1}{2n}\|Y- X\beta\|^2 + \lambda\sum_{j}|\beta_j|\}.
+  \[
+  \hat{\beta}=\arg\min\left\{\frac{1}{2n}\|Y- X\beta\|^2 + \lambda\sum_{j}|\beta_j|\right\}.
   \]
-
 
 Because of the nature of $L_1$ penalty or constraint, Lasso can estimate 
 some coefficients as exactly $0$ and hence performs variable selection.
@@ -338,8 +350,13 @@ $\tilde y_{ij} = \sum_{k\ne j} x_{ik}\tilde\beta_k$,
 $\tilde r_{ij} = y_i - \tilde y_{ij}$, and
 $\tilde z_j = n^{-1} \sum_{i=1}^n x_{ij} \tilde r_{ij}$.
 Note that $\tilde r_{ij}$'s are the partial residual with respect to
-the $j$th covariate.
-The standardized covariates and completion of squares lead to
+the $j$th covariate. Assuming that the covariates are centered and
+standardized such that
+$\sum_{i=1}^{n}x_{ij}=0$ and
+$\sum_{i=1}^{n}x_{ij}^2=n$ for all $1\leq j \leq p$, 
+the standardized covariates and completion of squares
+lead to
+
 \[
 L_j(\beta_j; \lambda) = \frac{1}{2}(\beta_j - \tilde z_j)^2 + \lambda |\beta_j| + \frac{1}{2n} \sum_{i=1}^n \tilde r_{ij}^2 - \frac{1}{2} \tilde z_j^2.
 \]
