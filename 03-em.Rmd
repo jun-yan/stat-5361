@@ -125,7 +125,7 @@ it is not quite so in general.
 
 When the E-step has no closed-form, it can be approximated
 by a Monte Carlo process, and this variant of the EM algorithm 
-is known as the Monte Carlo EM (MCEM) @Wei:Tann:mont:1990.
+is known as the Monte Carlo EM (MCEM) [@Wei:Tann:mont:1990].
 The Monte Carlo E-step goes as the following.
 \begin{enumerate}
 \item 
@@ -146,7 +146,7 @@ convergence to control the Monte Carlo error.
 Importance sampling can be used as well.
 
 
-MCEM routines need to address two challenges @Lavi:Case:impl:2001
+MCEM routines need to address two challenges [@Lavi:Case:impl:2001]
 (1) how do we minimize the computational cost in obtaining an 
 sample? and (2) how do we choose the Monte Carlo sample size?
 Rejection sampling and importance sampling can be used for the first.
@@ -157,7 +157,7 @@ be increased in an automated way.
 
 ### ECM
 The Expectation Conditional Maximization (ECM) algorithm
-@Meng:Rubi:maxi:1993 is a class of generalized 
+[@Meng:Rubi:maxi:1993] is a class of generalized 
 EM (GEM) algorithms [@Demp:Lair:Rubi:maxi:1977], where the M-step
 is only partially implemented, with the new estimate improving the
 likelihood found in the E-step, but not necessarily maximizing it.
@@ -171,7 +171,15 @@ constraints is such that the maximization is over the full parameter
 space of $\theta$. It is essentially coordinate ascend!
 
 
-A CM-step might be in closed form or it might itself require iteration, but because the CM maximizations are over smaller dimensional spaces, often they are simpler, faster, and more stable than the corresponding full maximizations called for on the M-step of the EM algorithm, especially when iteration is required. The ECM algorithm typically converges more slowly than the EM in terms of number of iterations, but can be faster in total computer time. More importantly, the ECM  algorithm preserves the appealing convergence properties of the EM algorithm, such as its monotone convergence. 
+A CM-step might be in closed form or it might itself require
+iteration, but because the CM maximizations are over smaller
+dimensional spaces, often they are simpler, faster, and more stable
+than the corresponding full maximizations called for on the M-step of
+the EM algorithm, especially when iteration is required. The ECM
+algorithm typically converges more slowly than the EM in terms of
+number of iterations, but can be faster in total computer time. More
+importantly, the ECM  algorithm preserves the appealing convergence
+properties of the EM algorithm, such as its monotone convergence. 
 <!-- % http://sfb649.wiwi.hu-berlin.de/fedc_homepage/xplore/ebooks/html/csa/node46.html#SECTION08141000000000000000 -->
 
 
@@ -394,9 +402,9 @@ Let $\delta$ be the parameters of the initial distribution of $S_t$.
 Let $\Gamma$ be the probability transition matrix of $S_t$.
 Let $\theta$ be the parameter vector in $\Pr(X_t | S_t)$.
 Given the observed data $\{x_t: t = 1, \ldots, T\}$, 
-these parameters can be  estimated by maximizing the 
-an EM algorithm that treats the unobserved states 
-$\{s_t: t = 1, \ldots, T\}$ as missing data.
+these parameters can be  estimated by an application of
+the EM algorithm where the unobserved states 
+$\{s_t: t = 1, \ldots, T\}$ are treated as missing data.
 
 
 To devise the EM algorithm, we need the complete data loglikelihood.
@@ -405,10 +413,10 @@ and $v_{jk}(t) = I(s_{t-1} = j, s_t = k)$, $t = 2, \ldots, T$,
 and $j, k \in \{1, \ldots, m\}$.
 The complete data loglikelihood is
 \begin{align*}
- & \log p(s_1, \ldots, s_T, x_1, \ldots, x_T)\\
- =& \log \delta_{s_1} \prod_{t=2}^T \Gamma_{s_{t-1}, s_t} \prod_{t=1}^T p(x_t | s_t; \theta)\\
- =& \log \delta_{s_1} + \sum_{t=2}^T \log \Gamma_{s_{t-1}, s_t} + \sum_{t=1}^T \log p(x_t | s_t; \theta)\\
- =& \sum_{i=1}^m u_j(1) \log \delta_j 
+ &{=} \log p(s_1, \ldots, s_T, x_1, \ldots, x_T)\\
+ &= \log \delta_{s_1} \prod_{t=2}^T \Gamma_{s_{t-1}, s_t} \prod_{t=1}^T p(x_t | s_t; \theta)\\
+ &= \log \delta_{s_1} + \sum_{t=2}^T \log \Gamma_{s_{t-1}, s_t} + \sum_{t=1}^T \log p(x_t | s_t; \theta)\\
+ &= \sum_{i=1}^m u_j(1) \log \delta_j 
    + \sum_{j=1}^m \sum_{k=1}^m \sum_{t=2}^T v_{jk}(t) \log \Gamma_{jk}
    + \sum_{j=1}^m \sum_{t=1}^T u_j(t) \log p(x_t | s_t = j; \theta)
 \end{align*}
@@ -456,7 +464,7 @@ p(s_{t - 1} = j, s_t = k | x_1, \ldots, x_T)
 (\#eq:condexv)
 \end{equation}
 
-__equation labels cannot contain underscore__
+<!-- __equation labels cannot contain underscore__ -->
 
 Equations \@ref(eq:condexu) and \@ref(eq:condexv), respectively,
 give the needed conditional expectation in the E-step for $u_j(t)$ 
