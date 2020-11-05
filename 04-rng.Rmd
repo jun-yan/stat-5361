@@ -148,7 +148,7 @@ rNormTail.f <- function(n, c, batSize = n) {
     while (TRUE) {
         cand <- rexp(batSize, lambda)
         ratio <- dnorm(cand + c) / (1 - pnorm(c)) / dexp(cand, lambda) / alpha
-        u <- runif(n)
+        u <- runif(batSize)
         accept <- u < ratio
         naccpt <- sum(accept)
         ntodo <- n - ndone
@@ -179,7 +179,7 @@ microbenchmark(x1 <- qnorm(runif(n, pnorm(cc), 1)),
                x4 <- rNormTail.f(n, cc, n / 2))
 ```
 
-### Sampling Importance Sampling
+### Sampling Importance Resampling
 
 ```{r sir}
 ##' Sampling importance resampling
@@ -522,6 +522,83 @@ A stochastic or random process is a collection of random variables indexed by ce
 
 ### Gaussian Markov Process
 
+
+Simulation of Brownian motion and Brianian bridge on a grid time grid.
+
+```{r bmbg}
+
+## Brownian motion
+rBM <- function(tgrid, x0 = 0) {
+    dt <- diff(tgrid)
+    z <- rnorm(length(dt), sd = sqrt(dt))
+    c(x0, cumsum(z) + x0)
+}
+
+
+## Brownian bridge
+rBB <- function(tgrid, x, y) {
+    n <- length(tgrid)
+    w <- double(n)
+    a <- tgrid[1]; w[1] <- x
+    b <- tgrid[n]; w[n] <- y
+    for (i in 2:(n-1)) {
+        t <- tgrid[i]
+        mu <- ((b - t) * x + (t - a) * y) / (b - a)
+        sigma <- sqrt((t - a) * (b - t) / (b - a))
+        w[i] <- x <- rnorm(1, mu, sigma)
+        a <- tgrid[i]
+    }
+    w
+}
+
+```
+
+
+The square root diffusion process has a closed-form transition distribution,
+which is a scaled non-central chi-squared.
+```{r rcir}
+rcir <- function(n, r0, alpha, b, sigma, dt) {
+    df  <- 4 * alpha * b / sigma / sigma
+    ee <- exp(- alpha * dt)
+    cc <- sigma^2 * (1 - ee) / 4 / alpha
+    lambda <- ee * r0 / cc
+    rchisq(n, df = df, ncp = lambda) * cc
+}
+```
+
+The transition density would otherwise be approximated by the Euler
+scheme with a fine time grid.
+```{r rcir_euler}
+rcir_euler <- function(n, r0, alpha, b, sigma, dt, ng = 10) {
+    ddt <- dt / ng
+    sapply(1:n, function(idx) {
+        for (i in seq(1:ng)) {
+            rt <- r0 + alpha * (b - r0) * ddt +
+                sigma * sqrt(r0 * ddt) * rnorm(1)
+            rt <- max(0, rt)
+            r0 <- rt
+        }
+        rt
+    })
+}
+```
+
+Here is an illustration.
+```{r rcir_illustration}
+r0 <- .05
+alpha <- .2
+b <- .05
+sigma <- 1
+dt <- .1
+n <- 1000
+
+x1 <- rcir      (n, r0, alpha, b, sigma, dt)
+x2 <- rcir_euler(n, r0, alpha, b, sigma, dt)
+qqplot(x1, x2)
+abline(0, 1)
+```
+
+
 ### Counting Process
 
 A counting process is a stochastic process $\{N(t); t ≥ 0\}$ with values that are non-negative, integer, and non-decreasing. It is often used to model the occurrence of certain event.
@@ -548,10 +625,18 @@ An inhomogeneous Poisson process is a characterized by an intensity function $\l
 
 - N(0) = 0;
 - the occurrences of events in disjoint time intervals are indepdent;
-- the number of events in an interval $(0, \tau]$ is a Poissoin random variable with mean $\Lambda(\tau) = \int_0^\tau \lambda(t) \dd{t}$.
+- the number of events in an interval $(0, \tau]$ is a Poissoin random
+  variable with mean $\Lambda(\tau) = \int_0^\tau \lambda(t) \dd{t}$.
 
 
-The inversion method generates inter-arrival event times [@Cinl:intr:1975, p.96]. Consider an inhomomegeneous Poisson process with mean function $\Lambda(t)$, $t > 0$, which is continuous and nondecreasing. If $\Lambda(T_1), \Lambda(T_2), \ldots$ are event times from a homogeneous Poisson process with rate one, then $T_1, T_2, \ldots$ are event times from a nonhomogeneous Poisson process with mean function $\Lambda(t)$.
+
+The inversion method generates inter-arrival event times
+[@Cinl:intr:1975, p.96]. Consider an nonhomomegeneous Poisson process
+with mean function $\Lambda(t)$, $t > 0$, which is continuous and
+nondecreasing. If $\Lambda(T_1), \Lambda(T_2), \ldots$ are event times
+from a homogeneous Poisson process with rate one, then 
+$T_1, T_2, \ldots$ are event times from a nonhomogeneous Poisson
+process with mean function $\Lambda(t)$.
 The algorithm works as follows.
 
 1. Generate $S_1, S_2, \ldots$ from a homogeneous Poisson process with rate one.
@@ -573,14 +658,60 @@ The thinning method (process analog of the acceptance-rejection method)
 [@Lewi:Shed:simu:1979]:
 Let $\lambda_{\max} = \max_{t \in (0, \tau]} \lambda(t)$.
 Suppose that $S_1, S_2, \ldots$ are event times from a homogeneous 
-Poisson process with rate function $\lambda(t)$. 
+Poisson process with rate function $\lambda_{\max}$.
 If the $i$th event time $S_i$ is independently accepted with
 probability $\lambda(t) / \lambda_{\max}$, the the remaining event
 times form a realization from a nonhomogeneous Poisson process with 
 rate function $\lambda(t)$ in $(0, \tau]$.
 
+```{r nhpp-thinning}
+## simulation of a nonhomegeneous Poisson process
+## with the thinning method
+rnhpp <- function(intensity, intmax, tmax) {
+    n <- rpois(1, intmax)
+    tt <- runif(n, 0, tmax)
+    u <- runif(n)
+    accept <- u < intensity(tt) / intmax
+    sort(tt[accept])
+}
+
+intfun <- function(x) sin(2 * pi * x) + 1
+
+ff <- rnhpp(intfun, 2, 1)
+hist(unlist(replicate(10000, rnhpp(intfun, 2, 1))))
+```
+
 
 Discussion: what are the pros and cons of these methods?
+
+
+### Jump-Diffusion Process
+
+Simulation from a jump-diffusion process on a given time grid in a
+simple setting with a homogeneous Poisson process for the jump events
+and a lognormal jump sizes.
+```{r jd}
+## jump rate: constant lambda
+## jump size: log normal distribution with meanlog and sdlog
+rjd <- function(tgrid, x0, mu, sigma, lambda, meanlog, sdlog) {
+    dt <- diff(tgrid)
+    n <- length(dt)
+    ddiff <- (mu - 0.5 * sigma * sigma) * dt + sigma * sqrt(dt) * rnorm(n)
+    njump <- rpois(n, dt * lambda)
+    jsize <- ifelse(njump == 0, 0,
+                    rnorm(n, meanlog * njump, sdlog * sqrt(njump)))
+    dx  <- ddiff + jsize
+    c(x0, x0 + cumsum(dx))
+}
+
+meanlog <- 0; sdlog <- 0.02
+lambda <- 2; mu <- .01; sigma <- sqrt(.02)
+x0  <- .05
+tgrid <- seq(0, 10, by = .01)
+plot(ts(xx <- rjd(tgrid, x0, mu, sigma, lambda, meanlog, sdlog)))
+```
+
+
 
 ## Exercises
 
