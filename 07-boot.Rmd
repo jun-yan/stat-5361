@@ -58,6 +58,7 @@ do1rep <- function(n) {
   c(p1, p2)
 }
 
+set.seed(2020-12-01)
 pvals <- replicate(1000, do1rep(100))
 
 ## par(mfrow=c(1, 2), mar=c(2.5, 2.5, 0.1, 0.1), mgp=c(1.5, 0.5, 0))
@@ -134,7 +135,7 @@ my_chisq_test <- function(x, bins = seq(0.1, 0.9, by = 0.1), B = 1000,
     getstat <- function(x, thetahat, bins) {
         pp <- diff(c(0, bins, 1))
         qx <- quantile(x, bins)
-        p <- texmex::pgpd(qx, sigma = thetahat[1], xi = thetahat[2])
+        p <- texmex::pgpd(qx, sigma = thetahat[2], xi = thetahat[1])
         freq <- diff(n * c(0, p, 1))
         chisq.test(x = freq, p = pp)$statistic
     }
@@ -154,7 +155,7 @@ my_chisq_test <- function(x, bins = seq(0.1, 0.9, by = 0.1), B = 1000,
     ## bootstrap stat
     stat.b <- double(B)
       for (i in 1:B) {
-        x.b <- texmex::rgpd(n, sigma = thetahat[1], xi = thetahat[2])
+        x.b <- texmex::rgpd(n, sigma = thetahat[2], xi = thetahat[1])
         thetahat.b <- evir::gpd(x.b, threshold = 0)$par.ests
         if (method == "minchisq") thetahat.b <- min_chisq(x.b, thetahat.b, bins)$par
         stat.b[i] <- getstat(x.b, thetahat.b, bins)
@@ -173,14 +174,16 @@ my_chisq_test(y)$p.value
 ## pvals <- replicate(500, my_chisq_test(texmex::rgpd(n, sigma = theta[1], xi = theta[2]))$p.value)
 
 ## compare the distribution of the testing statistic with chi-squared
-stat.ch <- replicate(1000, my_chisq_test(texmex::rgpd(n, sigma=theta[1], xi=theta[2]), B = 0,
-                                         method = "minchisq"))
-stat.ml <- replicate(1000, my_chisq_test(texmex::rgpd(n, sigma=theta[1], xi=theta[2]), B = 0,
-                                         method = "ml"))
+stat.ch <- replicate(1000,
+                     my_chisq_test(texmex::rgpd(n, sigma=theta[2], xi=theta[1]),
+                                   B = 0, method = "minchisq"))
+stat.ml <- replicate(1000,
+                     my_chisq_test(texmex::rgpd(n, sigma=theta[2], xi=theta[1]),
+                                   B = 0, method = "ml"))
 
 ## hist(stat.ml, prob=TRUE, breaks = 30)
-plot(density(stat.ml))
-kdens <- density(stat.ch)
+plot(density(stat.ch))
+kdens <- density(stat.ml)
 lines(kdens$x, kdens$y, col = "blue")
 curve(dchisq(x, df = 7), add = TRUE, col = "red")
 curve(dchisq(x, df = 9), add = TRUE, col = "purple")
