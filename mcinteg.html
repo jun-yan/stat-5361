@@ -1,0 +1,902 @@
+<!DOCTYPE html>
+<html lang="" xml:lang="">
+<head>
+
+  <meta charset="utf-8" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <title>Chapter 7 Monte Carlo Integration | STAT 5361: Statistical Computing, Fall 2019</title>
+  <meta name="description" content="This is a series of notes for the students of STAT 5361, Statisticl Computing, at UConn." />
+  <meta name="generator" content="bookdown 0.21.5 and GitBook 2.6.7" />
+
+  <meta property="og:title" content="Chapter 7 Monte Carlo Integration | STAT 5361: Statistical Computing, Fall 2019" />
+  <meta property="og:type" content="book" />
+  
+  
+  <meta property="og:description" content="This is a series of notes for the students of STAT 5361, Statisticl Computing, at UConn." />
+  
+
+  <meta name="twitter:card" content="summary" />
+  <meta name="twitter:title" content="Chapter 7 Monte Carlo Integration | STAT 5361: Statistical Computing, Fall 2019" />
+  
+  <meta name="twitter:description" content="This is a series of notes for the students of STAT 5361, Statisticl Computing, at UConn." />
+  
+
+<meta name="author" content="Jun Yan" />
+
+
+<meta name="date" content="2020-12-04" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black" />
+  
+  
+<link rel="prev" href="markov-chain-monte-carlo.html"/>
+<link rel="next" href="boot.html"/>
+<script src="libs/jquery-2.2.3/jquery.min.js"></script>
+<link href="libs/gitbook-2.6.7/css/style.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-table.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-bookdown.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-highlight.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-search.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-fontsettings.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-clipboard.css" rel="stylesheet" />
+
+
+
+
+
+
+
+
+
+<link href="libs/anchor-sections-1.0.1/anchor-sections.css" rel="stylesheet" />
+<script src="libs/anchor-sections-1.0.1/anchor-sections.js"></script>
+
+
+<style type="text/css">
+a.sourceLine { display: inline-block; line-height: 1.25; }
+a.sourceLine { pointer-events: none; color: inherit; text-decoration: inherit; }
+a.sourceLine:empty { height: 1.2em; position: absolute; }
+.sourceCode { overflow: visible; }
+code.sourceCode { white-space: pre; position: relative; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+code.sourceCode { white-space: pre-wrap; }
+a.sourceLine { text-indent: -1em; padding-left: 1em; }
+}
+pre.numberSource a.sourceLine
+  { position: relative; }
+pre.numberSource a.sourceLine:empty
+  { position: absolute; }
+pre.numberSource a.sourceLine::before
+  { content: attr(data-line-number);
+    position: absolute; left: -5em; text-align: right; vertical-align: baseline;
+    border: none; pointer-events: all;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+    color: #aaaaaa;
+  }
+pre.numberSource { margin-left: 3em; border-left: 1px solid #aaaaaa;  padding-left: 4px; }
+div.sourceCode
+  {  }
+@media screen {
+a.sourceLine::before { text-decoration: underline; }
+}
+code span.al { color: #ff0000; font-weight: bold; } /* Alert */
+code span.an { color: #60a0b0; font-weight: bold; font-style: italic; } /* Annotation */
+code span.at { color: #7d9029; } /* Attribute */
+code span.bn { color: #40a070; } /* BaseN */
+code span.bu { } /* BuiltIn */
+code span.cf { color: #007020; font-weight: bold; } /* ControlFlow */
+code span.ch { color: #4070a0; } /* Char */
+code span.cn { color: #880000; } /* Constant */
+code span.co { color: #60a0b0; font-style: italic; } /* Comment */
+code span.cv { color: #60a0b0; font-weight: bold; font-style: italic; } /* CommentVar */
+code span.do { color: #ba2121; font-style: italic; } /* Documentation */
+code span.dt { color: #902000; } /* DataType */
+code span.dv { color: #40a070; } /* DecVal */
+code span.er { color: #ff0000; font-weight: bold; } /* Error */
+code span.ex { } /* Extension */
+code span.fl { color: #40a070; } /* Float */
+code span.fu { color: #06287e; } /* Function */
+code span.im { } /* Import */
+code span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Information */
+code span.kw { color: #007020; font-weight: bold; } /* Keyword */
+code span.op { color: #666666; } /* Operator */
+code span.ot { color: #007020; } /* Other */
+code span.pp { color: #bc7a00; } /* Preprocessor */
+code span.sc { color: #4070a0; } /* SpecialChar */
+code span.ss { color: #bb6688; } /* SpecialString */
+code span.st { color: #4070a0; } /* String */
+code span.va { color: #19177c; } /* Variable */
+code span.vs { color: #4070a0; } /* VerbatimString */
+code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warning */
+</style>
+
+</head>
+
+<body>
+
+
+
+  <div class="book without-animation with-summary font-size-2 font-family-1" data-basepath=".">
+
+    <div class="book-summary">
+      <nav role="navigation">
+
+<ul class="summary">
+<li class="chapter" data-level="1" data-path="index.html"><a href="index.html"><i class="fa fa-check"></i><b>1</b> Prerequisites</a><ul>
+<li class="chapter" data-level="1.1" data-path="index.html"><a href="index.html#a-teaser-example-likelihood-estimation"><i class="fa fa-check"></i><b>1.1</b> A Teaser Example: Likelihood Estimation</a></li>
+<li class="chapter" data-level="1.2" data-path="index.html"><a href="index.html#computer-arithmetics"><i class="fa fa-check"></i><b>1.2</b> Computer Arithmetics</a><ul>
+<li class="chapter" data-level="1.2.1" data-path="index.html"><a href="index.html#integers"><i class="fa fa-check"></i><b>1.2.1</b> Integers</a></li>
+<li class="chapter" data-level="1.2.2" data-path="index.html"><a href="index.html#floating-point"><i class="fa fa-check"></i><b>1.2.2</b> Floating Point</a></li>
+<li class="chapter" data-level="1.2.3" data-path="index.html"><a href="index.html#error-analysis"><i class="fa fa-check"></i><b>1.2.3</b> Error Analysis</a></li>
+<li class="chapter" data-level="1.2.4" data-path="index.html"><a href="index.html#condition-number"><i class="fa fa-check"></i><b>1.2.4</b> Condition Number</a></li>
+</ul></li>
+<li class="chapter" data-level="1.3" data-path="index.html"><a href="index.html#exercises"><i class="fa fa-check"></i><b>1.3</b> Exercises</a></li>
+<li class="chapter" data-level="1.4" data-path="index.html"><a href="index.html#course-project"><i class="fa fa-check"></i><b>1.4</b> Course Project</a></li>
+</ul></li>
+<li class="chapter" data-level="2" data-path="nla.html"><a href="nla.html"><i class="fa fa-check"></i><b>2</b> Numerical Linear Algebra</a></li>
+<li class="chapter" data-level="3" data-path="optim.html"><a href="optim.html"><i class="fa fa-check"></i><b>3</b> Optimization</a><ul>
+<li class="chapter" data-level="3.1" data-path="optim.html"><a href="optim.html#univariate-optimizations"><i class="fa fa-check"></i><b>3.1</b> Univariate Optimizations</a><ul>
+<li class="chapter" data-level="3.1.1" data-path="optim.html"><a href="optim.html#bisection-method"><i class="fa fa-check"></i><b>3.1.1</b> Bisection Method</a></li>
+<li class="chapter" data-level="3.1.2" data-path="optim.html"><a href="optim.html#newtons-method"><i class="fa fa-check"></i><b>3.1.2</b> Newton’s Method</a></li>
+<li class="chapter" data-level="3.1.3" data-path="optim.html"><a href="optim.html#fixed-point-iteration"><i class="fa fa-check"></i><b>3.1.3</b> Fixed Point Iteration</a></li>
+</ul></li>
+<li class="chapter" data-level="3.2" data-path="optim.html"><a href="optim.html#multivariate-optimization"><i class="fa fa-check"></i><b>3.2</b> Multivariate Optimization</a><ul>
+<li class="chapter" data-level="3.2.1" data-path="optim.html"><a href="optim.html#newton-raphson-method"><i class="fa fa-check"></i><b>3.2.1</b> Newton-Raphson Method</a></li>
+<li class="chapter" data-level="3.2.2" data-path="optim.html"><a href="optim.html#variants-of-newton-raphson-method"><i class="fa fa-check"></i><b>3.2.2</b> Variants of Newton-Raphson Method</a></li>
+<li class="chapter" data-level="3.2.3" data-path="optim.html"><a href="optim.html#nelder-mead-simplex-algorithm"><i class="fa fa-check"></i><b>3.2.3</b> Nelder-Mead (Simplex) Algorithm</a></li>
+<li class="chapter" data-level="3.2.4" data-path="optim.html"><a href="optim.html#optimization-with-r"><i class="fa fa-check"></i><b>3.2.4</b> Optimization with R</a></li>
+</ul></li>
+<li class="chapter" data-level="3.3" data-path="optim.html"><a href="optim.html#mm-algorithm"><i class="fa fa-check"></i><b>3.3</b> MM Algorithm</a></li>
+<li class="chapter" data-level="3.4" data-path="optim.html"><a href="optim.html#an-example-lasso-with-coordinate-descent"><i class="fa fa-check"></i><b>3.4</b> An Example: LASSO with Coordinate Descent</a></li>
+<li class="chapter" data-level="3.5" data-path="optim.html"><a href="optim.html#exercises-1"><i class="fa fa-check"></i><b>3.5</b> Exercises</a><ul>
+<li class="chapter" data-level="3.5.1" data-path="optim.html"><a href="optim.html#cauchy-with-unknown-location."><i class="fa fa-check"></i><b>3.5.1</b> Cauchy with unknown location.</a></li>
+<li class="chapter" data-level="3.5.2" data-path="optim.html"><a href="optim.html#many-local-maxima"><i class="fa fa-check"></i><b>3.5.2</b> Many local maxima</a></li>
+<li class="chapter" data-level="3.5.3" data-path="optim.html"><a href="optim.html#modeling-beetle-data"><i class="fa fa-check"></i><b>3.5.3</b> Modeling beetle data</a></li>
+<li class="chapter" data-level="3.5.4" data-path="optim.html"><a href="optim.html#coordinate-descent-for-penalized-least-squares"><i class="fa fa-check"></i><b>3.5.4</b> Coordinate descent for penalized least squares</a></li>
+</ul></li>
+</ul></li>
+<li class="chapter" data-level="4" data-path="em-algorithm.html"><a href="em-algorithm.html"><i class="fa fa-check"></i><b>4</b> EM Algorithm</a><ul>
+<li class="chapter" data-level="4.1" data-path="em-algorithm.html"><a href="em-algorithm.html#introduction"><i class="fa fa-check"></i><b>4.1</b> Introduction</a></li>
+<li class="chapter" data-level="4.2" data-path="em-algorithm.html"><a href="em-algorithm.html#em-algorithm-1"><i class="fa fa-check"></i><b>4.2</b> EM Algorithm</a></li>
+<li class="chapter" data-level="4.3" data-path="em-algorithm.html"><a href="em-algorithm.html#example-clustering-by-em"><i class="fa fa-check"></i><b>4.3</b> Example: Clustering by EM</a></li>
+<li class="chapter" data-level="4.4" data-path="em-algorithm.html"><a href="em-algorithm.html#variants-of-em"><i class="fa fa-check"></i><b>4.4</b> Variants of EM</a><ul>
+<li class="chapter" data-level="4.4.1" data-path="em-algorithm.html"><a href="em-algorithm.html#mcem"><i class="fa fa-check"></i><b>4.4.1</b> MCEM</a></li>
+<li class="chapter" data-level="4.4.2" data-path="em-algorithm.html"><a href="em-algorithm.html#ecm"><i class="fa fa-check"></i><b>4.4.2</b> ECM</a></li>
+</ul></li>
+<li class="chapter" data-level="4.5" data-path="em-algorithm.html"><a href="em-algorithm.html#standard-errors"><i class="fa fa-check"></i><b>4.5</b> Standard Errors</a><ul>
+<li class="chapter" data-level="4.5.1" data-path="em-algorithm.html"><a href="em-algorithm.html#supplemental-em-sem"><i class="fa fa-check"></i><b>4.5.1</b> Supplemental EM (SEM)</a></li>
+<li class="chapter" data-level="4.5.2" data-path="em-algorithm.html"><a href="em-algorithm.html#direct-calculation-of-the-information-matrix"><i class="fa fa-check"></i><b>4.5.2</b> Direct Calculation of the Information Matrix</a></li>
+</ul></li>
+<li class="chapter" data-level="4.6" data-path="em-algorithm.html"><a href="em-algorithm.html#acceleration"><i class="fa fa-check"></i><b>4.6</b> Acceleration</a></li>
+<li class="chapter" data-level="4.7" data-path="em-algorithm.html"><a href="em-algorithm.html#example-hidden-markov-model"><i class="fa fa-check"></i><b>4.7</b> Example: Hidden Markov Model</a></li>
+<li class="chapter" data-level="4.8" data-path="em-algorithm.html"><a href="em-algorithm.html#exercises-2"><i class="fa fa-check"></i><b>4.8</b> Exercises</a><ul>
+<li class="chapter" data-level="4.8.1" data-path="em-algorithm.html"><a href="em-algorithm.html#finite-mixture-regression"><i class="fa fa-check"></i><b>4.8.1</b> Finite mixture regression</a></li>
+<li class="chapter" data-level="4.8.2" data-path="em-algorithm.html"><a href="em-algorithm.html#acceleration-of-em-algorithm"><i class="fa fa-check"></i><b>4.8.2</b> Acceleration of EM algorithm</a></li>
+<li class="chapter" data-level="4.8.3" data-path="em-algorithm.html"><a href="em-algorithm.html#a-poisson-hmm-for-earthquake-data"><i class="fa fa-check"></i><b>4.8.3</b> A Poisson-HMM for earthquake data</a></li>
+</ul></li>
+</ul></li>
+<li class="chapter" data-level="5" data-path="random-number-generation.html"><a href="random-number-generation.html"><i class="fa fa-check"></i><b>5</b> Random Number Generation</a><ul>
+<li class="chapter" data-level="5.1" data-path="random-number-generation.html"><a href="random-number-generation.html#univariate-random-number-generation"><i class="fa fa-check"></i><b>5.1</b> Univariate Random Number Generation</a><ul>
+<li class="chapter" data-level="5.1.1" data-path="random-number-generation.html"><a href="random-number-generation.html#inverse-cdf"><i class="fa fa-check"></i><b>5.1.1</b> Inverse CDF</a></li>
+<li class="chapter" data-level="5.1.2" data-path="random-number-generation.html"><a href="random-number-generation.html#rejection-method"><i class="fa fa-check"></i><b>5.1.2</b> Rejection Method</a></li>
+<li class="chapter" data-level="5.1.3" data-path="random-number-generation.html"><a href="random-number-generation.html#sampling-importance-resampling"><i class="fa fa-check"></i><b>5.1.3</b> Sampling Importance Resampling</a></li>
+</ul></li>
+<li class="chapter" data-level="5.2" data-path="random-number-generation.html"><a href="random-number-generation.html#stochastic-processes"><i class="fa fa-check"></i><b>5.2</b> Stochastic Processes</a><ul>
+<li class="chapter" data-level="5.2.1" data-path="random-number-generation.html"><a href="random-number-generation.html#gaussian-markov-process"><i class="fa fa-check"></i><b>5.2.1</b> Gaussian Markov Process</a></li>
+<li class="chapter" data-level="5.2.2" data-path="random-number-generation.html"><a href="random-number-generation.html#counting-process"><i class="fa fa-check"></i><b>5.2.2</b> Counting Process</a></li>
+<li class="chapter" data-level="5.2.3" data-path="random-number-generation.html"><a href="random-number-generation.html#inhomogeneous-poisson-process"><i class="fa fa-check"></i><b>5.2.3</b> Inhomogeneous Poisson Process</a></li>
+<li class="chapter" data-level="5.2.4" data-path="random-number-generation.html"><a href="random-number-generation.html#jump-diffusion-process"><i class="fa fa-check"></i><b>5.2.4</b> Jump-Diffusion Process</a></li>
+</ul></li>
+<li class="chapter" data-level="5.3" data-path="random-number-generation.html"><a href="random-number-generation.html#exercises-3"><i class="fa fa-check"></i><b>5.3</b> Exercises</a><ul>
+<li class="chapter" data-level="5.3.1" data-path="random-number-generation.html"><a href="random-number-generation.html#rejection-sampling"><i class="fa fa-check"></i><b>5.3.1</b> Rejection sampling</a></li>
+<li class="chapter" data-level="5.3.2" data-path="random-number-generation.html"><a href="random-number-generation.html#mixture-proposal"><i class="fa fa-check"></i><b>5.3.2</b> Mixture Proposal</a></li>
+<li class="chapter" data-level="5.3.3" data-path="random-number-generation.html"><a href="random-number-generation.html#orsteinuhlenbeck-process"><i class="fa fa-check"></i><b>5.3.3</b> Orstein–Uhlenbeck Process</a></li>
+<li class="chapter" data-level="5.3.4" data-path="random-number-generation.html"><a href="random-number-generation.html#poisson-process"><i class="fa fa-check"></i><b>5.3.4</b> Poisson Process</a></li>
+</ul></li>
+</ul></li>
+<li class="chapter" data-level="6" data-path="markov-chain-monte-carlo.html"><a href="markov-chain-monte-carlo.html"><i class="fa fa-check"></i><b>6</b> Markov Chain Monte Carlo</a><ul>
+<li class="chapter" data-level="6.1" data-path="markov-chain-monte-carlo.html"><a href="markov-chain-monte-carlo.html#eample-normal-mixture"><i class="fa fa-check"></i><b>6.1</b> Eample: Normal mixture</a></li>
+<li class="chapter" data-level="6.2" data-path="markov-chain-monte-carlo.html"><a href="markov-chain-monte-carlo.html#general-purpose-gibbs-sampling-with-the-arms"><i class="fa fa-check"></i><b>6.2</b> General-Purpose Gibbs Sampling with the ARMS</a></li>
+<li class="chapter" data-level="6.3" data-path="markov-chain-monte-carlo.html"><a href="markov-chain-monte-carlo.html#exercises-4"><i class="fa fa-check"></i><b>6.3</b> Exercises</a><ul>
+<li class="chapter" data-level="6.3.1" data-path="markov-chain-monte-carlo.html"><a href="markov-chain-monte-carlo.html#normal-mixture-revisited"><i class="fa fa-check"></i><b>6.3.1</b> Normal mixture revisited</a></li>
+</ul></li>
+</ul></li>
+<li class="chapter" data-level="7" data-path="mcinteg.html"><a href="mcinteg.html"><i class="fa fa-check"></i><b>7</b> Monte Carlo Integration</a><ul>
+<li class="chapter" data-level="7.1" data-path="mcinteg.html"><a href="mcinteg.html#introduction-1"><i class="fa fa-check"></i><b>7.1</b> Introduction</a></li>
+<li class="chapter" data-level="7.2" data-path="mcinteg.html"><a href="mcinteg.html#option-pricing"><i class="fa fa-check"></i><b>7.2</b> Option Pricing</a></li>
+<li class="chapter" data-level="7.3" data-path="mcinteg.html"><a href="mcinteg.html#particle-filtering-for-state-space-models"><i class="fa fa-check"></i><b>7.3</b> Particle Filtering for State Space Models</a></li>
+<li class="chapter" data-level="7.4" data-path="mcinteg.html"><a href="mcinteg.html#variance-reduction"><i class="fa fa-check"></i><b>7.4</b> Variance Reduction</a><ul>
+<li class="chapter" data-level="7.4.1" data-path="mcinteg.html"><a href="mcinteg.html#importance-sampling"><i class="fa fa-check"></i><b>7.4.1</b> Importance Sampling</a></li>
+<li class="chapter" data-level="7.4.2" data-path="mcinteg.html"><a href="mcinteg.html#control-variates"><i class="fa fa-check"></i><b>7.4.2</b> Control Variates</a></li>
+<li class="chapter" data-level="7.4.3" data-path="mcinteg.html"><a href="mcinteg.html#antithetic-variates"><i class="fa fa-check"></i><b>7.4.3</b> Antithetic Variates</a></li>
+<li class="chapter" data-level="7.4.4" data-path="mcinteg.html"><a href="mcinteg.html#stratified-sampling"><i class="fa fa-check"></i><b>7.4.4</b> Stratified Sampling</a></li>
+</ul></li>
+<li class="chapter" data-level="7.5" data-path="mcinteg.html"><a href="mcinteg.html#exercises-5"><i class="fa fa-check"></i><b>7.5</b> Exercises</a></li>
+</ul></li>
+<li class="chapter" data-level="8" data-path="boot.html"><a href="boot.html"><i class="fa fa-check"></i><b>8</b> Bootstrap</a><ul>
+<li class="chapter" data-level="8.1" data-path="boot.html"><a href="boot.html#principles-of-bootstrap"><i class="fa fa-check"></i><b>8.1</b> Principles of Bootstrap</a></li>
+<li class="chapter" data-level="8.2" data-path="boot.html"><a href="boot.html#parametric-bootstrap"><i class="fa fa-check"></i><b>8.2</b> Parametric Bootstrap</a><ul>
+<li class="chapter" data-level="8.2.1" data-path="boot.html"><a href="boot.html#goodness-of-fit-test"><i class="fa fa-check"></i><b>8.2.1</b> Goodness-of-Fit Test</a></li>
+</ul></li>
+<li class="chapter" data-level="8.3" data-path="boot.html"><a href="boot.html#block-bootstrap"><i class="fa fa-check"></i><b>8.3</b> Block bootstrap</a></li>
+<li class="chapter" data-level="8.4" data-path="boot.html"><a href="boot.html#semiparametric-bootstrap"><i class="fa fa-check"></i><b>8.4</b> Semiparametric bootstrap</a></li>
+<li class="chapter" data-level="8.5" data-path="boot.html"><a href="boot.html#multiplier-bootstrap"><i class="fa fa-check"></i><b>8.5</b> Multiplier bootstrap</a><ul>
+<li class="chapter" data-level="8.5.1" data-path="boot.html"><a href="boot.html#multiplier-central-limit-theorem"><i class="fa fa-check"></i><b>8.5.1</b> Multiplier central limit theorem</a></li>
+</ul></li>
+<li class="chapter" data-level="8.6" data-path="boot.html"><a href="boot.html#exercises-6"><i class="fa fa-check"></i><b>8.6</b> Exercises</a></li>
+</ul></li>
+<li class="appendix"><span><b>Appendix</b></span></li>
+<li class="chapter" data-level="A" data-path="git-setup.html"><a href="git-setup.html"><i class="fa fa-check"></i><b>A</b> Git Setup</a><ul>
+<li class="chapter" data-level="A.1" data-path="git-setup.html"><a href="git-setup.html#git-windows"><i class="fa fa-check"></i><b>A.1</b> Git for Windows installer</a></li>
+</ul></li>
+<li class="chapter" data-level="B" data-path="git-lesson.html"><a href="git-lesson.html"><i class="fa fa-check"></i><b>B</b> Git Lesson</a><ul>
+<li class="chapter" data-level="B.1" data-path="git-lesson.html"><a href="git-lesson.html#automated-version-control"><i class="fa fa-check"></i><b>B.1</b> Automated Version Control</a></li>
+<li class="chapter" data-level="B.2" data-path="git-lesson.html"><a href="git-lesson.html#setup"><i class="fa fa-check"></i><b>B.2</b> Setup</a></li>
+<li class="chapter" data-level="B.3" data-path="git-lesson.html"><a href="git-lesson.html#creating-a-repository"><i class="fa fa-check"></i><b>B.3</b> Creating a Repository</a></li>
+<li class="chapter" data-level="B.4" data-path="git-lesson.html"><a href="git-lesson.html#setting-up-git-authorship"><i class="fa fa-check"></i><b>B.4</b> Setting up Git Authorship</a></li>
+<li class="chapter" data-level="B.5" data-path="git-lesson.html"><a href="git-lesson.html#tracking-changes"><i class="fa fa-check"></i><b>B.5</b> Tracking Changes</a></li>
+<li class="chapter" data-level="B.6" data-path="git-lesson.html"><a href="git-lesson.html#undo-changes"><i class="fa fa-check"></i><b>B.6</b> Undo Changes</a></li>
+<li class="chapter" data-level="B.7" data-path="git-lesson.html"><a href="git-lesson.html#explore-history"><i class="fa fa-check"></i><b>B.7</b> Explore History</a></li>
+<li class="chapter" data-level="B.8" data-path="git-lesson.html"><a href="git-lesson.html#next-steps"><i class="fa fa-check"></i><b>B.8</b> Next Steps</a></li>
+</ul></li>
+<li class="chapter" data-level="" data-path="references.html"><a href="references.html"><i class="fa fa-check"></i>References</a></li>
+</ul>
+
+      </nav>
+    </div>
+
+    <div class="book-body">
+      <div class="body-inner">
+        <div class="book-header" role="navigation">
+          <h1>
+            <i class="fa fa-circle-o-notch fa-spin"></i><a href="./">STAT 5361: Statistical Computing, Fall 2019</a>
+          </h1>
+        </div>
+
+        <div class="page-wrapper" tabindex="-1" role="main">
+          <div class="page-inner">
+
+            <section class="normal" id="section-">
+<div id="mcinteg" class="section level1">
+<h1><span class="header-section-number">Chapter 7</span> Monte Carlo Integration</h1>
+<div id="introduction-1" class="section level2">
+<h2><span class="header-section-number">7.1</span> Introduction</h2>
+<p>Evaluate integral
+<span class="math display">\[\begin{equation*}
+  E_f[ h(X)] = \int_{\mathcal{X}} h(x) f(x) \mathrm{d}x.
+\end{equation*}\]</span>
+If sampling from <span class="math inline">\(f\)</span> can be done,
+approximate by sample average
+<span class="math display">\[\begin{equation*}
+  \bar h_n = \frac{1}{n}\sum_{j=1}^n h(X_j),
+\end{equation*}\]</span>
+where <span class="math inline">\(X_1, \ldots, X_n\)</span> are a random sample from <span class="math inline">\(f\)</span>.
+The convergence is enforced by the SLLN.
+The speed of the convergence can be assessed if <span class="math inline">\(E h^2(X) &lt; \infty\)</span>
+with the CLT.</p>
+<div class="sourceCode" id="cb108"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb108-1" data-line-number="1">f &lt;-<span class="st"> </span><span class="cf">function</span>(x) <span class="kw">log</span>(<span class="kw">abs</span>(x)) <span class="op">*</span><span class="st"> </span><span class="kw">exp</span>(<span class="op">-</span><span class="st"> </span>(x <span class="op">+</span><span class="st"> </span><span class="dv">1</span>)<span class="op">^</span><span class="dv">2</span> <span class="op">/</span><span class="st"> </span><span class="dv">8</span>)</a>
+<a class="sourceLine" id="cb108-2" data-line-number="2"><span class="kw">integrate</span>(f, <span class="op">-</span><span class="ot">Inf</span>, <span class="ot">Inf</span>)</a></code></pre></div>
+<pre><code>## 0.8919911 with absolute error &lt; 5.5e-06</code></pre>
+<div class="sourceCode" id="cb110"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb110-1" data-line-number="1">## Monte Carlo approximation</a>
+<a class="sourceLine" id="cb110-2" data-line-number="2">nrep &lt;-<span class="st"> </span><span class="dv">1000</span></a>
+<a class="sourceLine" id="cb110-3" data-line-number="3">n &lt;-<span class="st"> </span><span class="dv">10000</span></a>
+<a class="sourceLine" id="cb110-4" data-line-number="4">## normal sampler</a>
+<a class="sourceLine" id="cb110-5" data-line-number="5">## i.n &lt;- replicate(nrep, sqrt(8 * pi) * mean(log(abs(rnorm(n, -1, 2)))))</a>
+<a class="sourceLine" id="cb110-6" data-line-number="6">i.n &lt;-<span class="st"> </span><span class="kw">replicate</span>(nrep, {x &lt;-<span class="st"> </span><span class="kw">rnorm</span>(n, <span class="dv">-1</span>, <span class="dv">2</span>); <span class="kw">mean</span>(<span class="kw">f</span>(x) <span class="op">/</span><span class="st"> </span><span class="kw">dnorm</span>(x, <span class="dv">-1</span>, <span class="dv">2</span>))})</a>
+<a class="sourceLine" id="cb110-7" data-line-number="7"><span class="kw">mean</span>(i.n)</a></code></pre></div>
+<pre><code>## [1] 0.8904976</code></pre>
+<div class="sourceCode" id="cb112"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb112-1" data-line-number="1"><span class="kw">sd</span>(i.n)</a></code></pre></div>
+<pre><code>## [1] 0.05637411</code></pre>
+<div class="sourceCode" id="cb114"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb114-1" data-line-number="1">## cauchy sampler</a>
+<a class="sourceLine" id="cb114-2" data-line-number="2">i.c &lt;-<span class="st"> </span><span class="kw">replicate</span>(nrep, {x &lt;-<span class="st"> </span><span class="kw">rcauchy</span>(n, <span class="dv">-1</span>, <span class="dv">2</span>); <span class="kw">mean</span>(<span class="kw">f</span>(x) <span class="op">/</span><span class="st"> </span><span class="kw">dcauchy</span>(x, <span class="dv">-1</span>, <span class="dv">2</span>))})</a>
+<a class="sourceLine" id="cb114-3" data-line-number="3"><span class="kw">mean</span>(i.c)</a></code></pre></div>
+<pre><code>## [1] 0.8929429</code></pre>
+<div class="sourceCode" id="cb116"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb116-1" data-line-number="1"><span class="kw">sd</span>(i.c)</a></code></pre></div>
+<pre><code>## [1] 0.06465228</code></pre>
+<p>The order of the Monte Carlo error is <span class="math inline">\(\sqrt{\mathrm{Var}[h(X)] / n}\)</span>.
+The error of estimating <span class="math inline">\(E_f[ h(X)]\)</span> declines at the rate of <span class="math inline">\(n^{-1/2}\)</span>.
+This is slower than the quadrature method with <span class="math inline">\(n\)</span> quadrature
+points, which has a rate of <span class="math inline">\(O(n^{-k}\)</span> for <span class="math inline">\(k \ge 2\)</span> typically.</p>
+</div>
+<div id="option-pricing" class="section level2">
+<h2><span class="header-section-number">7.2</span> Option Pricing</h2>
+<div class="sourceCode" id="cb118"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb118-1" data-line-number="1">blackScholes &lt;-<span class="st"> </span><span class="cf">function</span>(strike, time, S0, rfrate, sigma) {</a>
+<a class="sourceLine" id="cb118-2" data-line-number="2">    crit &lt;-<span class="st"> </span>(<span class="kw">log</span>(strike <span class="op">/</span><span class="st"> </span>S0) <span class="op">-</span><span class="st"> </span>(rfrate <span class="op">-</span><span class="st"> </span>sigma<span class="op">^</span><span class="dv">2</span> <span class="op">/</span><span class="st"> </span><span class="dv">2</span>) <span class="op">*</span><span class="st"> </span>time)<span class="op">/</span><span class="st"> </span>sigma <span class="op">/</span><span class="st"> </span><span class="kw">sqrt</span>(time)</a>
+<a class="sourceLine" id="cb118-3" data-line-number="3">    S0 <span class="op">*</span><span class="st"> </span><span class="kw">pnorm</span>(sigma <span class="op">*</span><span class="st"> </span><span class="kw">sqrt</span>(time) <span class="op">-</span><span class="st"> </span>crit) <span class="op">-</span></a>
+<a class="sourceLine" id="cb118-4" data-line-number="4"><span class="st">        </span>strike <span class="op">*</span><span class="st"> </span><span class="kw">exp</span>(<span class="op">-</span><span class="st"> </span>rfrate <span class="op">*</span><span class="st"> </span>time) <span class="op">*</span><span class="st"> </span><span class="kw">pnorm</span>(<span class="op">-</span>crit)</a>
+<a class="sourceLine" id="cb118-5" data-line-number="5">}</a>
+<a class="sourceLine" id="cb118-6" data-line-number="6"></a>
+<a class="sourceLine" id="cb118-7" data-line-number="7">S0 &lt;-<span class="st"> </span>strike &lt;-<span class="st"> </span>time &lt;-<span class="st"> </span><span class="dv">1</span></a>
+<a class="sourceLine" id="cb118-8" data-line-number="8">rfrate &lt;-<span class="st"> </span><span class="fl">0.06</span></a>
+<a class="sourceLine" id="cb118-9" data-line-number="9">sigma &lt;-<span class="st"> </span><span class="fl">0.1</span></a>
+<a class="sourceLine" id="cb118-10" data-line-number="10">## analytic solution</a>
+<a class="sourceLine" id="cb118-11" data-line-number="11"><span class="kw">blackScholes</span>(strike, time, S0, rfrate, sigma)</a></code></pre></div>
+<pre><code>## [1] 0.07459322</code></pre>
+<div class="sourceCode" id="cb120"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb120-1" data-line-number="1">## Monte Carlo approximation</a>
+<a class="sourceLine" id="cb120-2" data-line-number="2">myApprox &lt;-<span class="st"> </span><span class="cf">function</span>(nsim, strike, time, S0, rfrate, signma) {</a>
+<a class="sourceLine" id="cb120-3" data-line-number="3">    wt &lt;-<span class="st"> </span><span class="kw">rnorm</span>(nsim, <span class="dt">sd =</span> <span class="kw">sqrt</span>(time) <span class="op">*</span><span class="st"> </span>sigma)</a>
+<a class="sourceLine" id="cb120-4" data-line-number="4">    value &lt;-<span class="st"> </span><span class="kw">mean</span>(<span class="kw">pmax</span>(S0 <span class="op">*</span><span class="st"> </span><span class="kw">exp</span>((rfrate <span class="op">-</span><span class="st"> </span>sigma<span class="op">^</span><span class="dv">2</span> <span class="op">/</span><span class="st"> </span><span class="dv">2</span>) <span class="op">*</span><span class="st"> </span>time <span class="op">+</span><span class="st"> </span>wt) <span class="op">-</span><span class="st"> </span>strike, <span class="dv">0</span>))</a>
+<a class="sourceLine" id="cb120-5" data-line-number="5">    <span class="kw">exp</span>(<span class="op">-</span>rfrate <span class="op">*</span><span class="st"> </span>time) <span class="op">*</span><span class="st"> </span>value</a>
+<a class="sourceLine" id="cb120-6" data-line-number="6">}</a>
+<a class="sourceLine" id="cb120-7" data-line-number="7"></a>
+<a class="sourceLine" id="cb120-8" data-line-number="8">mcAppr &lt;-<span class="st"> </span><span class="kw">replicate</span>(nrep, <span class="kw">myApprox</span>(n, strike, time, S0, rfrate, sigma))</a>
+<a class="sourceLine" id="cb120-9" data-line-number="9"><span class="kw">mean</span>(mcAppr)</a></code></pre></div>
+<pre><code>## [1] 0.0746219</code></pre>
+<div class="sourceCode" id="cb122"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb122-1" data-line-number="1"><span class="kw">sd</span>(mcAppr)</a></code></pre></div>
+<pre><code>## [1] 0.000777726</code></pre>
+<p>What if the stock price process <span class="math inline">\(S(t)\)</span> is not a geometric Brownian motion?</p>
+</div>
+<div id="particle-filtering-for-state-space-models" class="section level2">
+<h2><span class="header-section-number">7.3</span> Particle Filtering for State Space Models</h2>
+<p>Consider a simple state space model
+<span class="math display">\[\begin{eqnarray*}
+Y_{t}  \mid &amp; X_t,    &amp; \theta &amp; \sim &amp; N(X_t,     &amp; \sigma^2)\\
+X_{t}  \mid &amp; X_{t-1},&amp; \theta &amp; \sim &amp; N(X_{t-1}, &amp; \tau^2)
+\end{eqnarray*}\]</span>
+where <span class="math inline">\(X_0 \sim N(\mu_0, \sigma^2_0)\)</span> and <span class="math inline">\(\theta = (\sigma^2, \tau^2)\)</span>.
+This model is also known as a dynamic linear model. The observed data are <span class="math inline">\(Y_1, \ldots, Y_T\)</span>. We would like to predict the hidden states <span class="math inline">\(X_1, \ldots, X_T\)</span>. For this simple normal model, closed form solutions exist but we use SIS for illustration.</p>
+<p>First, let’s generate data.</p>
+<div class="sourceCode" id="cb124"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb124-1" data-line-number="1">dlmSim &lt;-<span class="st"> </span><span class="cf">function</span>(n, sigma, tau, x0) {</a>
+<a class="sourceLine" id="cb124-2" data-line-number="2">  x    &lt;-<span class="st"> </span><span class="kw">rep</span>(<span class="dv">0</span>, n)</a>
+<a class="sourceLine" id="cb124-3" data-line-number="3">  y    &lt;-<span class="st"> </span><span class="kw">rep</span>(<span class="dv">0</span>, n)</a>
+<a class="sourceLine" id="cb124-4" data-line-number="4">  x[<span class="dv">1</span>] &lt;-<span class="st"> </span><span class="kw">rnorm</span>(<span class="dv">1</span>, x0,   tau)</a>
+<a class="sourceLine" id="cb124-5" data-line-number="5">  y[<span class="dv">1</span>] &lt;-<span class="st"> </span><span class="kw">rnorm</span>(<span class="dv">1</span>, x[<span class="dv">1</span>], sigma)</a>
+<a class="sourceLine" id="cb124-6" data-line-number="6">  <span class="cf">for</span> (t <span class="cf">in</span> <span class="dv">2</span><span class="op">:</span>n) { <span class="co"># loop for clarity; could be vectorized</span></a>
+<a class="sourceLine" id="cb124-7" data-line-number="7">    x[t] &lt;-<span class="st"> </span><span class="kw">rnorm</span>(<span class="dv">1</span>, x[t<span class="dv">-1</span>], tau)</a>
+<a class="sourceLine" id="cb124-8" data-line-number="8">    y[t] &lt;-<span class="st"> </span><span class="kw">rnorm</span>(<span class="dv">1</span>, x[t],   sigma)</a>
+<a class="sourceLine" id="cb124-9" data-line-number="9">  }</a>
+<a class="sourceLine" id="cb124-10" data-line-number="10">  <span class="kw">data.frame</span>(<span class="dt">y =</span> y, <span class="dt">x =</span> x) <span class="co"># save x for comparison purpose</span></a>
+<a class="sourceLine" id="cb124-11" data-line-number="11">}</a></code></pre></div>
+<p>Let <span class="math inline">\(\tau^2 = 0.5\)</span> and <span class="math inline">\(\sigma^2 = 2\tau^2\)</span>.
+Generate a series of length <span class="math inline">\(n = 50\)</span>.</p>
+<div class="sourceCode" id="cb125"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb125-1" data-line-number="1">n &lt;-<span class="st"> </span><span class="dv">50</span></a>
+<a class="sourceLine" id="cb125-2" data-line-number="2">tau &lt;-<span class="st"> </span><span class="kw">sqrt</span>(<span class="fl">0.5</span>); sigma &lt;-<span class="st"> </span><span class="kw">sqrt</span>(<span class="dv">2</span>) <span class="op">*</span><span class="st"> </span>tau</a>
+<a class="sourceLine" id="cb125-3" data-line-number="3"><span class="kw">set.seed</span>(<span class="dv">123456</span>)</a>
+<a class="sourceLine" id="cb125-4" data-line-number="4">dat &lt;-<span class="st"> </span><span class="kw">dlmSim</span>(n, sigma, tau, <span class="dv">0</span>)</a></code></pre></div>
+<p>Now we use apply SIS to make inferences about <span class="math inline">\(X_1, \ldots, X_T\)</span>.</p>
+<div class="sourceCode" id="cb126"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb126-1" data-line-number="1">dlmSIS &lt;-<span class="st"> </span><span class="cf">function</span>(y, sigma, tau, m0, s0, N) {</a>
+<a class="sourceLine" id="cb126-2" data-line-number="2">  xseq &lt;-<span class="st"> </span><span class="kw">matrix</span>(<span class="dv">0</span>, n, N)</a>
+<a class="sourceLine" id="cb126-3" data-line-number="3">  x &lt;-<span class="st"> </span><span class="kw">rnorm</span>(N, m0, s0)</a>
+<a class="sourceLine" id="cb126-4" data-line-number="4">  w &lt;-<span class="st"> </span><span class="kw">rep</span>(<span class="dv">1</span><span class="op">/</span>N, N)</a>
+<a class="sourceLine" id="cb126-5" data-line-number="5">  <span class="cf">for</span> (t <span class="cf">in</span> <span class="dv">1</span><span class="op">:</span>n) {</a>
+<a class="sourceLine" id="cb126-6" data-line-number="6">    x &lt;-<span class="st"> </span><span class="kw">rnorm</span>(N, x, tau)</a>
+<a class="sourceLine" id="cb126-7" data-line-number="7">    w &lt;-<span class="st"> </span>w <span class="op">*</span><span class="st"> </span><span class="kw">dnorm</span>(y[t], x, sigma)</a>
+<a class="sourceLine" id="cb126-8" data-line-number="8">    xseq[t, ] &lt;-<span class="st"> </span>x &lt;-<span class="st"> </span><span class="kw">sample</span>(x, <span class="dt">size =</span> N, <span class="dt">replace =</span> <span class="ot">TRUE</span>, <span class="dt">prob =</span> w)</a>
+<a class="sourceLine" id="cb126-9" data-line-number="9">  }</a>
+<a class="sourceLine" id="cb126-10" data-line-number="10">  xseq</a>
+<a class="sourceLine" id="cb126-11" data-line-number="11">}</a></code></pre></div>
+<p>We run this SIS with <span class="math inline">\(\mu_0 = 0\)</span> and <span class="math inline">\(\sigma_0 = 10\)</span> with <span class="math inline">\(N = 1000\)</span> particles. It is easy to see that the particle sample degenerates.</p>
+<div class="sourceCode" id="cb127"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb127-1" data-line-number="1">xseq &lt;-<span class="st"> </span><span class="kw">dlmSIS</span>(dat<span class="op">$</span>y, sigma, tau, <span class="dv">0</span>, <span class="dv">10</span>, <span class="dv">1000</span>)</a>
+<a class="sourceLine" id="cb127-2" data-line-number="2"><span class="kw">summary</span>(<span class="kw">apply</span>(xseq, <span class="dv">1</span>, <span class="cf">function</span>(x) <span class="kw">length</span>(<span class="kw">unique</span>(x))))</a></code></pre></div>
+<pre><code>##    Min. 1st Qu.  Median    Mean 3rd Qu.    Max. 
+##    8.00   17.25   23.00   34.22   34.75  194.00</code></pre>
+<div class="sourceCode" id="cb129"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb129-1" data-line-number="1">plotDlmPf &lt;-<span class="st"> </span><span class="cf">function</span>(xseq) {</a>
+<a class="sourceLine" id="cb129-2" data-line-number="2">  lower &lt;-<span class="st"> </span><span class="kw">apply</span>(xseq, <span class="dv">1</span>, quantile, <span class="dt">prob =</span> <span class="fl">0.025</span>)</a>
+<a class="sourceLine" id="cb129-3" data-line-number="3">  upper &lt;-<span class="st"> </span><span class="kw">apply</span>(xseq, <span class="dv">1</span>, quantile, <span class="dt">prob =</span> <span class="fl">0.975</span>)</a>
+<a class="sourceLine" id="cb129-4" data-line-number="4">  med &lt;-<span class="st"> </span><span class="kw">apply</span>(xseq, <span class="dv">1</span>, median)</a>
+<a class="sourceLine" id="cb129-5" data-line-number="5">  <span class="kw">plot</span>(dat<span class="op">$</span>x, <span class="dt">type =</span> <span class="st">&quot;n&quot;</span>, <span class="dt">ylim =</span> <span class="kw">range</span>(<span class="kw">c</span>(dat<span class="op">$</span>x, lower, upper)))</a>
+<a class="sourceLine" id="cb129-6" data-line-number="6">  <span class="kw">points</span>(dat<span class="op">$</span>x)</a>
+<a class="sourceLine" id="cb129-7" data-line-number="7">  <span class="kw">lines</span>(med, <span class="dt">lty =</span> <span class="dv">1</span>)</a>
+<a class="sourceLine" id="cb129-8" data-line-number="8">  <span class="kw">lines</span>(lower, <span class="dt">lty =</span> <span class="dv">2</span>)</a>
+<a class="sourceLine" id="cb129-9" data-line-number="9">  <span class="kw">lines</span>(upper, <span class="dt">lty =</span> <span class="dv">2</span>)</a>
+<a class="sourceLine" id="cb129-10" data-line-number="10">}</a>
+<a class="sourceLine" id="cb129-11" data-line-number="11"><span class="kw">plotDlmPf</span>(xseq)</a></code></pre></div>
+<p><img src="06-mcinteg_files/figure-html/dlmSIS-Run-1.png" width="672" /></p>
+<p>To fight for degeneracy, the sequential importance sampling resampling (SISR), the particles gets updated with uniform weight being the goal.</p>
+<div class="sourceCode" id="cb130"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb130-1" data-line-number="1">dlmSISR &lt;-<span class="st"> </span><span class="cf">function</span>(y, sigma, tau, m0, s0, N) {</a>
+<a class="sourceLine" id="cb130-2" data-line-number="2">  xseq &lt;-<span class="st"> </span><span class="kw">matrix</span>(<span class="dv">0</span>, n, N)</a>
+<a class="sourceLine" id="cb130-3" data-line-number="3">  x &lt;-<span class="st"> </span><span class="kw">rnorm</span>(N, m0, s0)</a>
+<a class="sourceLine" id="cb130-4" data-line-number="4">  <span class="cf">for</span> (t <span class="cf">in</span> <span class="dv">1</span><span class="op">:</span>n) {</a>
+<a class="sourceLine" id="cb130-5" data-line-number="5">    x &lt;-<span class="st"> </span><span class="kw">rnorm</span>(N, x, tau)</a>
+<a class="sourceLine" id="cb130-6" data-line-number="6">    w &lt;-<span class="st"> </span><span class="kw">dnorm</span>(y[t], x, sigma)</a>
+<a class="sourceLine" id="cb130-7" data-line-number="7">    xseq[t, ] &lt;-<span class="st"> </span>x &lt;-<span class="st"> </span><span class="kw">sample</span>(x, <span class="dt">size =</span> N, <span class="dt">replace =</span> <span class="ot">TRUE</span>, <span class="dt">prob =</span> w)</a>
+<a class="sourceLine" id="cb130-8" data-line-number="8">  }</a>
+<a class="sourceLine" id="cb130-9" data-line-number="9">  xseq</a>
+<a class="sourceLine" id="cb130-10" data-line-number="10">}</a></code></pre></div>
+<p>We rerun the analysis with SISR with the same data and setting.</p>
+<div class="sourceCode" id="cb131"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb131-1" data-line-number="1">xseq &lt;-<span class="st"> </span><span class="kw">dlmSISR</span>(dat<span class="op">$</span>y, sigma, tau, <span class="dv">0</span>, <span class="dv">10</span>, <span class="dv">1000</span>)</a>
+<a class="sourceLine" id="cb131-2" data-line-number="2"><span class="kw">summary</span>(<span class="kw">apply</span>(xseq, <span class="dv">1</span>, <span class="cf">function</span>(x) <span class="kw">length</span>(<span class="kw">unique</span>(x))))</a></code></pre></div>
+<pre><code>##    Min. 1st Qu.  Median    Mean 3rd Qu.    Max. 
+##   173.0   518.2   573.0   530.0   589.0   616.0</code></pre>
+<div class="sourceCode" id="cb133"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb133-1" data-line-number="1"><span class="kw">plotDlmPf</span>(xseq)</a></code></pre></div>
+<p><img src="06-mcinteg_files/figure-html/dlmSISR-run-1.png" width="672" /></p>
+<p>Another popular algorithm is the auxiliary particle filter algorithm (APF) of Pitt and Shephard (1999a). The APF uses importance sampling similarly to the bootstrap filter but includes an additional ``look-ahead step&quot;. At each time point t, the APF calculates first-stage weights <span class="math inline">\(w_{t|t−1}\)</span> for particles from time <span class="math inline">\(t − 1\)</span>. These weights are calculated using an estimate of the likelihood of the current data given each particle from the previous time point, <span class="math inline">\(\hat p(y_t \mid x_{t-1})\)</span>. Particles with high first-stage weights correspond to values of the latent state at time <span class="math inline">\(t − 1\)</span> that are likely to generate the observed data at time <span class="math inline">\(t\)</span>. The estimate <span class="math inline">\(\hat p(y_t | x_{t-1})\)</span> can be approximated by choosing an auxiliary variable <span class="math inline">\(\tilde x_t | x_{t-1}\)</span> and setting <span class="math inline">\(\hat p(y_t | x_{t-1}) = g(y_t|\tilde x_{t|t−1})\)</span>. Possible methods for choosing <span class="math inline">\(\tilde x_{t | t - 1}\)</span> include simulating a value from <span class="math inline">\(f(x_t|x_{t−1})\)</span> or taking <span class="math inline">\(\tilde x_{t | t - 1} = \mathbb{E}(x_t | x_{t−1})\)</span>.</p>
+<div class="sourceCode" id="cb134"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb134-1" data-line-number="1">dlmAPF &lt;-<span class="st"> </span><span class="cf">function</span>(y, sigma, tau, m0, s0, N) {</a>
+<a class="sourceLine" id="cb134-2" data-line-number="2">  xseq &lt;-<span class="st"> </span><span class="kw">matrix</span>(<span class="dv">0</span>, n, N)</a>
+<a class="sourceLine" id="cb134-3" data-line-number="3">  x &lt;-<span class="st"> </span><span class="kw">rnorm</span>(N, m0, s0)</a>
+<a class="sourceLine" id="cb134-4" data-line-number="4">  <span class="cf">for</span> (t <span class="cf">in</span> <span class="dv">1</span><span class="op">:</span>n) {</a>
+<a class="sourceLine" id="cb134-5" data-line-number="5">    w0 &lt;-<span class="st"> </span><span class="kw">dnorm</span>(y[t], x, sigma)</a>
+<a class="sourceLine" id="cb134-6" data-line-number="6">    tilx &lt;-<span class="st"> </span><span class="kw">sample</span>(x, <span class="dt">size =</span> N, <span class="dt">replace =</span> <span class="ot">TRUE</span>, <span class="dt">prob =</span> w0)</a>
+<a class="sourceLine" id="cb134-7" data-line-number="7">    x &lt;-<span class="st"> </span><span class="kw">rnorm</span>(N, tilx, tau)</a>
+<a class="sourceLine" id="cb134-8" data-line-number="8">    w &lt;-<span class="st"> </span><span class="kw">dnorm</span>(y[t], x, sigma) <span class="op">/</span><span class="st"> </span><span class="kw">dnorm</span>(y[t], tilx, sigma)</a>
+<a class="sourceLine" id="cb134-9" data-line-number="9">    xseq[t, ] &lt;-<span class="st"> </span>x &lt;-<span class="st"> </span><span class="kw">sample</span>(x, <span class="dt">size =</span> N, <span class="dt">replace =</span> <span class="ot">TRUE</span>, <span class="dt">prob =</span> w)</a>
+<a class="sourceLine" id="cb134-10" data-line-number="10">  }</a>
+<a class="sourceLine" id="cb134-11" data-line-number="11">  xseq</a>
+<a class="sourceLine" id="cb134-12" data-line-number="12">}</a>
+<a class="sourceLine" id="cb134-13" data-line-number="13"></a>
+<a class="sourceLine" id="cb134-14" data-line-number="14">xseq &lt;-<span class="st"> </span><span class="kw">dlmAPF</span>(dat<span class="op">$</span>y, sigma, tau, <span class="dv">0</span>, <span class="dv">10</span>, <span class="dv">1000</span>)</a>
+<a class="sourceLine" id="cb134-15" data-line-number="15"><span class="kw">summary</span>(<span class="kw">apply</span>(xseq, <span class="dv">1</span>, <span class="cf">function</span>(x) <span class="kw">length</span>(<span class="kw">unique</span>(x))))</a></code></pre></div>
+<pre><code>##    Min. 1st Qu.  Median    Mean 3rd Qu.    Max. 
+##   368.0   561.0   593.0   567.6   598.0   614.0</code></pre>
+<div class="sourceCode" id="cb136"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb136-1" data-line-number="1"><span class="kw">plotDlmPf</span>(xseq)</a></code></pre></div>
+<p><img src="06-mcinteg_files/figure-html/dlmAPF-1.png" width="672" /></p>
+</div>
+<div id="variance-reduction" class="section level2">
+<h2><span class="header-section-number">7.4</span> Variance Reduction</h2>
+<div id="importance-sampling" class="section level3">
+<h3><span class="header-section-number">7.4.1</span> Importance Sampling</h3>
+<p>An integral <span class="math inline">\(\int_a^b H(x) \mathrm{d}x\)</span> is expressed as
+<span class="math display">\[
+  \mu = \int_a^b h(x) f(x) \mathrm{d}x
+\]</span>
+where <span class="math inline">\(f(x)\)</span> is a density with support <span class="math inline">\((a, b)\)</span> and <span class="math inline">\(h(x) = H(x) / f(x)\)</span>.
+An ordinary MC estimator of <span class="math inline">\(\mu\)</span> is
+<span class="math display">\[
+  \hat\mu = \frac{1}{n} \sum_{i=1}^n h(Z_i)
+\]</span>
+where <span class="math inline">\(Z_1, \ldots, Z_n\)</span> are a random sample from <span class="math inline">\(f\)</span>.</p>
+<p>An importance sampling estimator is
+<span class="math display">\[
+  \hat\mu = \frac{1}{n} \sum_{i=1}^n \frac{h(X_i)}{g(X_i)}
+\]</span>
+where <span class="math inline">\(X_1, \ldots, X_n\)</span> are a random sample from a density <span class="math inline">\(g\)</span> whose support is the same as <span class="math inline">\(f\)</span>. This estimator is unbiased with <span class="math inline">\(\mathbb{E}(\hat\mu) = \mu\)</span>, the optimal choice of <span class="math inline">\(g\)</span> should minimize the variance <span class="math inline">\(\hat\mu\)</span> or equivalently the second moment of <span class="math inline">\(\hat\mu\)</span>. From Jensen’s inequality
+<span class="math display">\[
+  \mathbb{E}(\hat\mu^2) \ge \mathbb{E}^2 (\hat\mu) = \mu^2.
+\]</span>
+When the equality holds, we have <span class="math inline">\(\mathrm{Var}(\hat\mu) = 0\)</span>. That is the density <span class="math inline">\(g\)</span> should be chosen such that <span class="math inline">\(g(x) \propto |h(x)| f(x) = |H(x)|\)</span>. The result is slightly irrelevant since <span class="math inline">\(\int_a^b H(x) \mathrm{d}x\)</span> is exactly what we need to find out the first place. Nonetheless, it implies that the variance of the weighted estimator is lower if <span class="math inline">\(g(z)\)</span> resembles <span class="math inline">\(|h(z)| f(z)\)</span>, in which case, random points are sampled where they are needed most for accuracy.</p>
+<p>For illustration, Consider MC integration of <span class="math inline">\(\mathbb{E}[ h(X)]\)</span>, where
+<span class="math inline">\(h(x) = x^\alpha\)</span> and <span class="math inline">\(X\)</span> is an exponential random variable with mean <span class="math inline">\(\beta\)</span>.
+The optimal sampler <span class="math inline">\(g\)</span> should be <span class="math inline">\(\Gamma(\alpha + 1, \beta)\)</span>.</p>
+<div class="sourceCode" id="cb137"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb137-1" data-line-number="1">isAppr &lt;-<span class="st"> </span><span class="cf">function</span>(n, h, df, dg, rg, ...) {</a>
+<a class="sourceLine" id="cb137-2" data-line-number="2">  x &lt;-<span class="st"> </span><span class="kw">rg</span>(n, ...)</a>
+<a class="sourceLine" id="cb137-3" data-line-number="3">  <span class="kw">mean</span>( <span class="kw">h</span>(x) <span class="op">*</span><span class="st"> </span><span class="kw">df</span>(x) <span class="op">/</span><span class="st"> </span><span class="kw">dg</span>(x, ...) )</a>
+<a class="sourceLine" id="cb137-4" data-line-number="4">}</a>
+<a class="sourceLine" id="cb137-5" data-line-number="5"></a>
+<a class="sourceLine" id="cb137-6" data-line-number="6">alpha &lt;-<span class="st"> </span><span class="dv">3</span></a>
+<a class="sourceLine" id="cb137-7" data-line-number="7">h &lt;-<span class="st"> </span><span class="cf">function</span>(x) x<span class="op">^</span>alpha</a>
+<a class="sourceLine" id="cb137-8" data-line-number="8">beta &lt;-<span class="st"> </span><span class="dv">2</span></a>
+<a class="sourceLine" id="cb137-9" data-line-number="9">df &lt;-<span class="st"> </span><span class="cf">function</span>(x) <span class="kw">dexp</span>(x, <span class="dt">rate =</span> <span class="dv">1</span> <span class="op">/</span><span class="st"> </span>beta)</a>
+<a class="sourceLine" id="cb137-10" data-line-number="10"></a>
+<a class="sourceLine" id="cb137-11" data-line-number="11">mySummary &lt;-<span class="st"> </span><span class="cf">function</span>(nrep, n, h, df, dg, rg) {</a>
+<a class="sourceLine" id="cb137-12" data-line-number="12">##    browser()</a>
+<a class="sourceLine" id="cb137-13" data-line-number="13">    sim &lt;-<span class="st"> </span><span class="kw">replicate</span>(nrep, <span class="kw">isAppr</span>(n, h, df, dg, rg))</a>
+<a class="sourceLine" id="cb137-14" data-line-number="14">    <span class="kw">c</span>(<span class="dt">mean =</span> <span class="kw">mean</span>(sim), <span class="dt">sd =</span> <span class="kw">sd</span>(sim))</a>
+<a class="sourceLine" id="cb137-15" data-line-number="15">}</a>
+<a class="sourceLine" id="cb137-16" data-line-number="16"></a>
+<a class="sourceLine" id="cb137-17" data-line-number="17"><span class="kw">sapply</span>(<span class="dv">1</span><span class="op">:</span><span class="dv">6</span>, </a>
+<a class="sourceLine" id="cb137-18" data-line-number="18">       <span class="cf">function</span>(shp) {</a>
+<a class="sourceLine" id="cb137-19" data-line-number="19">           rg &lt;-<span class="st"> </span><span class="cf">function</span>(n) <span class="kw">rgamma</span>(n, <span class="dt">shape =</span> shp, <span class="dt">scale =</span> beta)</a>
+<a class="sourceLine" id="cb137-20" data-line-number="20">           dg &lt;-<span class="st"> </span><span class="cf">function</span>(x) <span class="kw">dgamma</span>(x, <span class="dt">shape =</span> shp, <span class="dt">scale =</span> beta)</a>
+<a class="sourceLine" id="cb137-21" data-line-number="21">           <span class="kw">mySummary</span>(<span class="dv">100</span>, <span class="dv">1000</span>, h, df, dg, rg)</a>
+<a class="sourceLine" id="cb137-22" data-line-number="22">       })</a></code></pre></div>
+<pre><code>##           [,1]      [,2]       [,3] [,4]       [,5]      [,6]
+## mean 47.255131 47.857725 47.9267750   48 48.0636864 47.967139
+## sd    6.761963  2.665243  0.8627971    0  0.8602572  1.985869</code></pre>
+<div id="ruin-probability" class="section level4">
+<h4><span class="header-section-number">7.4.1.1</span> Ruin Probability</h4>
+<p>Consider an insurance company with a reserve <span class="math inline">\(x &gt; 0\)</span>. Suppose that it earns premiums at a constant rate <span class="math inline">\(p\)</span> per unit time; that the payments <span class="math inline">\(Y_1, Y_2, \ldots\)</span> for the claims are independent and identically distributed <span class="math inline">\(\Gamma(\alpha, \beta)\)</span> with mean <span class="math inline">\(\alpha / \beta\)</span>; that on average it receives <span class="math inline">\(\lambda\)</span> claims per unit time; and that the premiums flow in at a faster rate than claims are paid out, i.e., <span class="math inline">\(\lambda \mathbb{E}(Y_i) = \lambda\alpha / \beta &lt; p\)</span>. Let <span class="math inline">\(\xi_i\)</span> be the interarrival times,,<span class="math inline">\(i = 1, 2, \ldots\)</span>, which follows an expoential distribution with rate <span class="math inline">\(\lambda\)</span>. Then
+<span class="math display">\[
+Z_i = Y_i - p \xi_i
+\]</span>
+is the loss during the period from the the <span class="math inline">\((i-1)\)</span>th claim to the <span class="math inline">\(i\)</span>th claim and
+<span class="math display">\[
+L_n = \sum_{i=1}^n Z_i
+\]</span>
+is the total loss by the time of the <span class="math inline">\(n\)</span>th claim.</p>
+<p>Ruin occurs if and only if <span class="math inline">\(L_n &gt; x\)</span> for some <span class="math inline">\(n\)</span>. Let <span class="math inline">\(N\)</span> be the first time <span class="math inline">\(L_n\)</span> passes <span class="math inline">\(x\)</span>. Then the ruin probability is <span class="math inline">\(\Pr(N &lt; \infty)\)</span>. Since <span class="math inline">\(\mathbb{E}Z_i = \mathbb{E}Y_i - p / \lambda &lt; 0\)</span>, by the law of large number <span class="math inline">\(L_n \to -\infty\)</span> as <span class="math inline">\(n \to \infty\)</span>. Since <span class="math inline">\(x &gt; 0\)</span>, we have <span class="math inline">\(\Pr(N &lt; \infty) &lt; 1\)</span>, or equivalently, <span class="math inline">\(\Pr(N = \infty) &gt; 0\)</span>. A naive way to approximate the ruin probabilty is to simulate the the path of <span class="math inline">\(L_n\)</span> many times and count how often <span class="math inline">\(L_n\)</span> passes <span class="math inline">\(x\)</span>. Nonetheless, because <span class="math inline">\(\Pr(N = \infty) &gt; 0\)</span>, how do we get out of the path that has <span class="math inline">\(N = \infty\)</span>? If we always stop when <span class="math inline">\(N &gt; M\)</span> for a very large number <span class="math inline">\(M\)</span>, then we would introduce bias into the estimation.</p>
+<p>An importance sampler boosts the probability of ruin and guarantees to stop at a finite number of claims. Suppose the density of <span class="math inline">\(Z_i\)</span>’s is <span class="math inline">\(f\)</span>. Instead of sampling <span class="math inline">\(Z_i\)</span>’s from <span class="math inline">\(f\)</span>, we sampling <span class="math inline">\(X_i\)</span>’s from some density <span class="math inline">\(g\)</span> such that <span class="math inline">\(\mathbb{E}X_i &gt; 0\)</span> and <span class="math inline">\(g(x) &gt; 0\)</span> wherever <span class="math inline">\(f(x) &gt; 0\)</span>. By the law of large number <span class="math inline">\(G_n = \sum_{i=1}^n X_i \to \infty\)</span> with probability one. Therefore, unlike <span class="math inline">\(L_n\)</span>, <span class="math inline">\(G_n\)</span> is guaranteed to pass <span class="math inline">\(x\)</span> at a finite <span class="math inline">\(n\)</span>. Let <span class="math inline">\(\tau\)</span> be the first time <span class="math inline">\(G_n\)</span> passes <span class="math inline">\(x\)</span>. Then
+<span class="math display">\[
+\Pr(N &lt; \infty) = \mathbb{E}[1 \{N &lt; \infty\}] = \mathbb{E}\left[\prod_{i=1}^\tau \frac{f(X_i)}{g(X_i)} 1\{\tau &lt; \infty\}\right].
+\]</span>
+The importance sampling procedure then generate a large number of copies of
+<span class="math display">\[
+V_i = \prod_{j=1}^\tau \frac{f(X_j)}{g(X_j)}, \qquad i = 1, \ldots, m,
+\]</span>
+and approximate the ruin probability by <span class="math inline">\(\hat\mu_g = \sum_{i=1}^m V_i / m\)</span>.</p>
+<p>How to select the importance sampler <span class="math inline">\(g\)</span>? Note that in this specific example, the density <span class="math inline">\(f\)</span> of <span class="math inline">\(Z_i\)</span>, the difference between two independent gamma variables, involves an integral which cannot be simplified. If we can construct <span class="math inline">\(g\)</span> so that it can cancel the density of <span class="math inline">\(f\)</span>, then the evaluation of <span class="math inline">\(V_i\)</span>’s would be made easier. One such approach is exponential tilting where
+<span class="math display">\[
+g(x) = e^{\theta x - \psi(\theta)} f(x),
+\]</span>
+where <span class="math inline">\(\psi(\theta)\)</span> is the cumulant generating function of <span class="math inline">\(f\)</span>, i.e.,
+<span class="math display">\[
+\psi(\theta) = \log \int e^{\theta x} f(x) \mathrm{d}x.
+\]</span>
+In our setting, <span class="math inline">\(\psi(\theta)\)</span> is known from the moment generating function of <span class="math inline">\(Z_i\)</span> and <span class="math inline">\(p \xi_i\)</span>. The moment generating function of <span class="math inline">\(X_i\)</span> also reveals that the distribution of <span class="math inline">\(X_i\)</span> is the distribution of the difference between a <span class="math inline">\(\Gamma(\alpha, \beta - \theta)\)</span> variable and an independent exponential variable with rate <span class="math inline">\(\lambda / p + \theta\)</span>. This characterization allows simple simulation of <span class="math inline">\(X_i\)</span>$’s. With <span class="math inline">\(\theta\)</span> selected such that <span class="math inline">\(\mathbb{E}X_i &gt; 0\)</span>, we have
+<span class="math display">\[
+\Pr(N &lt; \infty) = \mathbb{E}\prod_{i=1}^\tau e^{\psi(\theta) - \theta X_i}
+= \mathbb{E}e^{- \theta G_{\tau} + \psi(\theta)\tau}.
+\]</span></p>
+<p>We can further choose <span class="math inline">\(\theta\)</span> as the unique positive root <span class="math inline">\(\theta^*\)</span> to <span class="math inline">\(\psi(\theta) = 0\)</span>. The existence and uniqueness of <span class="math inline">\(\theta^*\)</span> is due to the strictly convexity of <span class="math inline">\(\psi(\theta)\)</span>, <span class="math inline">\(\psi(0) = 0\)</span>, <span class="math inline">\(\psi&#39;(0) = \mathbb{E}Z_i &lt; 0\)</span>, and <span class="math inline">\(\psi(\theta) \to \infty\)</span> as <span class="math inline">\(\theta \to \infty\)</span>. Then
+<span class="math display">\[
+\Pr(N &lt; \infty) = e^{\theta^* x} \mathbb{E}e^{ - \theta^* (G_\tau - x)},
+\]</span>
+where <span class="math inline">\(G_\tau - x\)</span> is the amount of the “overshoot” when <span class="math inline">\(G_\tau\)</span> first passes <span class="math inline">\(x\)</span>.</p>
+<p>The sampling from the importance sampler is simple from the moment generating function of <span class="math inline">\(X_i\)</span>.</p>
+<div class="sourceCode" id="cb139"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb139-1" data-line-number="1"><span class="co">#&#39; Importance sampler with exponeitial tilting</span></a>
+<a class="sourceLine" id="cb139-2" data-line-number="2"><span class="co">#&#39; $X_i = U_i - V_i$ where</span></a>
+<a class="sourceLine" id="cb139-3" data-line-number="3"><span class="co">#&#39; $U_i$ is gamma(a, b - theta) and $V_i$ is an independent exponential</span></a>
+<a class="sourceLine" id="cb139-4" data-line-number="4"><span class="co">#&#39; with rate lambda / p + theta</span></a>
+<a class="sourceLine" id="cb139-5" data-line-number="5"><span class="co">#&#39; Theta needs to be selected such that E X &gt; 0</span></a>
+<a class="sourceLine" id="cb139-6" data-line-number="6"></a>
+<a class="sourceLine" id="cb139-7" data-line-number="7">rX &lt;-<span class="st"> </span><span class="cf">function</span>(n, theta, lambda, a, b, p) {</a>
+<a class="sourceLine" id="cb139-8" data-line-number="8">  <span class="kw">rgamma</span>(n, a, <span class="dt">rate =</span> b <span class="op">-</span><span class="st"> </span>theta) <span class="op">-</span><span class="st"> </span><span class="kw">rexp</span>(n, <span class="dt">rate =</span> lambda <span class="op">/</span><span class="st"> </span>p <span class="op">+</span><span class="st"> </span>theta)    </a>
+<a class="sourceLine" id="cb139-9" data-line-number="9">}</a></code></pre></div>
+<p>Now we set some parameter values and plot the <span class="math inline">\(psi\)</span> function.</p>
+<div class="sourceCode" id="cb140"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb140-1" data-line-number="1">x &lt;-<span class="st"> </span><span class="dv">2</span> <span class="co"># reserve</span></a>
+<a class="sourceLine" id="cb140-2" data-line-number="2">lambda &lt;-<span class="st"> </span><span class="dv">1</span>; a &lt;-<span class="st"> </span><span class="dv">6</span>; b &lt;-<span class="st"> </span><span class="dv">2</span>; p &lt;-<span class="st"> </span><span class="dv">6</span> <span class="co"># such that a / b - p / lambda &lt; 0</span></a>
+<a class="sourceLine" id="cb140-3" data-line-number="3"><span class="co">#&#39; $Z_i = Y_i - p \xi_i$ such that E[Z_i] &lt; 0</span></a>
+<a class="sourceLine" id="cb140-4" data-line-number="4"><span class="co">#&#39; where $Y_i$ is Gamma(a, b) with mean a/b,</span></a>
+<a class="sourceLine" id="cb140-5" data-line-number="5"><span class="co">#&#39; $\xi_i$ is exponential with rate lambda.</span></a>
+<a class="sourceLine" id="cb140-6" data-line-number="6"><span class="co">#&#39; The cumulant generating function of Z as a function of theta</span></a>
+<a class="sourceLine" id="cb140-7" data-line-number="7">psiExpr &lt;-<span class="st"> </span><span class="kw">expression</span>(<span class="op">-</span><span class="st"> </span>a <span class="op">*</span><span class="st"> </span><span class="kw">log</span>(<span class="dv">1</span> <span class="op">-</span><span class="st"> </span>t <span class="op">/</span><span class="st"> </span>b) <span class="op">-</span><span class="st"> </span><span class="kw">log</span>(<span class="dv">1</span> <span class="op">+</span><span class="st"> </span>t <span class="op">/</span><span class="st"> </span>lambda <span class="op">*</span><span class="st"> </span>p))</a>
+<a class="sourceLine" id="cb140-8" data-line-number="8">dPsiExpr &lt;-<span class="st"> </span><span class="kw">D</span>(psiExpr, <span class="st">&quot;t&quot;</span>)</a>
+<a class="sourceLine" id="cb140-9" data-line-number="9"></a>
+<a class="sourceLine" id="cb140-10" data-line-number="10">psi &lt;-<span class="st"> </span><span class="cf">function</span>(t, lambda, a, b, p) {</a>
+<a class="sourceLine" id="cb140-11" data-line-number="11">  <span class="kw">eval</span>( psiExpr, <span class="kw">list</span>(<span class="dt">t =</span> t, <span class="dt">lambda =</span> lambda, <span class="dt">a =</span> a, <span class="dt">b =</span> b, <span class="dt">p =</span> p))</a>
+<a class="sourceLine" id="cb140-12" data-line-number="12">}</a>
+<a class="sourceLine" id="cb140-13" data-line-number="13"></a>
+<a class="sourceLine" id="cb140-14" data-line-number="14">dPsi &lt;-<span class="st"> </span><span class="cf">function</span>(t, lambda, a, b, p) {</a>
+<a class="sourceLine" id="cb140-15" data-line-number="15">  <span class="kw">eval</span>(dPsiExpr, <span class="kw">list</span>(<span class="dt">t =</span> t, <span class="dt">lambda =</span> lambda, <span class="dt">a =</span> a, <span class="dt">b =</span> b, <span class="dt">p =</span> p))</a>
+<a class="sourceLine" id="cb140-16" data-line-number="16">}</a>
+<a class="sourceLine" id="cb140-17" data-line-number="17"></a>
+<a class="sourceLine" id="cb140-18" data-line-number="18"><span class="kw">curve</span>( <span class="kw">psi</span>(x, lambda, a, b, p), <span class="dv">0</span>, <span class="dv">1</span>)</a></code></pre></div>
+<p><img src="06-mcinteg_files/figure-html/ruinProb_psi-1.png" width="672" /></p>
+<div class="sourceCode" id="cb141"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb141-1" data-line-number="1"><span class="kw">curve</span>(<span class="kw">dPsi</span>(x, lambda, a, b, p), <span class="dv">0</span>, <span class="dv">1</span>)</a></code></pre></div>
+<p><img src="06-mcinteg_files/figure-html/ruinProb_psi-2.png" width="672" /></p>
+<div class="sourceCode" id="cb142"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb142-1" data-line-number="1">## root of psi(theta) = 0</a>
+<a class="sourceLine" id="cb142-2" data-line-number="2">(th0  &lt;-<span class="st"> </span><span class="kw">uniroot</span>( psi, <span class="kw">c</span>(<span class="fl">0.01</span>, <span class="dv">1</span>), <span class="dt">lambda =</span> lambda, <span class="dt">a =</span> a, <span class="dt">b =</span> b, <span class="dt">p =</span> p)<span class="op">$</span>root)</a></code></pre></div>
+<pre><code>## [1] 0.3362335</code></pre>
+<div class="sourceCode" id="cb144"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb144-1" data-line-number="1">## root of dPsi(theta) = 0</a>
+<a class="sourceLine" id="cb144-2" data-line-number="2">(thd0 &lt;-<span class="st"> </span><span class="kw">uniroot</span>(dPsi, <span class="kw">c</span>(<span class="fl">0.01</span>, <span class="dv">1</span>), <span class="dt">lambda =</span> lambda, <span class="dt">a =</span> a, <span class="dt">b =</span> b, <span class="dt">p =</span> p)<span class="op">$</span>root)</a></code></pre></div>
+<pre><code>## [1] 0.1428567</code></pre>
+<p>The importance sampling approximation is made more efficient in <code>R</code> by sampling in batches.</p>
+<div class="sourceCode" id="cb146"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb146-1" data-line-number="1">## approximation with importance sampler</a>
+<a class="sourceLine" id="cb146-2" data-line-number="2">ruinProbAppr &lt;-<span class="st"> </span><span class="cf">function</span>(n, lambda, a, b, p, x, theta,</a>
+<a class="sourceLine" id="cb146-3" data-line-number="3">                         <span class="dt">batSize =</span> <span class="dv">1000</span>){</a>
+<a class="sourceLine" id="cb146-4" data-line-number="4">    do1rep &lt;-<span class="st"> </span><span class="cf">function</span>() {</a>
+<a class="sourceLine" id="cb146-5" data-line-number="5">        lossCum &lt;-<span class="st"> </span><span class="dv">0</span></a>
+<a class="sourceLine" id="cb146-6" data-line-number="6">        tau &lt;-<span class="st"> </span><span class="dv">0</span></a>
+<a class="sourceLine" id="cb146-7" data-line-number="7">        <span class="cf">repeat</span> {</a>
+<a class="sourceLine" id="cb146-8" data-line-number="8">            z &lt;-<span class="st"> </span><span class="kw">rX</span>(batSize, theta, lambda, a, b, p)</a>
+<a class="sourceLine" id="cb146-9" data-line-number="9">            loss &lt;-<span class="st"> </span>lossCum <span class="op">+</span><span class="st"> </span><span class="kw">cumsum</span>(z)</a>
+<a class="sourceLine" id="cb146-10" data-line-number="10">            idx &lt;-<span class="st"> </span><span class="kw">which</span>(loss <span class="op">&gt;</span><span class="st"> </span>x)</a>
+<a class="sourceLine" id="cb146-11" data-line-number="11">            <span class="cf">if</span> (<span class="kw">length</span>(idx) <span class="op">&gt;</span><span class="st"> </span><span class="dv">0</span>) <span class="cf">break</span></a>
+<a class="sourceLine" id="cb146-12" data-line-number="12">            lossCum &lt;-<span class="st"> </span>loss[batSize]</a>
+<a class="sourceLine" id="cb146-13" data-line-number="13">            tau &lt;-<span class="st"> </span>tau <span class="op">+</span><span class="st"> </span>batSize</a>
+<a class="sourceLine" id="cb146-14" data-line-number="14">        }</a>
+<a class="sourceLine" id="cb146-15" data-line-number="15">        lossCum &lt;-<span class="st"> </span>loss[idx[<span class="dv">1</span>]]</a>
+<a class="sourceLine" id="cb146-16" data-line-number="16">        tau &lt;-<span class="st"> </span>tau <span class="op">+</span><span class="st"> </span>idx[<span class="dv">1</span>]</a>
+<a class="sourceLine" id="cb146-17" data-line-number="17">        lr &lt;-<span class="st"> </span><span class="kw">exp</span>(<span class="op">-</span><span class="st"> </span>theta <span class="op">*</span><span class="st"> </span>lossCum <span class="op">+</span><span class="st"> </span>tau <span class="op">*</span><span class="st"> </span><span class="kw">psi</span>(theta, lambda, a, b, p))</a>
+<a class="sourceLine" id="cb146-18" data-line-number="18">    }</a>
+<a class="sourceLine" id="cb146-19" data-line-number="19">    sim &lt;-<span class="st"> </span><span class="kw">replicate</span>(n, <span class="kw">do1rep</span>())</a>
+<a class="sourceLine" id="cb146-20" data-line-number="20">    <span class="kw">mean</span>(sim)</a>
+<a class="sourceLine" id="cb146-21" data-line-number="21">}</a></code></pre></div>
+<p>Now we compare the performance at several values of <span class="math inline">\(\theta\)</span>.</p>
+<div class="sourceCode" id="cb147"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb147-1" data-line-number="1">## Compare different theta values</a>
+<a class="sourceLine" id="cb147-2" data-line-number="2">theta &lt;-<span class="st"> </span><span class="kw">c</span>(<span class="kw">mean</span>(<span class="kw">c</span>(thd0, th0)), (<span class="dv">1</span><span class="op">:</span><span class="dv">2</span>) <span class="op">*</span><span class="st"> </span>th0)</a>
+<a class="sourceLine" id="cb147-3" data-line-number="3">nrep &lt;-<span class="st"> </span><span class="dv">50</span></a>
+<a class="sourceLine" id="cb147-4" data-line-number="4">n &lt;-<span class="st"> </span><span class="dv">200</span></a>
+<a class="sourceLine" id="cb147-5" data-line-number="5">sim &lt;-<span class="st"> </span><span class="kw">sapply</span>(theta,</a>
+<a class="sourceLine" id="cb147-6" data-line-number="6">              <span class="cf">function</span>(th) {</a>
+<a class="sourceLine" id="cb147-7" data-line-number="7">                  srep &lt;-<span class="st"> </span><span class="kw">replicate</span>(nrep, <span class="kw">ruinProbAppr</span>(n, lambda, a, b, p, x, th))</a>
+<a class="sourceLine" id="cb147-8" data-line-number="8">                  <span class="kw">c</span>(<span class="dt">mean =</span> <span class="kw">mean</span>(srep), <span class="dt">sd =</span> <span class="kw">sd</span>(srep))</a>
+<a class="sourceLine" id="cb147-9" data-line-number="9">              })</a>
+<a class="sourceLine" id="cb147-10" data-line-number="10">sim</a></code></pre></div>
+<pre><code>##             [,1]        [,2]       [,3]
+## mean 0.312298954 0.310416606 0.30850139
+## sd   0.009255797 0.008025985 0.06320838</code></pre>
+</div>
+</div>
+<div id="control-variates" class="section level3">
+<h3><span class="header-section-number">7.4.2</span> Control Variates</h3>
+<p>Suppose that there is another MC estimator
+<span class="math display">\[
+\hat\theta = \frac{1}{n}\sum_{i=1}^n g(Y_i)
+\]</span>
+whose target <span class="math inline">\(\theta\)</span> is known. If <span class="math inline">\(h(X_i)\)</span> and <span class="math inline">\(g(Y_i)\)</span> are positively correlated, their dependence can be exploited to construct an improved MC estimator for <span class="math inline">\(\mu\)</span>. The intuition is that if <span class="math inline">\(\hat\theta\)</span> is overestimating (underestimating) <span class="math inline">\(\theta\)</span>, it is likely that <span class="math inline">\(\hat\mu\)</span> is also overestimating (underestimating) <span class="math inline">\(\mu\)</span>. The known bias in <span class="math inline">\(\hat\theta\)</span> can be used to adjust <span class="math inline">\(\hat\mu\)</span>. The random variable on which <span class="math inline">\(\hat\theta\)</span> is based is called a control variate in estimating <span class="math inline">\(\mu\)</span>. Specifically, the control variate MC estimator for <span class="math inline">\(\mu\)</span> is
+<span class="math display">\[
+\hat\mu_{\mbox{CV}} = \hat\mu - b (\hat\theta - \theta)
+\]</span>
+where <span class="math inline">\(b\)</span> is constant designed to minimize the variance of <span class="math inline">\(\hat\mu_{\mbox{CV}}\)</span>.</p>
+<p>Clearly, <span class="math inline">\(\hat\mu_{\mbox{CV}}\)</span> is unbiased and consistent. It reduces to <span class="math inline">\(\hat\mu\)</span> when <span class="math inline">\(b = 0\)</span>. Given <span class="math inline">\(g\)</span> and the distribution of <span class="math inline">\(Y_i\)</span>,
+<span class="math display">\[
+\mathrm{Var}(\hat\mu_{\mbox{CV}}) = \mathrm{Var}(\hat\mu) + \mathrm{Var}(\hat\theta) - 2 \mathrm{Cov}(\hat\mu, \hat\theta).
+\]</span>
+The optimal <span class="math inline">\(b\)</span> that minimizes <span class="math inline">\(\mathrm{Var}(\hat\mu_{\mbox{CV}})\)</span> is
+<span class="math display">\[
+b_{\mbox{opt}} = \frac{\mathrm{Cov}(\hat\mu, \hat\theta)}{\mathrm{Var}(\hat\mu)} 
+= \frac{\mathrm{Cov}[h(X), g(Y)]}{\mathrm{Var}[g(Y)]}.
+\]</span>
+The minimized variance is
+<span class="math display">\[
+\mathrm{Var}(\hat\mu_{\mbox{CV}}) = (1 - \rho^2) \mathrm{Var}(\hat\mu)
+\]</span>
+where <span class="math inline">\(\rho\)</span> is the correlation between <span class="math inline">\(h(X)\)</span> and <span class="math inline">\(g(Y)\)</span>.
+In practice, the covariance and variance in the equations are unknown but can be estimated by the their sample version based on the MC sample of <span class="math inline">\(X\)</span> and <span class="math inline">\(Y\)</span>.</p>
+<p>To select a control variate <span class="math inline">\(g(Y)\)</span>, we need that <span class="math inline">\(E[g(Y)]\)</span> is known and that the correlation between <span class="math inline">\(h(X)\)</span> and <span class="math inline">\(g(Y)\)</span> is strong. When <span class="math inline">\(\rho = 1\)</span>, we have <span class="math inline">\(\mathrm{Var}(\hat\mu_{\mbox{CV}}) = 0\)</span>. This is not a surprise because in that case <span class="math inline">\(h(X)\)</span> is a linear transformation of <span class="math inline">\(g(Y)\)</span> and <span class="math inline">\(\mu\)</span> is a linear transformation of <span class="math inline">\(\theta\)</span>.</p>
+<p>Consider pricing an Asian call option; Example 4.1.2 in Glasserman (2000, p.189).
+For MC integration, sample paths of BM will be needed.</p>
+<div class="sourceCode" id="cb149"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb149-1" data-line-number="1">rBM &lt;-<span class="st"> </span><span class="cf">function</span>(n, tgrid, sigma) {</a>
+<a class="sourceLine" id="cb149-2" data-line-number="2">    tt &lt;-<span class="st"> </span><span class="kw">c</span>(<span class="dv">0</span>, tgrid)</a>
+<a class="sourceLine" id="cb149-3" data-line-number="3">    dt &lt;-<span class="st"> </span><span class="kw">diff</span>(tt)</a>
+<a class="sourceLine" id="cb149-4" data-line-number="4">    nt &lt;-<span class="st"> </span><span class="kw">length</span>(tgrid)</a>
+<a class="sourceLine" id="cb149-5" data-line-number="5">    dw &lt;-<span class="st"> </span><span class="kw">matrix</span>(<span class="kw">rnorm</span>(n <span class="op">*</span><span class="st"> </span>nt, <span class="dt">sd =</span> sigma <span class="op">*</span><span class="st"> </span><span class="kw">sqrt</span>(dt)), n, nt, <span class="dt">byrow =</span> <span class="ot">TRUE</span>)</a>
+<a class="sourceLine" id="cb149-6" data-line-number="6">    <span class="kw">t</span>(<span class="kw">apply</span>(dw, <span class="dv">1</span>, cumsum))</a>
+<a class="sourceLine" id="cb149-7" data-line-number="7">}</a></code></pre></div>
+<p>If the value the underlying asset at maturity follows a lognormal distribution, then the expected value of a European call option has a closed-form.</p>
+<div class="sourceCode" id="cb150"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb150-1" data-line-number="1">callValLognorm &lt;-<span class="st"> </span><span class="cf">function</span>(S0, K, mu, sigma) {</a>
+<a class="sourceLine" id="cb150-2" data-line-number="2">    d &lt;-<span class="st"> </span>(<span class="kw">log</span>(S0 <span class="op">/</span><span class="st"> </span>K) <span class="op">+</span><span class="st"> </span>mu <span class="op">+</span><span class="st"> </span>sigma<span class="op">^</span><span class="dv">2</span>) <span class="op">/</span><span class="st"> </span>sigma</a>
+<a class="sourceLine" id="cb150-3" data-line-number="3">    S0 <span class="op">*</span><span class="st"> </span><span class="kw">exp</span>(mu <span class="op">+</span><span class="st"> </span><span class="fl">0.5</span> <span class="op">*</span><span class="st"> </span>sigma<span class="op">^</span><span class="dv">2</span>) <span class="op">*</span><span class="st"> </span><span class="kw">pnorm</span>(d) <span class="op">-</span><span class="st"> </span>K <span class="op">*</span><span class="st"> </span><span class="kw">pnorm</span>(d <span class="op">-</span><span class="st"> </span>sigma)</a>
+<a class="sourceLine" id="cb150-4" data-line-number="4">}</a></code></pre></div>
+<p>We now approximate the present value of an Asian call option. The first estimator is a simple MC estimator, which will be compared with three control variate MC estimator. The three control variates are, respectively, the underlying asset, a standard European call option, and an Asian call option but defined with geometric mean instead of arithmetic mean.</p>
+<div class="sourceCode" id="cb151"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb151-1" data-line-number="1">optValueAppr &lt;-<span class="st"> </span><span class="cf">function</span>(n, r, sigma, S0, K, tgrid) {</a>
+<a class="sourceLine" id="cb151-2" data-line-number="2">    wt &lt;-<span class="st"> </span><span class="kw">rBM</span>(n, tgrid, sigma)</a>
+<a class="sourceLine" id="cb151-3" data-line-number="3">    ## payoff of call option on arithmetic average</a>
+<a class="sourceLine" id="cb151-4" data-line-number="4">    nt &lt;-<span class="st"> </span><span class="kw">length</span>(tgrid)</a>
+<a class="sourceLine" id="cb151-5" data-line-number="5">    TT &lt;-<span class="st"> </span>tgrid[nt]</a>
+<a class="sourceLine" id="cb151-6" data-line-number="6">    St &lt;-<span class="st"> </span>S0 <span class="op">*</span><span class="st"> </span><span class="kw">exp</span>((r <span class="op">-</span><span class="st"> </span>sigma<span class="op">^</span><span class="dv">2</span> <span class="op">/</span><span class="st"> </span><span class="dv">2</span>) <span class="op">*</span><span class="st"> </span><span class="kw">matrix</span>(tgrid, n, nt, <span class="dt">byrow =</span> <span class="ot">TRUE</span>) <span class="op">+</span><span class="st"> </span>wt)</a>
+<a class="sourceLine" id="cb151-7" data-line-number="7">    pAri &lt;-<span class="st"> </span><span class="kw">pmax</span>(<span class="kw">rowMeans</span>(St) <span class="op">-</span><span class="st"> </span>K, <span class="dv">0</span>)</a>
+<a class="sourceLine" id="cb151-8" data-line-number="8">    vAri &lt;-<span class="st"> </span><span class="kw">mean</span>(pAri) </a>
+<a class="sourceLine" id="cb151-9" data-line-number="9">    ## underlying asset price</a>
+<a class="sourceLine" id="cb151-10" data-line-number="10">    ST &lt;-<span class="st"> </span>St[, nt]</a>
+<a class="sourceLine" id="cb151-11" data-line-number="11">    vAs &lt;-<span class="st"> </span>vAri <span class="op">-</span><span class="st"> </span><span class="kw">cov</span>(ST, pAri) <span class="op">/</span><span class="st"> </span><span class="kw">var</span>(ST) <span class="op">*</span><span class="st"> </span>(<span class="kw">mean</span>(ST) <span class="op">-</span><span class="st"> </span><span class="kw">exp</span>(r <span class="op">*</span><span class="st"> </span>TT) <span class="op">*</span><span class="st"> </span>S0)</a>
+<a class="sourceLine" id="cb151-12" data-line-number="12">    ## value of standard option</a>
+<a class="sourceLine" id="cb151-13" data-line-number="13">    pStd &lt;-<span class="st"> </span><span class="kw">pmax</span>(ST <span class="op">-</span><span class="st"> </span>K, <span class="dv">0</span>)</a>
+<a class="sourceLine" id="cb151-14" data-line-number="14">    pStdTrue &lt;-<span class="st"> </span><span class="kw">callValLognorm</span>(S0, K, (r <span class="op">-</span><span class="st"> </span><span class="fl">0.5</span> <span class="op">*</span><span class="st"> </span>sigma<span class="op">^</span><span class="dv">2</span>) <span class="op">*</span><span class="st"> </span>TT,</a>
+<a class="sourceLine" id="cb151-15" data-line-number="15">                               sigma <span class="op">*</span><span class="st"> </span><span class="kw">sqrt</span>(TT))</a>
+<a class="sourceLine" id="cb151-16" data-line-number="16">    vStd &lt;-<span class="st">  </span>vAri <span class="op">-</span><span class="st"> </span><span class="kw">cov</span>(pStd, pAri) <span class="op">/</span><span class="st"> </span><span class="kw">var</span>(pStd) <span class="op">*</span><span class="st"> </span>(<span class="kw">mean</span>(pStd) <span class="op">-</span><span class="st"> </span>pStdTrue)</a>
+<a class="sourceLine" id="cb151-17" data-line-number="17">    ## payoff of call option on geometric average</a>
+<a class="sourceLine" id="cb151-18" data-line-number="18">    pGeo &lt;-<span class="st"> </span><span class="kw">pmax</span>(<span class="kw">exp</span>(<span class="kw">rowMeans</span>(<span class="kw">log</span>(St))) <span class="op">-</span><span class="st"> </span>K, <span class="dv">0</span>)</a>
+<a class="sourceLine" id="cb151-19" data-line-number="19">    tbar &lt;-<span class="st"> </span><span class="kw">mean</span>(tgrid)</a>
+<a class="sourceLine" id="cb151-20" data-line-number="20">    sBar2 &lt;-<span class="st"> </span>sigma<span class="op">^</span><span class="dv">2</span> <span class="op">/</span><span class="st"> </span>nt<span class="op">^</span><span class="dv">2</span> <span class="op">/</span><span class="st"> </span>tbar <span class="op">*</span><span class="st"> </span><span class="kw">sum</span>( (<span class="dv">2</span> <span class="op">*</span><span class="st"> </span><span class="kw">seq</span>(nt) <span class="op">-</span><span class="st"> </span><span class="dv">1</span>) <span class="op">*</span><span class="st"> </span><span class="kw">rev</span>(tgrid) )</a>
+<a class="sourceLine" id="cb151-21" data-line-number="21">    pGeoTrue &lt;-<span class="st"> </span><span class="kw">callValLognorm</span>(S0, K, (r <span class="op">-</span><span class="st"> </span><span class="fl">0.5</span> <span class="op">*</span><span class="st"> </span>sigma<span class="op">^</span><span class="dv">2</span>) <span class="op">*</span><span class="st"> </span>tbar,</a>
+<a class="sourceLine" id="cb151-22" data-line-number="22">                               <span class="kw">sqrt</span>(sBar2 <span class="op">*</span><span class="st"> </span>tbar))</a>
+<a class="sourceLine" id="cb151-23" data-line-number="23">    vGeo &lt;-<span class="st"> </span>vAri <span class="op">-</span><span class="st"> </span><span class="kw">cov</span>(pGeo, pAri) <span class="op">/</span><span class="st"> </span><span class="kw">var</span>(pGeo) <span class="op">*</span><span class="st"> </span>(<span class="kw">mean</span>(pGeo) <span class="op">-</span><span class="st"> </span>pGeoTrue)</a>
+<a class="sourceLine" id="cb151-24" data-line-number="24">    ## sim &lt;- data.frame(pAri, ST, pStd, pGeo)</a>
+<a class="sourceLine" id="cb151-25" data-line-number="25">    ## result</a>
+<a class="sourceLine" id="cb151-26" data-line-number="26">    <span class="kw">c</span>(vAri, vAs, vStd, vGeo) <span class="op">*</span><span class="st"> </span><span class="kw">exp</span>(<span class="op">-</span>r <span class="op">*</span><span class="st"> </span>TT)</a>
+<a class="sourceLine" id="cb151-27" data-line-number="27">}</a></code></pre></div>
+<p>We run 200 replicates, each with a sample size of 500, and compare the results</p>
+<div class="sourceCode" id="cb152"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb152-1" data-line-number="1">r &lt;-<span class="st"> </span><span class="fl">0.05</span>; sigma &lt;-<span class="st"> </span><span class="fl">0.3</span>; S0 &lt;-<span class="st">  </span><span class="dv">50</span>; K &lt;-<span class="st">  </span><span class="dv">50</span></a>
+<a class="sourceLine" id="cb152-2" data-line-number="2">tgrid &lt;-<span class="st">  </span><span class="kw">seq</span>(<span class="dv">0</span>, <span class="fl">.25</span>, <span class="dt">length =</span> <span class="dv">14</span>)[<span class="op">-</span><span class="dv">1</span>]</a>
+<a class="sourceLine" id="cb152-3" data-line-number="3">sim &lt;-<span class="st"> </span><span class="kw">replicate</span>(<span class="dv">200</span>, <span class="kw">optValueAppr</span>(<span class="dv">500</span>, r, sigma, S0, K, tgrid))</a>
+<a class="sourceLine" id="cb152-4" data-line-number="4"><span class="kw">apply</span>(sim, <span class="dv">1</span>, mean)</a></code></pre></div>
+<pre><code>## [1] 1.992368 1.976591 1.977684 1.982716</code></pre>
+<div class="sourceCode" id="cb154"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb154-1" data-line-number="1"><span class="kw">apply</span>(sim, <span class="dv">1</span>, sd)</a></code></pre></div>
+<pre><code>## [1] 0.133252648 0.081312123 0.071635329 0.002713132</code></pre>
+<p>The standard error using the geometric mean Asian option is strikingly small compared the first version. This is due to the strong correlation between the arithmetic mean Asian option and geometric mean Asian option.</p>
+</div>
+<div id="antithetic-variates" class="section level3">
+<h3><span class="header-section-number">7.4.3</span> Antithetic Variates</h3>
+<p>Approximate the mean of <span class="math inline">\(X^2\)</span> where <span class="math inline">\(X\)</span> follows the <span class="math inline">\(N(0, 1)\)</span> distribution.</p>
+<div class="sourceCode" id="cb156"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb156-1" data-line-number="1">myApprox &lt;-<span class="st"> </span><span class="cf">function</span>(n) {</a>
+<a class="sourceLine" id="cb156-2" data-line-number="2">  ## basic MC</a>
+<a class="sourceLine" id="cb156-3" data-line-number="3">  z &lt;-<span class="st"> </span><span class="kw">rnorm</span>(n)</a>
+<a class="sourceLine" id="cb156-4" data-line-number="4">  mu1 &lt;-<span class="st"> </span><span class="kw">mean</span>(z<span class="op">^</span><span class="dv">2</span>)</a>
+<a class="sourceLine" id="cb156-5" data-line-number="5">  ## antithetic variate 1 ## no reduction in variance</a>
+<a class="sourceLine" id="cb156-6" data-line-number="6">  za &lt;-<span class="st"> </span><span class="op">-</span>z</a>
+<a class="sourceLine" id="cb156-7" data-line-number="7">  mu2 &lt;-<span class="st"> </span><span class="kw">mean</span>(<span class="kw">c</span>(<span class="kw">mean</span>(z<span class="op">^</span><span class="dv">2</span>), <span class="kw">mean</span>(za<span class="op">^</span><span class="dv">2</span>)))</a>
+<a class="sourceLine" id="cb156-8" data-line-number="8">  ## antithetic variate 2</a>
+<a class="sourceLine" id="cb156-9" data-line-number="9">  y  &lt;-<span class="st"> </span><span class="kw">qchisq</span>(<span class="kw">pnorm</span>(z ), <span class="dt">df =</span> <span class="dv">1</span>)</a>
+<a class="sourceLine" id="cb156-10" data-line-number="10">  ya &lt;-<span class="st"> </span><span class="kw">qchisq</span>(<span class="kw">pnorm</span>(za), <span class="dt">df =</span> <span class="dv">1</span>)</a>
+<a class="sourceLine" id="cb156-11" data-line-number="11">  mu3 &lt;-<span class="st"> </span><span class="kw">mean</span>(<span class="kw">c</span>(<span class="kw">mean</span>(y), <span class="kw">mean</span>(ya)))</a>
+<a class="sourceLine" id="cb156-12" data-line-number="12">  <span class="kw">c</span>(mu1, mu2, mu3)              </a>
+<a class="sourceLine" id="cb156-13" data-line-number="13">}</a>
+<a class="sourceLine" id="cb156-14" data-line-number="14"></a>
+<a class="sourceLine" id="cb156-15" data-line-number="15">nrep &lt;-<span class="st"> </span><span class="dv">200</span>; n &lt;-<span class="st"> </span><span class="dv">100</span></a>
+<a class="sourceLine" id="cb156-16" data-line-number="16">sim &lt;-<span class="st"> </span><span class="kw">replicate</span>(nrep, <span class="kw">myApprox</span>(n))</a>
+<a class="sourceLine" id="cb156-17" data-line-number="17"><span class="kw">apply</span>(sim, <span class="dv">1</span>, mean)</a></code></pre></div>
+<pre><code>## [1] 1.001890 1.001890 1.001171</code></pre>
+<div class="sourceCode" id="cb158"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb158-1" data-line-number="1"><span class="kw">apply</span>(sim, <span class="dv">1</span>, sd)</a></code></pre></div>
+<pre><code>## [1] 0.1262916 0.1262916 0.0669218</code></pre>
+</div>
+<div id="stratified-sampling" class="section level3">
+<h3><span class="header-section-number">7.4.4</span> Stratified Sampling</h3>
+<div class="sourceCode" id="cb160"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb160-1" data-line-number="1"><span class="co">#&#39; X ~ Lognormal(0, 1)</span></a>
+<a class="sourceLine" id="cb160-2" data-line-number="2"><span class="co">#&#39; Y | X ~ lognormal(9 + 3 log X, 1)</span></a>
+<a class="sourceLine" id="cb160-3" data-line-number="3"><span class="co">#&#39; Find E(Y / X)</span></a>
+<a class="sourceLine" id="cb160-4" data-line-number="4"></a>
+<a class="sourceLine" id="cb160-5" data-line-number="5">myraoblack &lt;-<span class="st"> </span><span class="cf">function</span>(n) {</a>
+<a class="sourceLine" id="cb160-6" data-line-number="6">    x &lt;-<span class="st"> </span><span class="kw">rlnorm</span>(n, <span class="dv">0</span>, <span class="dv">1</span>)</a>
+<a class="sourceLine" id="cb160-7" data-line-number="7">    y &lt;-<span class="st"> </span><span class="kw">rlnorm</span>(n, <span class="dv">9</span> <span class="op">+</span><span class="st"> </span><span class="dv">3</span> <span class="op">*</span><span class="st"> </span><span class="kw">log</span>(x), <span class="dv">1</span>)</a>
+<a class="sourceLine" id="cb160-8" data-line-number="8">    ## vanilla version</a>
+<a class="sourceLine" id="cb160-9" data-line-number="9">    v1 &lt;-<span class="st"> </span><span class="kw">mean</span>(y <span class="op">/</span><span class="st"> </span>x)</a>
+<a class="sourceLine" id="cb160-10" data-line-number="10">    ## Rao-Blackwell version</a>
+<a class="sourceLine" id="cb160-11" data-line-number="11">    y.x &lt;-<span class="st"> </span><span class="kw">exp</span>(<span class="dv">9</span> <span class="op">+</span><span class="st"> </span><span class="dv">3</span> <span class="op">*</span><span class="st"> </span><span class="kw">log</span>(x) <span class="op">+</span><span class="st"> </span><span class="dv">1</span> <span class="op">/</span><span class="st"> </span><span class="dv">2</span>)</a>
+<a class="sourceLine" id="cb160-12" data-line-number="12">    v2 &lt;-<span class="st"> </span><span class="kw">mean</span>(y.x <span class="op">/</span><span class="st"> </span>x)</a>
+<a class="sourceLine" id="cb160-13" data-line-number="13">    <span class="kw">c</span>(v1, v2)</a>
+<a class="sourceLine" id="cb160-14" data-line-number="14">}</a>
+<a class="sourceLine" id="cb160-15" data-line-number="15"></a>
+<a class="sourceLine" id="cb160-16" data-line-number="16">sim &lt;-<span class="st"> </span><span class="kw">replicate</span>(<span class="dv">200</span>, <span class="kw">myraoblack</span>(<span class="dv">5000</span>))</a>
+<a class="sourceLine" id="cb160-17" data-line-number="17"><span class="kw">apply</span>(sim, <span class="dv">1</span>, mean)</a></code></pre></div>
+<pre><code>## [1] 99429.09 97898.69</code></pre>
+<div class="sourceCode" id="cb162"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb162-1" data-line-number="1"><span class="kw">apply</span>(sim, <span class="dv">1</span>, sd)</a></code></pre></div>
+<pre><code>## [1] 35376.27  9270.43</code></pre>
+<div class="sourceCode" id="cb164"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb164-1" data-line-number="1"><span class="co">#&#39; @title Generating multivariate normal subject to linear constraint</span></a>
+<a class="sourceLine" id="cb164-2" data-line-number="2"><span class="co">#&#39; @param U a vector of U(0, 1) random variables</span></a>
+<a class="sourceLine" id="cb164-3" data-line-number="3"><span class="co">#&#39; @param Sigma variance matrix</span></a>
+<a class="sourceLine" id="cb164-4" data-line-number="4"><span class="co">#&#39; @param nu vector for the linear projection</span></a>
+<a class="sourceLine" id="cb164-5" data-line-number="5"></a>
+<a class="sourceLine" id="cb164-6" data-line-number="6">rmvnormLinCon &lt;-<span class="st"> </span><span class="cf">function</span>(U, Sigma, nu) {</a>
+<a class="sourceLine" id="cb164-7" data-line-number="7">    ## normalize nu such that nu&#39; %*% Sigma %*% nu == 1</a>
+<a class="sourceLine" id="cb164-8" data-line-number="8">    nu &lt;-<span class="st"> </span>nu <span class="op">/</span><span class="st"> </span><span class="kw">sqrt</span>(<span class="kw">c</span>(<span class="kw">crossprod</span>(nu, Sigma <span class="op">%*%</span><span class="st"> </span>nu)))</a>
+<a class="sourceLine" id="cb164-9" data-line-number="9">    n &lt;-<span class="st"> </span><span class="kw">length</span>(U); p &lt;-<span class="st"> </span><span class="kw">length</span>(nu)</a>
+<a class="sourceLine" id="cb164-10" data-line-number="10">    ## convert the conditioning U to standard normal scale</a>
+<a class="sourceLine" id="cb164-11" data-line-number="11">    X &lt;-<span class="st"> </span><span class="kw">qnorm</span>(U)</a>
+<a class="sourceLine" id="cb164-12" data-line-number="12">    ## standard N(0, I_p)</a>
+<a class="sourceLine" id="cb164-13" data-line-number="13">    Z &lt;-<span class="st"> </span><span class="kw">matrix</span>(<span class="kw">rnorm</span>(n <span class="op">*</span><span class="st"> </span>p), p, n)</a>
+<a class="sourceLine" id="cb164-14" data-line-number="14">    ## lower-triang matrix of Cholesky decomposition of Sigma</a>
+<a class="sourceLine" id="cb164-15" data-line-number="15">    A &lt;-<span class="st"> </span><span class="kw">t</span>(<span class="kw">chol</span>(Sigma))</a>
+<a class="sourceLine" id="cb164-16" data-line-number="16">    ## conditional sampling</a>
+<a class="sourceLine" id="cb164-17" data-line-number="17">    cmean &lt;-<span class="st"> </span><span class="kw">tcrossprod</span>(Sigma <span class="op">%*%</span><span class="st"> </span>nu, X) <span class="co"># a pxn matrix for mean</span></a>
+<a class="sourceLine" id="cb164-18" data-line-number="18">    xi &lt;-<span class="st"> </span>cmean <span class="op">+</span><span class="st"> </span>(A <span class="op">-</span><span class="st"> </span>Sigma <span class="op">%*%</span><span class="st"> </span>nu <span class="op">%*%</span><span class="st"> </span><span class="kw">crossprod</span>(nu, A)) <span class="op">%*%</span><span class="st"> </span>Z</a>
+<a class="sourceLine" id="cb164-19" data-line-number="19">    <span class="kw">t</span>(xi) <span class="co"># a nxp matrix</span></a>
+<a class="sourceLine" id="cb164-20" data-line-number="20">}</a>
+<a class="sourceLine" id="cb164-21" data-line-number="21"></a>
+<a class="sourceLine" id="cb164-22" data-line-number="22">optValueSS &lt;-<span class="st"> </span><span class="cf">function</span>(n, r, sigma, S0, K, tgrid, <span class="dt">nstrata =</span> <span class="dv">10</span>) {</a>
+<a class="sourceLine" id="cb164-23" data-line-number="23">    nt &lt;-<span class="st"> </span><span class="kw">length</span>(tgrid)</a>
+<a class="sourceLine" id="cb164-24" data-line-number="24">    Sigma &lt;-<span class="st"> </span>sigma<span class="op">^</span><span class="dv">2</span> <span class="op">*</span><span class="st"> </span><span class="kw">outer</span>(tgrid, tgrid, pmin)</a>
+<a class="sourceLine" id="cb164-25" data-line-number="25">    nu &lt;-<span class="st"> </span><span class="kw">rep</span>(<span class="dv">1</span>, nt) <span class="op">/</span><span class="st"> </span>nt</a>
+<a class="sourceLine" id="cb164-26" data-line-number="26">    ## unstratified version</a>
+<a class="sourceLine" id="cb164-27" data-line-number="27">    U &lt;-<span class="st"> </span><span class="kw">runif</span>(n)</a>
+<a class="sourceLine" id="cb164-28" data-line-number="28">    Wt &lt;-<span class="st"> </span><span class="kw">rmvnormLinCon</span>(U, Sigma, nu)</a>
+<a class="sourceLine" id="cb164-29" data-line-number="29">    St &lt;-<span class="st"> </span>S0 <span class="op">*</span><span class="st"> </span><span class="kw">exp</span>((r <span class="op">-</span><span class="st"> </span>sigma<span class="op">^</span><span class="dv">2</span> <span class="op">/</span><span class="st"> </span><span class="dv">2</span>) <span class="op">*</span><span class="st"> </span><span class="kw">matrix</span>(tgrid, n, nt, <span class="dt">byrow =</span> <span class="ot">TRUE</span>)</a>
+<a class="sourceLine" id="cb164-30" data-line-number="30">                   <span class="op">+</span><span class="st"> </span>Wt)</a>
+<a class="sourceLine" id="cb164-31" data-line-number="31">    pAri &lt;-<span class="st"> </span><span class="kw">pmax</span>(<span class="kw">rowMeans</span>(St) <span class="op">-</span><span class="st"> </span>K, <span class="dv">0</span>)</a>
+<a class="sourceLine" id="cb164-32" data-line-number="32">    vAri &lt;-<span class="st"> </span><span class="kw">mean</span>(pAri)</a>
+<a class="sourceLine" id="cb164-33" data-line-number="33">    ## stratified version</a>
+<a class="sourceLine" id="cb164-34" data-line-number="34">    left &lt;-<span class="st"> </span><span class="kw">rep</span>(<span class="kw">seq</span>(nstrata) <span class="op">-</span><span class="st"> </span><span class="dv">1</span>, <span class="dt">each =</span> n <span class="op">/</span><span class="st"> </span>nstrata)</a>
+<a class="sourceLine" id="cb164-35" data-line-number="35">    V &lt;-<span class="st"> </span>(left <span class="op">+</span><span class="st"> </span>U) <span class="op">/</span><span class="st"> </span>nstrata <span class="co"># stratified based on U</span></a>
+<a class="sourceLine" id="cb164-36" data-line-number="36">    Wt.s &lt;-<span class="st"> </span><span class="kw">rmvnormLinCon</span>(V, Sigma, nu)</a>
+<a class="sourceLine" id="cb164-37" data-line-number="37">    St.s &lt;-<span class="st"> </span>S0 <span class="op">*</span><span class="st"> </span><span class="kw">exp</span>((r <span class="op">-</span><span class="st"> </span>sigma<span class="op">^</span><span class="dv">2</span> <span class="op">/</span><span class="st"> </span><span class="dv">2</span>) <span class="op">*</span><span class="st"> </span><span class="kw">matrix</span>(tgrid, n, nt, <span class="dt">byrow =</span> <span class="ot">TRUE</span>)</a>
+<a class="sourceLine" id="cb164-38" data-line-number="38">                     <span class="op">+</span><span class="st"> </span>Wt.s)</a>
+<a class="sourceLine" id="cb164-39" data-line-number="39">    pAri.s &lt;-<span class="st"> </span><span class="kw">pmax</span>(<span class="kw">rowMeans</span>(St.s) <span class="op">-</span><span class="st"> </span>K, <span class="dv">0</span>)</a>
+<a class="sourceLine" id="cb164-40" data-line-number="40">    vAri.s &lt;-<span class="st"> </span><span class="kw">mean</span>(pAri.s)</a>
+<a class="sourceLine" id="cb164-41" data-line-number="41">    <span class="kw">c</span>(vAri, vAri.s)</a>
+<a class="sourceLine" id="cb164-42" data-line-number="42">}</a>
+<a class="sourceLine" id="cb164-43" data-line-number="43"></a>
+<a class="sourceLine" id="cb164-44" data-line-number="44">r &lt;-<span class="st"> </span><span class="fl">0.05</span>; sigma &lt;-<span class="st"> </span><span class="fl">0.3</span>; S0 &lt;-<span class="st">  </span><span class="dv">50</span>; K &lt;-<span class="st">  </span><span class="dv">50</span></a>
+<a class="sourceLine" id="cb164-45" data-line-number="45">tgrid &lt;-<span class="st">  </span><span class="kw">seq</span>(<span class="dv">0</span>, <span class="fl">.25</span>, <span class="dt">length =</span> <span class="dv">14</span>)[<span class="op">-</span><span class="dv">1</span>]</a>
+<a class="sourceLine" id="cb164-46" data-line-number="46"></a>
+<a class="sourceLine" id="cb164-47" data-line-number="47">sim &lt;-<span class="st"> </span><span class="kw">replicate</span>(<span class="dv">200</span>, <span class="kw">optValueSS</span>(<span class="dv">500</span>, r, sigma, S0, K, tgrid))</a>
+<a class="sourceLine" id="cb164-48" data-line-number="48"><span class="kw">apply</span>(sim, <span class="dv">1</span>, mean)</a></code></pre></div>
+<pre><code>## [1] 1.988077 2.007031</code></pre>
+<div class="sourceCode" id="cb166"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb166-1" data-line-number="1"><span class="kw">apply</span>(sim, <span class="dv">1</span>, sd)</a></code></pre></div>
+<pre><code>## [1] 0.1262231 0.0357946</code></pre>
+</div>
+</div>
+<div id="exercises-5" class="section level2">
+<h2><span class="header-section-number">7.5</span> Exercises</h2>
+<ol style="list-style-type: decimal">
+<li>Suppose <span class="math inline">\(X\)</span> has the following probability density function
+<span class="math display">\[
+f(x) = \frac{1}{5\sqrt{2\pi}}x^2 e^{-\frac{(x-2)^2}{2}}, \qquad -\infty &lt;x &lt; \infty.
+\]</span>
+Consider using the importance sampling method to estimate <span class="math inline">\(\mathbb{E}(X^2)\)</span>.
+<ol style="list-style-type: lower-alpha">
+<li>Implement the important sampling method, with <span class="math inline">\(g(x)\)</span> being the standard
+normal density. Report your estimates using 1000, 10000 and 50000
+samples. Also estimate the variances of the estimates.</li>
+<li>Design a better importance sampling method to estimate <span class="math inline">\(\mathbb{E}(X^2)\)</span> using a
+different <span class="math inline">\(g(x)\)</span>. Justify your choice of <span class="math inline">\(g(x)\)</span>.</li>
+<li>Implement your method and estimate <span class="math inline">\(\mathbb{E}(X^2)\)</span> using using 1000, 10000 and 50000
+samples. Also estimate the variances of the importance sampling estimates.</li>
+<li>Compare the two results from the two methods and comment.</li>
+</ol></li>
+<li>Consider a geometric Brownian motion
+<span class="math display">\[\begin{align*}
+  \frac{\mathrm{d}S(t)}{S(t)} = r\,\mathrm{d}t + \sigma\,\mathrm{d}W(t).
+\end{align*}\]</span>
+Let <span class="math inline">\(P_A = e^{-rT}(S_A-K)_+\)</span>, <span class="math inline">\(P_E = e^{-rT}[S(T)-K]_+\)</span>, and <span class="math inline">\(P_G = e^{-rT}[S_G-K]_+\)</span>, where
+<span class="math display">\[\begin{align*}
+  S_A = \frac{1}{n} \sum_{i=1}^n S\left(\frac{iT}{n}\right),
+  \quad
+  S_G = \left[\prod_{i=1}^n S\left(\frac{iT}{n}\right)\right]^{1/n}.
+\end{align*}\]</span>
+In all the questions below, <span class="math inline">\(S(0)=1\)</span>, <span class="math inline">\(r=0.05\)</span>, and <span class="math inline">\(n=12\)</span>.
+<ol style="list-style-type: lower-alpha">
+<li>Write down and implement an algorithm to sample the path of <span class="math inline">\(S(t)\)</span>.</li>
+<li>Set <span class="math inline">\(\sigma=0.5\)</span> and <span class="math inline">\(T=1\)</span>. For each of the values of
+<span class="math inline">\(K \in \{1.1, 1.2, 1.3, 1.4, 1.5\}\)</span>, simulate 5000 sample paths of <span class="math inline">\(S(t)\)</span> to get
+MC estimates of the correlation coefficients between <span class="math inline">\(P_A\)</span> and
+<span class="math inline">\(S(T)\)</span>, between <span class="math inline">\(P_A\)</span> and <span class="math inline">\(P_E\)</span>, and between <span class="math inline">\(P_A\)</span> and <span class="math inline">\(P_G\)</span>. How
+do the correlation coefficients change as <span class="math inline">\(K\)</span> increases?</li>
+<li>Set <span class="math inline">\(T=1\)</span> and <span class="math inline">\(K=1.5\)</span>. For each of the values of
+<span class="math inline">\(\sigma \in \{0.2, 0.3, 0.4, 0.5\}\)</span>, simulate 5000 sample paths of <span class="math inline">\(S(t)\)</span> to
+get MC estimates of the correlation coefficients. How do the correlation
+coefficients change as <span class="math inline">\(\sigma\)</span> increases?</li>
+<li>Set <span class="math inline">\(\sigma=0.5\)</span> and <span class="math inline">\(K=1.5\)</span>. For each of the values of
+<span class="math inline">\(T \in \{0.4, 0.7, 1, 1.3, 1.6\}\)</span>, use 5000 sample paths of <span class="math inline">\(S(t)\)</span> to get MC
+estimates of the correlation coefficients. How do the correlation
+coefficients change as <span class="math inline">\(T\)</span> increases?</li>
+<li>Set <span class="math inline">\(\sigma=0.4\)</span>, <span class="math inline">\(T=1\)</span> and <span class="math inline">\(K=1.5\)</span>. Use <span class="math inline">\(P_G\)</span> as a control
+variate to develop a control variate MC estimator for <span class="math inline">\(\mathbb{E}(P_A)\)</span>.
+Compare its SD with the SD of the MC estimator for <span class="math inline">\(\mathbb{E}(P_A)\)</span> that
+has no control variate.</li>
+</ol></li>
+</ol>
+
+</div>
+</div>
+            </section>
+
+          </div>
+        </div>
+      </div>
+<a href="markov-chain-monte-carlo.html" class="navigation navigation-prev " aria-label="Previous page"><i class="fa fa-angle-left"></i></a>
+<a href="boot.html" class="navigation navigation-next " aria-label="Next page"><i class="fa fa-angle-right"></i></a>
+    </div>
+  </div>
+<script src="libs/gitbook-2.6.7/js/app.min.js"></script>
+<script src="libs/gitbook-2.6.7/js/lunr.js"></script>
+<script src="libs/gitbook-2.6.7/js/clipboard.min.js"></script>
+<script src="libs/gitbook-2.6.7/js/plugin-search.js"></script>
+<script src="libs/gitbook-2.6.7/js/plugin-sharing.js"></script>
+<script src="libs/gitbook-2.6.7/js/plugin-fontsettings.js"></script>
+<script src="libs/gitbook-2.6.7/js/plugin-bookdown.js"></script>
+<script src="libs/gitbook-2.6.7/js/jquery.highlight.js"></script>
+<script src="libs/gitbook-2.6.7/js/plugin-clipboard.js"></script>
+<script>
+gitbook.require(["gitbook"], function(gitbook) {
+gitbook.start({
+"sharing": {
+"github": false,
+"facebook": true,
+"twitter": true,
+"linkedin": false,
+"weibo": false,
+"instapaper": false,
+"vk": false,
+"all": ["facebook", "twitter", "linkedin", "weibo", "instapaper"]
+},
+"fontsettings": {
+"theme": "white",
+"family": "sans",
+"size": 2
+},
+"edit": {
+"link": null,
+"text": null
+},
+"history": {
+"link": null,
+"text": null
+},
+"view": {
+"link": null,
+"text": null
+},
+"download": null,
+"toc": {
+"collapse": "subsection"
+}
+});
+});
+</script>
+
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+  (function () {
+    var script = document.createElement("script");
+    script.type = "text/javascript";
+    var src = "true";
+    if (src === "" || src === "true") src = "https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-MML-AM_CHTML";
+    if (location.protocol !== "file:")
+      if (/^https?:/.test(src))
+        src = src.replace(/^https?:/, '');
+    script.src = src;
+    document.getElementsByTagName("head")[0].appendChild(script);
+  })();
+</script>
+</body>
+
+</html>

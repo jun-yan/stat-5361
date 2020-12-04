@@ -1,0 +1,454 @@
+<!DOCTYPE html>
+<html lang="" xml:lang="">
+<head>
+
+  <meta charset="utf-8" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <title>Chapter 6 Markov Chain Monte Carlo | STAT 5361: Statistical Computing, Fall 2019</title>
+  <meta name="description" content="This is a series of notes for the students of STAT 5361, Statisticl Computing, at UConn." />
+  <meta name="generator" content="bookdown 0.21.5 and GitBook 2.6.7" />
+
+  <meta property="og:title" content="Chapter 6 Markov Chain Monte Carlo | STAT 5361: Statistical Computing, Fall 2019" />
+  <meta property="og:type" content="book" />
+  
+  
+  <meta property="og:description" content="This is a series of notes for the students of STAT 5361, Statisticl Computing, at UConn." />
+  
+
+  <meta name="twitter:card" content="summary" />
+  <meta name="twitter:title" content="Chapter 6 Markov Chain Monte Carlo | STAT 5361: Statistical Computing, Fall 2019" />
+  
+  <meta name="twitter:description" content="This is a series of notes for the students of STAT 5361, Statisticl Computing, at UConn." />
+  
+
+<meta name="author" content="Jun Yan" />
+
+
+<meta name="date" content="2020-12-04" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black" />
+  
+  
+<link rel="prev" href="random-number-generation.html"/>
+<link rel="next" href="mcinteg.html"/>
+<script src="libs/jquery-2.2.3/jquery.min.js"></script>
+<link href="libs/gitbook-2.6.7/css/style.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-table.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-bookdown.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-highlight.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-search.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-fontsettings.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-clipboard.css" rel="stylesheet" />
+
+
+
+
+
+
+
+
+
+<link href="libs/anchor-sections-1.0.1/anchor-sections.css" rel="stylesheet" />
+<script src="libs/anchor-sections-1.0.1/anchor-sections.js"></script>
+
+
+<style type="text/css">
+a.sourceLine { display: inline-block; line-height: 1.25; }
+a.sourceLine { pointer-events: none; color: inherit; text-decoration: inherit; }
+a.sourceLine:empty { height: 1.2em; position: absolute; }
+.sourceCode { overflow: visible; }
+code.sourceCode { white-space: pre; position: relative; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+code.sourceCode { white-space: pre-wrap; }
+a.sourceLine { text-indent: -1em; padding-left: 1em; }
+}
+pre.numberSource a.sourceLine
+  { position: relative; }
+pre.numberSource a.sourceLine:empty
+  { position: absolute; }
+pre.numberSource a.sourceLine::before
+  { content: attr(data-line-number);
+    position: absolute; left: -5em; text-align: right; vertical-align: baseline;
+    border: none; pointer-events: all;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+    color: #aaaaaa;
+  }
+pre.numberSource { margin-left: 3em; border-left: 1px solid #aaaaaa;  padding-left: 4px; }
+div.sourceCode
+  {  }
+@media screen {
+a.sourceLine::before { text-decoration: underline; }
+}
+code span.al { color: #ff0000; font-weight: bold; } /* Alert */
+code span.an { color: #60a0b0; font-weight: bold; font-style: italic; } /* Annotation */
+code span.at { color: #7d9029; } /* Attribute */
+code span.bn { color: #40a070; } /* BaseN */
+code span.bu { } /* BuiltIn */
+code span.cf { color: #007020; font-weight: bold; } /* ControlFlow */
+code span.ch { color: #4070a0; } /* Char */
+code span.cn { color: #880000; } /* Constant */
+code span.co { color: #60a0b0; font-style: italic; } /* Comment */
+code span.cv { color: #60a0b0; font-weight: bold; font-style: italic; } /* CommentVar */
+code span.do { color: #ba2121; font-style: italic; } /* Documentation */
+code span.dt { color: #902000; } /* DataType */
+code span.dv { color: #40a070; } /* DecVal */
+code span.er { color: #ff0000; font-weight: bold; } /* Error */
+code span.ex { } /* Extension */
+code span.fl { color: #40a070; } /* Float */
+code span.fu { color: #06287e; } /* Function */
+code span.im { } /* Import */
+code span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Information */
+code span.kw { color: #007020; font-weight: bold; } /* Keyword */
+code span.op { color: #666666; } /* Operator */
+code span.ot { color: #007020; } /* Other */
+code span.pp { color: #bc7a00; } /* Preprocessor */
+code span.sc { color: #4070a0; } /* SpecialChar */
+code span.ss { color: #bb6688; } /* SpecialString */
+code span.st { color: #4070a0; } /* String */
+code span.va { color: #19177c; } /* Variable */
+code span.vs { color: #4070a0; } /* VerbatimString */
+code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warning */
+</style>
+
+</head>
+
+<body>
+
+
+
+  <div class="book without-animation with-summary font-size-2 font-family-1" data-basepath=".">
+
+    <div class="book-summary">
+      <nav role="navigation">
+
+<ul class="summary">
+<li class="chapter" data-level="1" data-path="index.html"><a href="index.html"><i class="fa fa-check"></i><b>1</b> Prerequisites</a><ul>
+<li class="chapter" data-level="1.1" data-path="index.html"><a href="index.html#a-teaser-example-likelihood-estimation"><i class="fa fa-check"></i><b>1.1</b> A Teaser Example: Likelihood Estimation</a></li>
+<li class="chapter" data-level="1.2" data-path="index.html"><a href="index.html#computer-arithmetics"><i class="fa fa-check"></i><b>1.2</b> Computer Arithmetics</a><ul>
+<li class="chapter" data-level="1.2.1" data-path="index.html"><a href="index.html#integers"><i class="fa fa-check"></i><b>1.2.1</b> Integers</a></li>
+<li class="chapter" data-level="1.2.2" data-path="index.html"><a href="index.html#floating-point"><i class="fa fa-check"></i><b>1.2.2</b> Floating Point</a></li>
+<li class="chapter" data-level="1.2.3" data-path="index.html"><a href="index.html#error-analysis"><i class="fa fa-check"></i><b>1.2.3</b> Error Analysis</a></li>
+<li class="chapter" data-level="1.2.4" data-path="index.html"><a href="index.html#condition-number"><i class="fa fa-check"></i><b>1.2.4</b> Condition Number</a></li>
+</ul></li>
+<li class="chapter" data-level="1.3" data-path="index.html"><a href="index.html#exercises"><i class="fa fa-check"></i><b>1.3</b> Exercises</a></li>
+<li class="chapter" data-level="1.4" data-path="index.html"><a href="index.html#course-project"><i class="fa fa-check"></i><b>1.4</b> Course Project</a></li>
+</ul></li>
+<li class="chapter" data-level="2" data-path="nla.html"><a href="nla.html"><i class="fa fa-check"></i><b>2</b> Numerical Linear Algebra</a></li>
+<li class="chapter" data-level="3" data-path="optim.html"><a href="optim.html"><i class="fa fa-check"></i><b>3</b> Optimization</a><ul>
+<li class="chapter" data-level="3.1" data-path="optim.html"><a href="optim.html#univariate-optimizations"><i class="fa fa-check"></i><b>3.1</b> Univariate Optimizations</a><ul>
+<li class="chapter" data-level="3.1.1" data-path="optim.html"><a href="optim.html#bisection-method"><i class="fa fa-check"></i><b>3.1.1</b> Bisection Method</a></li>
+<li class="chapter" data-level="3.1.2" data-path="optim.html"><a href="optim.html#newtons-method"><i class="fa fa-check"></i><b>3.1.2</b> Newton’s Method</a></li>
+<li class="chapter" data-level="3.1.3" data-path="optim.html"><a href="optim.html#fixed-point-iteration"><i class="fa fa-check"></i><b>3.1.3</b> Fixed Point Iteration</a></li>
+</ul></li>
+<li class="chapter" data-level="3.2" data-path="optim.html"><a href="optim.html#multivariate-optimization"><i class="fa fa-check"></i><b>3.2</b> Multivariate Optimization</a><ul>
+<li class="chapter" data-level="3.2.1" data-path="optim.html"><a href="optim.html#newton-raphson-method"><i class="fa fa-check"></i><b>3.2.1</b> Newton-Raphson Method</a></li>
+<li class="chapter" data-level="3.2.2" data-path="optim.html"><a href="optim.html#variants-of-newton-raphson-method"><i class="fa fa-check"></i><b>3.2.2</b> Variants of Newton-Raphson Method</a></li>
+<li class="chapter" data-level="3.2.3" data-path="optim.html"><a href="optim.html#nelder-mead-simplex-algorithm"><i class="fa fa-check"></i><b>3.2.3</b> Nelder-Mead (Simplex) Algorithm</a></li>
+<li class="chapter" data-level="3.2.4" data-path="optim.html"><a href="optim.html#optimization-with-r"><i class="fa fa-check"></i><b>3.2.4</b> Optimization with R</a></li>
+</ul></li>
+<li class="chapter" data-level="3.3" data-path="optim.html"><a href="optim.html#mm-algorithm"><i class="fa fa-check"></i><b>3.3</b> MM Algorithm</a></li>
+<li class="chapter" data-level="3.4" data-path="optim.html"><a href="optim.html#an-example-lasso-with-coordinate-descent"><i class="fa fa-check"></i><b>3.4</b> An Example: LASSO with Coordinate Descent</a></li>
+<li class="chapter" data-level="3.5" data-path="optim.html"><a href="optim.html#exercises-1"><i class="fa fa-check"></i><b>3.5</b> Exercises</a><ul>
+<li class="chapter" data-level="3.5.1" data-path="optim.html"><a href="optim.html#cauchy-with-unknown-location."><i class="fa fa-check"></i><b>3.5.1</b> Cauchy with unknown location.</a></li>
+<li class="chapter" data-level="3.5.2" data-path="optim.html"><a href="optim.html#many-local-maxima"><i class="fa fa-check"></i><b>3.5.2</b> Many local maxima</a></li>
+<li class="chapter" data-level="3.5.3" data-path="optim.html"><a href="optim.html#modeling-beetle-data"><i class="fa fa-check"></i><b>3.5.3</b> Modeling beetle data</a></li>
+<li class="chapter" data-level="3.5.4" data-path="optim.html"><a href="optim.html#coordinate-descent-for-penalized-least-squares"><i class="fa fa-check"></i><b>3.5.4</b> Coordinate descent for penalized least squares</a></li>
+</ul></li>
+</ul></li>
+<li class="chapter" data-level="4" data-path="em-algorithm.html"><a href="em-algorithm.html"><i class="fa fa-check"></i><b>4</b> EM Algorithm</a><ul>
+<li class="chapter" data-level="4.1" data-path="em-algorithm.html"><a href="em-algorithm.html#introduction"><i class="fa fa-check"></i><b>4.1</b> Introduction</a></li>
+<li class="chapter" data-level="4.2" data-path="em-algorithm.html"><a href="em-algorithm.html#em-algorithm-1"><i class="fa fa-check"></i><b>4.2</b> EM Algorithm</a></li>
+<li class="chapter" data-level="4.3" data-path="em-algorithm.html"><a href="em-algorithm.html#example-clustering-by-em"><i class="fa fa-check"></i><b>4.3</b> Example: Clustering by EM</a></li>
+<li class="chapter" data-level="4.4" data-path="em-algorithm.html"><a href="em-algorithm.html#variants-of-em"><i class="fa fa-check"></i><b>4.4</b> Variants of EM</a><ul>
+<li class="chapter" data-level="4.4.1" data-path="em-algorithm.html"><a href="em-algorithm.html#mcem"><i class="fa fa-check"></i><b>4.4.1</b> MCEM</a></li>
+<li class="chapter" data-level="4.4.2" data-path="em-algorithm.html"><a href="em-algorithm.html#ecm"><i class="fa fa-check"></i><b>4.4.2</b> ECM</a></li>
+</ul></li>
+<li class="chapter" data-level="4.5" data-path="em-algorithm.html"><a href="em-algorithm.html#standard-errors"><i class="fa fa-check"></i><b>4.5</b> Standard Errors</a><ul>
+<li class="chapter" data-level="4.5.1" data-path="em-algorithm.html"><a href="em-algorithm.html#supplemental-em-sem"><i class="fa fa-check"></i><b>4.5.1</b> Supplemental EM (SEM)</a></li>
+<li class="chapter" data-level="4.5.2" data-path="em-algorithm.html"><a href="em-algorithm.html#direct-calculation-of-the-information-matrix"><i class="fa fa-check"></i><b>4.5.2</b> Direct Calculation of the Information Matrix</a></li>
+</ul></li>
+<li class="chapter" data-level="4.6" data-path="em-algorithm.html"><a href="em-algorithm.html#acceleration"><i class="fa fa-check"></i><b>4.6</b> Acceleration</a></li>
+<li class="chapter" data-level="4.7" data-path="em-algorithm.html"><a href="em-algorithm.html#example-hidden-markov-model"><i class="fa fa-check"></i><b>4.7</b> Example: Hidden Markov Model</a></li>
+<li class="chapter" data-level="4.8" data-path="em-algorithm.html"><a href="em-algorithm.html#exercises-2"><i class="fa fa-check"></i><b>4.8</b> Exercises</a><ul>
+<li class="chapter" data-level="4.8.1" data-path="em-algorithm.html"><a href="em-algorithm.html#finite-mixture-regression"><i class="fa fa-check"></i><b>4.8.1</b> Finite mixture regression</a></li>
+<li class="chapter" data-level="4.8.2" data-path="em-algorithm.html"><a href="em-algorithm.html#acceleration-of-em-algorithm"><i class="fa fa-check"></i><b>4.8.2</b> Acceleration of EM algorithm</a></li>
+<li class="chapter" data-level="4.8.3" data-path="em-algorithm.html"><a href="em-algorithm.html#a-poisson-hmm-for-earthquake-data"><i class="fa fa-check"></i><b>4.8.3</b> A Poisson-HMM for earthquake data</a></li>
+</ul></li>
+</ul></li>
+<li class="chapter" data-level="5" data-path="random-number-generation.html"><a href="random-number-generation.html"><i class="fa fa-check"></i><b>5</b> Random Number Generation</a><ul>
+<li class="chapter" data-level="5.1" data-path="random-number-generation.html"><a href="random-number-generation.html#univariate-random-number-generation"><i class="fa fa-check"></i><b>5.1</b> Univariate Random Number Generation</a><ul>
+<li class="chapter" data-level="5.1.1" data-path="random-number-generation.html"><a href="random-number-generation.html#inverse-cdf"><i class="fa fa-check"></i><b>5.1.1</b> Inverse CDF</a></li>
+<li class="chapter" data-level="5.1.2" data-path="random-number-generation.html"><a href="random-number-generation.html#rejection-method"><i class="fa fa-check"></i><b>5.1.2</b> Rejection Method</a></li>
+<li class="chapter" data-level="5.1.3" data-path="random-number-generation.html"><a href="random-number-generation.html#sampling-importance-resampling"><i class="fa fa-check"></i><b>5.1.3</b> Sampling Importance Resampling</a></li>
+</ul></li>
+<li class="chapter" data-level="5.2" data-path="random-number-generation.html"><a href="random-number-generation.html#stochastic-processes"><i class="fa fa-check"></i><b>5.2</b> Stochastic Processes</a><ul>
+<li class="chapter" data-level="5.2.1" data-path="random-number-generation.html"><a href="random-number-generation.html#gaussian-markov-process"><i class="fa fa-check"></i><b>5.2.1</b> Gaussian Markov Process</a></li>
+<li class="chapter" data-level="5.2.2" data-path="random-number-generation.html"><a href="random-number-generation.html#counting-process"><i class="fa fa-check"></i><b>5.2.2</b> Counting Process</a></li>
+<li class="chapter" data-level="5.2.3" data-path="random-number-generation.html"><a href="random-number-generation.html#inhomogeneous-poisson-process"><i class="fa fa-check"></i><b>5.2.3</b> Inhomogeneous Poisson Process</a></li>
+<li class="chapter" data-level="5.2.4" data-path="random-number-generation.html"><a href="random-number-generation.html#jump-diffusion-process"><i class="fa fa-check"></i><b>5.2.4</b> Jump-Diffusion Process</a></li>
+</ul></li>
+<li class="chapter" data-level="5.3" data-path="random-number-generation.html"><a href="random-number-generation.html#exercises-3"><i class="fa fa-check"></i><b>5.3</b> Exercises</a><ul>
+<li class="chapter" data-level="5.3.1" data-path="random-number-generation.html"><a href="random-number-generation.html#rejection-sampling"><i class="fa fa-check"></i><b>5.3.1</b> Rejection sampling</a></li>
+<li class="chapter" data-level="5.3.2" data-path="random-number-generation.html"><a href="random-number-generation.html#mixture-proposal"><i class="fa fa-check"></i><b>5.3.2</b> Mixture Proposal</a></li>
+<li class="chapter" data-level="5.3.3" data-path="random-number-generation.html"><a href="random-number-generation.html#orsteinuhlenbeck-process"><i class="fa fa-check"></i><b>5.3.3</b> Orstein–Uhlenbeck Process</a></li>
+<li class="chapter" data-level="5.3.4" data-path="random-number-generation.html"><a href="random-number-generation.html#poisson-process"><i class="fa fa-check"></i><b>5.3.4</b> Poisson Process</a></li>
+</ul></li>
+</ul></li>
+<li class="chapter" data-level="6" data-path="markov-chain-monte-carlo.html"><a href="markov-chain-monte-carlo.html"><i class="fa fa-check"></i><b>6</b> Markov Chain Monte Carlo</a><ul>
+<li class="chapter" data-level="6.1" data-path="markov-chain-monte-carlo.html"><a href="markov-chain-monte-carlo.html#eample-normal-mixture"><i class="fa fa-check"></i><b>6.1</b> Eample: Normal mixture</a></li>
+<li class="chapter" data-level="6.2" data-path="markov-chain-monte-carlo.html"><a href="markov-chain-monte-carlo.html#general-purpose-gibbs-sampling-with-the-arms"><i class="fa fa-check"></i><b>6.2</b> General-Purpose Gibbs Sampling with the ARMS</a></li>
+<li class="chapter" data-level="6.3" data-path="markov-chain-monte-carlo.html"><a href="markov-chain-monte-carlo.html#exercises-4"><i class="fa fa-check"></i><b>6.3</b> Exercises</a><ul>
+<li class="chapter" data-level="6.3.1" data-path="markov-chain-monte-carlo.html"><a href="markov-chain-monte-carlo.html#normal-mixture-revisited"><i class="fa fa-check"></i><b>6.3.1</b> Normal mixture revisited</a></li>
+</ul></li>
+</ul></li>
+<li class="chapter" data-level="7" data-path="mcinteg.html"><a href="mcinteg.html"><i class="fa fa-check"></i><b>7</b> Monte Carlo Integration</a><ul>
+<li class="chapter" data-level="7.1" data-path="mcinteg.html"><a href="mcinteg.html#introduction-1"><i class="fa fa-check"></i><b>7.1</b> Introduction</a></li>
+<li class="chapter" data-level="7.2" data-path="mcinteg.html"><a href="mcinteg.html#option-pricing"><i class="fa fa-check"></i><b>7.2</b> Option Pricing</a></li>
+<li class="chapter" data-level="7.3" data-path="mcinteg.html"><a href="mcinteg.html#particle-filtering-for-state-space-models"><i class="fa fa-check"></i><b>7.3</b> Particle Filtering for State Space Models</a></li>
+<li class="chapter" data-level="7.4" data-path="mcinteg.html"><a href="mcinteg.html#variance-reduction"><i class="fa fa-check"></i><b>7.4</b> Variance Reduction</a><ul>
+<li class="chapter" data-level="7.4.1" data-path="mcinteg.html"><a href="mcinteg.html#importance-sampling"><i class="fa fa-check"></i><b>7.4.1</b> Importance Sampling</a></li>
+<li class="chapter" data-level="7.4.2" data-path="mcinteg.html"><a href="mcinteg.html#control-variates"><i class="fa fa-check"></i><b>7.4.2</b> Control Variates</a></li>
+<li class="chapter" data-level="7.4.3" data-path="mcinteg.html"><a href="mcinteg.html#antithetic-variates"><i class="fa fa-check"></i><b>7.4.3</b> Antithetic Variates</a></li>
+<li class="chapter" data-level="7.4.4" data-path="mcinteg.html"><a href="mcinteg.html#stratified-sampling"><i class="fa fa-check"></i><b>7.4.4</b> Stratified Sampling</a></li>
+</ul></li>
+<li class="chapter" data-level="7.5" data-path="mcinteg.html"><a href="mcinteg.html#exercises-5"><i class="fa fa-check"></i><b>7.5</b> Exercises</a></li>
+</ul></li>
+<li class="chapter" data-level="8" data-path="boot.html"><a href="boot.html"><i class="fa fa-check"></i><b>8</b> Bootstrap</a><ul>
+<li class="chapter" data-level="8.1" data-path="boot.html"><a href="boot.html#principles-of-bootstrap"><i class="fa fa-check"></i><b>8.1</b> Principles of Bootstrap</a></li>
+<li class="chapter" data-level="8.2" data-path="boot.html"><a href="boot.html#parametric-bootstrap"><i class="fa fa-check"></i><b>8.2</b> Parametric Bootstrap</a><ul>
+<li class="chapter" data-level="8.2.1" data-path="boot.html"><a href="boot.html#goodness-of-fit-test"><i class="fa fa-check"></i><b>8.2.1</b> Goodness-of-Fit Test</a></li>
+</ul></li>
+<li class="chapter" data-level="8.3" data-path="boot.html"><a href="boot.html#block-bootstrap"><i class="fa fa-check"></i><b>8.3</b> Block bootstrap</a></li>
+<li class="chapter" data-level="8.4" data-path="boot.html"><a href="boot.html#semiparametric-bootstrap"><i class="fa fa-check"></i><b>8.4</b> Semiparametric bootstrap</a></li>
+<li class="chapter" data-level="8.5" data-path="boot.html"><a href="boot.html#multiplier-bootstrap"><i class="fa fa-check"></i><b>8.5</b> Multiplier bootstrap</a><ul>
+<li class="chapter" data-level="8.5.1" data-path="boot.html"><a href="boot.html#multiplier-central-limit-theorem"><i class="fa fa-check"></i><b>8.5.1</b> Multiplier central limit theorem</a></li>
+</ul></li>
+<li class="chapter" data-level="8.6" data-path="boot.html"><a href="boot.html#exercises-6"><i class="fa fa-check"></i><b>8.6</b> Exercises</a></li>
+</ul></li>
+<li class="appendix"><span><b>Appendix</b></span></li>
+<li class="chapter" data-level="A" data-path="git-setup.html"><a href="git-setup.html"><i class="fa fa-check"></i><b>A</b> Git Setup</a><ul>
+<li class="chapter" data-level="A.1" data-path="git-setup.html"><a href="git-setup.html#git-windows"><i class="fa fa-check"></i><b>A.1</b> Git for Windows installer</a></li>
+</ul></li>
+<li class="chapter" data-level="B" data-path="git-lesson.html"><a href="git-lesson.html"><i class="fa fa-check"></i><b>B</b> Git Lesson</a><ul>
+<li class="chapter" data-level="B.1" data-path="git-lesson.html"><a href="git-lesson.html#automated-version-control"><i class="fa fa-check"></i><b>B.1</b> Automated Version Control</a></li>
+<li class="chapter" data-level="B.2" data-path="git-lesson.html"><a href="git-lesson.html#setup"><i class="fa fa-check"></i><b>B.2</b> Setup</a></li>
+<li class="chapter" data-level="B.3" data-path="git-lesson.html"><a href="git-lesson.html#creating-a-repository"><i class="fa fa-check"></i><b>B.3</b> Creating a Repository</a></li>
+<li class="chapter" data-level="B.4" data-path="git-lesson.html"><a href="git-lesson.html#setting-up-git-authorship"><i class="fa fa-check"></i><b>B.4</b> Setting up Git Authorship</a></li>
+<li class="chapter" data-level="B.5" data-path="git-lesson.html"><a href="git-lesson.html#tracking-changes"><i class="fa fa-check"></i><b>B.5</b> Tracking Changes</a></li>
+<li class="chapter" data-level="B.6" data-path="git-lesson.html"><a href="git-lesson.html#undo-changes"><i class="fa fa-check"></i><b>B.6</b> Undo Changes</a></li>
+<li class="chapter" data-level="B.7" data-path="git-lesson.html"><a href="git-lesson.html#explore-history"><i class="fa fa-check"></i><b>B.7</b> Explore History</a></li>
+<li class="chapter" data-level="B.8" data-path="git-lesson.html"><a href="git-lesson.html#next-steps"><i class="fa fa-check"></i><b>B.8</b> Next Steps</a></li>
+</ul></li>
+<li class="chapter" data-level="" data-path="references.html"><a href="references.html"><i class="fa fa-check"></i>References</a></li>
+</ul>
+
+      </nav>
+    </div>
+
+    <div class="book-body">
+      <div class="body-inner">
+        <div class="book-header" role="navigation">
+          <h1>
+            <i class="fa fa-circle-o-notch fa-spin"></i><a href="./">STAT 5361: Statistical Computing, Fall 2019</a>
+          </h1>
+        </div>
+
+        <div class="page-wrapper" tabindex="-1" role="main">
+          <div class="page-inner">
+
+            <section class="normal" id="section-">
+<div id="markov-chain-monte-carlo" class="section level1">
+<h1><span class="header-section-number">Chapter 6</span> Markov Chain Monte Carlo</h1>
+<div id="eample-normal-mixture" class="section level2">
+<h2><span class="header-section-number">6.1</span> Eample: Normal mixture</h2>
+<p>Generate some data with mixing rate <span class="math inline">\(\delta\)</span>.</p>
+<div class="sourceCode" id="cb98"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb98-1" data-line-number="1">delta &lt;-<span class="st"> </span><span class="fl">0.7</span> <span class="co"># true value to be estimated based on the data</span></a>
+<a class="sourceLine" id="cb98-2" data-line-number="2">n &lt;-<span class="st"> </span><span class="dv">100</span></a>
+<a class="sourceLine" id="cb98-3" data-line-number="3"><span class="kw">set.seed</span>(<span class="dv">123</span>)</a>
+<a class="sourceLine" id="cb98-4" data-line-number="4">u &lt;-<span class="st"> </span><span class="kw">rbinom</span>(n, <span class="dt">prob =</span> delta, <span class="dt">size =</span> <span class="dv">1</span>)</a>
+<a class="sourceLine" id="cb98-5" data-line-number="5">x &lt;-<span class="st"> </span><span class="kw">rnorm</span>(n, <span class="kw">ifelse</span>(u <span class="op">==</span><span class="st"> </span><span class="dv">1</span>, <span class="dv">7</span>, <span class="dv">10</span>), <span class="fl">0.5</span>)</a></code></pre></div>
+<p>Assuming that the normal distribution parameters <span class="math inline">\(\mu_1\)</span>, <span class="math inline">\(\sigma_1^2\)</span>, <span class="math inline">\(\mu_2\)</span>, and <span class="math inline">\(\sigma_2^2\)</span> are known. The only unknown parameter is <span class="math inline">\(\delta\)</span>. The likelihood function of <span class="math inline">\(\delta\)</span> is</p>
+<div class="sourceCode" id="cb99"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb99-1" data-line-number="1">mylike &lt;-<span class="st"> </span><span class="cf">function</span>(delta, x) {</a>
+<a class="sourceLine" id="cb99-2" data-line-number="2">    <span class="kw">prod</span>(delta <span class="op">*</span><span class="st"> </span><span class="kw">dnorm</span>(x, <span class="dv">7</span>, <span class="fl">0.5</span>) <span class="op">+</span><span class="st"> </span>(<span class="dv">1</span> <span class="op">-</span><span class="st"> </span>delta) <span class="op">*</span><span class="st"> </span><span class="kw">dnorm</span>(x, <span class="dv">10</span>, <span class="fl">0.5</span>))</a>
+<a class="sourceLine" id="cb99-3" data-line-number="3">}</a></code></pre></div>
+<p>We impose an uninformative prior on <span class="math inline">\(\delta\)</span> and use a simple random walk proposal to construct the Metropolis–Hasting algorithm.</p>
+<div class="sourceCode" id="cb100"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb100-1" data-line-number="1">## simple random walk chain</a>
+<a class="sourceLine" id="cb100-2" data-line-number="2">myRange &lt;-<span class="st"> </span><span class="cf">function</span>(v, width) {</a>
+<a class="sourceLine" id="cb100-3" data-line-number="3">    <span class="kw">min</span>(<span class="dv">1</span>, v <span class="op">+</span><span class="st"> </span>width) <span class="op">-</span><span class="st"> </span><span class="kw">max</span>(<span class="dv">0</span>, v <span class="op">-</span><span class="st"> </span>width)</a>
+<a class="sourceLine" id="cb100-4" data-line-number="4">}</a>
+<a class="sourceLine" id="cb100-5" data-line-number="5"></a>
+<a class="sourceLine" id="cb100-6" data-line-number="6">mymcmc &lt;-<span class="st"> </span><span class="cf">function</span>(niter, init, x, width) {</a>
+<a class="sourceLine" id="cb100-7" data-line-number="7">    v &lt;-<span class="st"> </span><span class="kw">double</span>(niter)</a>
+<a class="sourceLine" id="cb100-8" data-line-number="8">    <span class="cf">for</span> (i <span class="cf">in</span> <span class="dv">1</span><span class="op">:</span>niter) {</a>
+<a class="sourceLine" id="cb100-9" data-line-number="9">        cand &lt;-<span class="st"> </span><span class="kw">runif</span>(<span class="dv">1</span>, <span class="kw">max</span>(<span class="dv">0</span>, init <span class="op">-</span><span class="st"> </span>width), <span class="kw">min</span>(<span class="dv">1</span>, init <span class="op">+</span><span class="st"> </span>width))</a>
+<a class="sourceLine" id="cb100-10" data-line-number="10">        ratio &lt;-<span class="st"> </span><span class="kw">mylike</span>(cand, x) <span class="op">/</span><span class="st"> </span><span class="kw">myRange</span>(cand, width) <span class="op">/</span></a>
+<a class="sourceLine" id="cb100-11" data-line-number="11"><span class="st">            </span><span class="kw">mylike</span>(init, x) <span class="op">*</span><span class="st"> </span><span class="kw">myRange</span>(init, width)</a>
+<a class="sourceLine" id="cb100-12" data-line-number="12">        <span class="cf">if</span> (<span class="kw">runif</span>(<span class="dv">1</span>) <span class="op">&lt;</span><span class="st"> </span><span class="kw">min</span>(ratio, <span class="dv">1</span>)) {</a>
+<a class="sourceLine" id="cb100-13" data-line-number="13">            v[i] &lt;-<span class="st"> </span>init &lt;-<span class="st"> </span>cand</a>
+<a class="sourceLine" id="cb100-14" data-line-number="14">        } <span class="cf">else</span> v[i] &lt;-<span class="st"> </span>init</a>
+<a class="sourceLine" id="cb100-15" data-line-number="15">    }</a>
+<a class="sourceLine" id="cb100-16" data-line-number="16">    v</a>
+<a class="sourceLine" id="cb100-17" data-line-number="17">}</a></code></pre></div>
+<p>With initial value <span class="math inline">\(\delta_0 = .2\)</span> and stepsize <span class="math inline">\(.1\)</span> in the random walk proposal, we run the 2500 iterations and throw away the first 500 iterations.</p>
+<div class="sourceCode" id="cb101"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb101-1" data-line-number="1">niter &lt;-<span class="st"> </span><span class="dv">2500</span></a>
+<a class="sourceLine" id="cb101-2" data-line-number="2"><span class="kw">plot</span>(<span class="kw">ts</span>(z &lt;-<span class="st"> </span><span class="kw">mymcmc</span>(niter, <span class="fl">.2</span>, x, <span class="fl">.1</span>)[<span class="op">-</span>(<span class="dv">1</span><span class="op">:</span><span class="dv">500</span>)]))</a></code></pre></div>
+<p><img src="05-mcmc_files/figure-html/nmix-res-1.png" width="672" /></p>
+<div class="sourceCode" id="cb102"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb102-1" data-line-number="1"><span class="kw">hist</span>(z)</a></code></pre></div>
+<p><img src="05-mcmc_files/figure-html/nmix-res-2.png" width="672" /></p>
+</div>
+<div id="general-purpose-gibbs-sampling-with-the-arms" class="section level2">
+<h2><span class="header-section-number">6.2</span> General-Purpose Gibbs Sampling with the ARMS</h2>
+<p>Consider an example of posterior inference.
+Suppose that <span class="math inline">\((Y_i, X_i)\)</span>, <span class="math inline">\(i = 1, \ldots, n\)</span>, are observed, where
+<span class="math display">\[
+Y_i \mid X_i \sim \mbox{Poisson}(\exp(a + b X_i)).
+\]</span>
+This is a Poisson regression model. Assume independent prior distributions on <span class="math inline">\(a\)</span> and <span class="math inline">\(b\)</span> with <span class="math inline">\(N(0, \sigma^2)\)</span> and <span class="math inline">\(N(0, \tau^2)\)</span>. The posterior density of <span class="math inline">\((a, b)\)</span> is
+<span class="math display">\[
+q(a, b \mid \mbox{data}) \propto
+\exp\left(a \sum_i^n Y_i + b \sum_i^n X_i Y_i - e^a \sum_i^n e^{X_i b} - \frac{a^2}{2\sigma^2} - \frac{b^2}{2\tau^2}\right).
+\]</span>
+The full conditional distributions of <span class="math inline">\(a\)</span> and <span class="math inline">\(b\)</span> can be shown to be log-concave, which allows adaptive rejection alogorithm <span class="citation">(Robert and Casella <a href="#ref-robert2004monte">2004</a>)</span>. One could also just use the general ARMS as a lazy man’s approach.</p>
+<p>Let us first generate some data.</p>
+<div class="sourceCode" id="cb103"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb103-1" data-line-number="1">n &lt;-<span class="st"> </span><span class="dv">100</span></a>
+<a class="sourceLine" id="cb103-2" data-line-number="2">a &lt;-<span class="st"> </span><span class="fl">0.0</span>; b &lt;-<span class="st"> </span><span class="fl">0.5</span></a>
+<a class="sourceLine" id="cb103-3" data-line-number="3">x &lt;-<span class="st"> </span><span class="kw">rnorm</span>(n)</a>
+<a class="sourceLine" id="cb103-4" data-line-number="4">y &lt;-<span class="st"> </span><span class="kw">rpois</span>(n, <span class="kw">exp</span>(a <span class="op">+</span><span class="st"> </span>b <span class="op">*</span><span class="st"> </span>x))</a>
+<a class="sourceLine" id="cb103-5" data-line-number="5">mydata &lt;-<span class="st"> </span><span class="kw">data.frame</span>(<span class="dt">y =</span> y, <span class="dt">x =</span> x)</a></code></pre></div>
+<p>The posterior density up to an unknown normalizing constant can be easily computed.</p>
+<div class="sourceCode" id="cb104"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb104-1" data-line-number="1">logpost &lt;-<span class="st"> </span><span class="cf">function</span>(theta, data, sigma2, tau2) {</a>
+<a class="sourceLine" id="cb104-2" data-line-number="2">  a &lt;-<span class="st"> </span>theta[<span class="dv">1</span>]; b &lt;-<span class="st"> </span>theta[<span class="dv">2</span>]</a>
+<a class="sourceLine" id="cb104-3" data-line-number="3">  x &lt;-<span class="st"> </span>data<span class="op">$</span>x; y &lt;-<span class="st"> </span>data<span class="op">$</span>y</a>
+<a class="sourceLine" id="cb104-4" data-line-number="4">  <span class="kw">return</span>(a <span class="op">*</span><span class="st"> </span><span class="kw">sum</span>(y) <span class="op">+</span><span class="st"> </span>b <span class="op">*</span><span class="st"> </span><span class="kw">sum</span>(x <span class="op">*</span><span class="st"> </span>y) <span class="op">-</span><span class="st"> </span><span class="kw">exp</span>(a) <span class="op">*</span><span class="st"> </span><span class="kw">sum</span>(<span class="kw">exp</span>(b <span class="op">*</span><span class="st"> </span>x))</a>
+<a class="sourceLine" id="cb104-5" data-line-number="5">         <span class="op">-</span><span class="st"> </span>a<span class="op">^</span><span class="dv">2</span> <span class="op">/</span><span class="st"> </span><span class="dv">2</span> <span class="op">/</span><span class="st"> </span>sigma2 <span class="op">-</span><span class="st"> </span>b<span class="op">^</span><span class="dv">2</span> <span class="op">/</span><span class="st"> </span><span class="dv">2</span> <span class="op">/</span><span class="st"> </span>tau2)</a>
+<a class="sourceLine" id="cb104-6" data-line-number="6">}</a></code></pre></div>
+<p>An MCMC based the Gibbs sampler uses the ARMS algorithm from R package <strong>HI</strong>.</p>
+<div class="sourceCode" id="cb105"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb105-1" data-line-number="1">mymcmc &lt;-<span class="st"> </span><span class="cf">function</span>(niter, thetaInit, data, sigma2, tau2, <span class="dt">nburn=</span> <span class="dv">100</span>) {</a>
+<a class="sourceLine" id="cb105-2" data-line-number="2">  p &lt;-<span class="st"> </span><span class="kw">length</span>(thetaInit)</a>
+<a class="sourceLine" id="cb105-3" data-line-number="3">  thetaCurrent &lt;-<span class="st"> </span>thetaInit</a>
+<a class="sourceLine" id="cb105-4" data-line-number="4">  ## define a function for full conditional sampling  </a>
+<a class="sourceLine" id="cb105-5" data-line-number="5">  logFC &lt;-<span class="st"> </span><span class="cf">function</span>(th, idx) {</a>
+<a class="sourceLine" id="cb105-6" data-line-number="6">    theta &lt;-<span class="st"> </span>thetaCurrent</a>
+<a class="sourceLine" id="cb105-7" data-line-number="7">    theta[idx] &lt;-<span class="st"> </span>th</a>
+<a class="sourceLine" id="cb105-8" data-line-number="8">    <span class="kw">logpost</span>(theta, data, sigma2, tau2)</a>
+<a class="sourceLine" id="cb105-9" data-line-number="9">  }</a>
+<a class="sourceLine" id="cb105-10" data-line-number="10">  out &lt;-<span class="st"> </span><span class="kw">matrix</span>(thetaInit, niter, p, <span class="dt">byrow =</span> <span class="ot">TRUE</span>)</a>
+<a class="sourceLine" id="cb105-11" data-line-number="11">  ## Gibbs sampling</a>
+<a class="sourceLine" id="cb105-12" data-line-number="12">  <span class="cf">for</span> (i <span class="cf">in</span> <span class="dv">2</span><span class="op">:</span>niter) {</a>
+<a class="sourceLine" id="cb105-13" data-line-number="13">    <span class="cf">for</span> (j <span class="cf">in</span> <span class="dv">1</span><span class="op">:</span>p) {</a>
+<a class="sourceLine" id="cb105-14" data-line-number="14">      ## general-purpose arms algorithm</a>
+<a class="sourceLine" id="cb105-15" data-line-number="15">      out[i, j] &lt;-<span class="st"> </span>thetaCurrent[j] &lt;-</a>
+<a class="sourceLine" id="cb105-16" data-line-number="16"><span class="st">          </span>HI<span class="op">::</span><span class="kw">arms</span>(thetaCurrent[j], logFC,</a>
+<a class="sourceLine" id="cb105-17" data-line-number="17">                   <span class="cf">function</span>(x, idx) ((x <span class="op">&gt;</span><span class="st"> </span><span class="dv">-10</span>) <span class="op">*</span><span class="st"> </span>(x <span class="op">&lt;</span><span class="st"> </span><span class="dv">10</span>)), </a>
+<a class="sourceLine" id="cb105-18" data-line-number="18">                   <span class="dv">1</span>, <span class="dt">idx =</span> j)</a>
+<a class="sourceLine" id="cb105-19" data-line-number="19">    }</a>
+<a class="sourceLine" id="cb105-20" data-line-number="20">  }</a>
+<a class="sourceLine" id="cb105-21" data-line-number="21">  out[<span class="op">-</span>(<span class="dv">1</span><span class="op">:</span>nburn), ]</a>
+<a class="sourceLine" id="cb105-22" data-line-number="22">}</a></code></pre></div>
+<p>Now give it a try with <span class="math inline">\(\sigma^2 = 100\)</span> and <span class="math inline">\(\tau^2 = 100\)</span>.</p>
+<div class="sourceCode" id="cb106"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb106-1" data-line-number="1">niter &lt;-<span class="st"> </span><span class="dv">600</span>; nburn &lt;-<span class="st"> </span><span class="dv">100</span></a>
+<a class="sourceLine" id="cb106-2" data-line-number="2">thetaInit &lt;-<span class="st"> </span><span class="kw">c</span>(<span class="dv">2</span>, <span class="dv">2</span>)</a>
+<a class="sourceLine" id="cb106-3" data-line-number="3">sigma2 &lt;-<span class="st"> </span>tau2 &lt;-<span class="st"> </span><span class="dv">100</span></a>
+<a class="sourceLine" id="cb106-4" data-line-number="4">sim &lt;-<span class="st"> </span><span class="kw">mymcmc</span>(niter, thetaInit, mydata, sigma2, tau2)</a>
+<a class="sourceLine" id="cb106-5" data-line-number="5"><span class="kw">plot</span>(<span class="kw">ts</span>(sim[,<span class="dv">1</span>]))</a></code></pre></div>
+<p><img src="05-mcmc_files/figure-html/rpois-run-1.png" width="672" /></p>
+<div class="sourceCode" id="cb107"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb107-1" data-line-number="1"><span class="kw">plot</span>(<span class="kw">ts</span>(sim[,<span class="dv">2</span>]))</a></code></pre></div>
+<p><img src="05-mcmc_files/figure-html/rpois-run-2.png" width="672" /></p>
+</div>
+<div id="exercises-4" class="section level2">
+<h2><span class="header-section-number">6.3</span> Exercises</h2>
+<div id="normal-mixture-revisited" class="section level3">
+<h3><span class="header-section-number">6.3.1</span> Normal mixture revisited</h3>
+<p>Consider again the normal mixture example, except that the parameters of the normal distributions are considered unknown. Suppose that prior for <span class="math inline">\(\mu_1\)</span> and <span class="math inline">\(\mu_2\)</span> are <span class="math inline">\(N(0, 10^2)\)</span>, that the prior for <span class="math inline">\(1/\sigma_1^2\)</span> and <span class="math inline">\(1/\sigma_2^2\)</span> are <span class="math inline">\(\Gamma(a, b)\)</span> with shape <span class="math inline">\(a = .5\)</span> and scale <span class="math inline">\(b = 10\)</span>. Further, all the priors are independent. Design an MCMC using the Gibbs sampling approach to estimate all 5 parameters. You may use the <code>arms()</code>function in package <strong>HI</strong>. Run your chain for sufficiently long and drop the burn-in period. Plot the histogram of the results for all the parameters.</p>
+
+</div>
+</div>
+</div>
+<h3>References</h3>
+<div id="refs" class="references">
+<div id="ref-robert2004monte">
+<p>Robert, Christian, and George Casella. 2004. <em>Monte Carlo Statistical Methods</em>. Springer Science &amp; Business Media.</p>
+</div>
+</div>
+            </section>
+
+          </div>
+        </div>
+      </div>
+<a href="random-number-generation.html" class="navigation navigation-prev " aria-label="Previous page"><i class="fa fa-angle-left"></i></a>
+<a href="mcinteg.html" class="navigation navigation-next " aria-label="Next page"><i class="fa fa-angle-right"></i></a>
+    </div>
+  </div>
+<script src="libs/gitbook-2.6.7/js/app.min.js"></script>
+<script src="libs/gitbook-2.6.7/js/lunr.js"></script>
+<script src="libs/gitbook-2.6.7/js/clipboard.min.js"></script>
+<script src="libs/gitbook-2.6.7/js/plugin-search.js"></script>
+<script src="libs/gitbook-2.6.7/js/plugin-sharing.js"></script>
+<script src="libs/gitbook-2.6.7/js/plugin-fontsettings.js"></script>
+<script src="libs/gitbook-2.6.7/js/plugin-bookdown.js"></script>
+<script src="libs/gitbook-2.6.7/js/jquery.highlight.js"></script>
+<script src="libs/gitbook-2.6.7/js/plugin-clipboard.js"></script>
+<script>
+gitbook.require(["gitbook"], function(gitbook) {
+gitbook.start({
+"sharing": {
+"github": false,
+"facebook": true,
+"twitter": true,
+"linkedin": false,
+"weibo": false,
+"instapaper": false,
+"vk": false,
+"all": ["facebook", "twitter", "linkedin", "weibo", "instapaper"]
+},
+"fontsettings": {
+"theme": "white",
+"family": "sans",
+"size": 2
+},
+"edit": {
+"link": null,
+"text": null
+},
+"history": {
+"link": null,
+"text": null
+},
+"view": {
+"link": null,
+"text": null
+},
+"download": null,
+"toc": {
+"collapse": "subsection"
+}
+});
+});
+</script>
+
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+  (function () {
+    var script = document.createElement("script");
+    script.type = "text/javascript";
+    var src = "true";
+    if (src === "" || src === "true") src = "https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-MML-AM_CHTML";
+    if (location.protocol !== "file:")
+      if (/^https?:/.test(src))
+        src = src.replace(/^https?:/, '');
+    script.src = src;
+    document.getElementsByTagName("head")[0].appendChild(script);
+  })();
+</script>
+</body>
+
+</html>

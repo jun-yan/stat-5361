@@ -1,0 +1,931 @@
+<!DOCTYPE html>
+<html lang="" xml:lang="">
+<head>
+
+  <meta charset="utf-8" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <title>Chapter 4 EM Algorithm | STAT 5361: Statistical Computing, Fall 2019</title>
+  <meta name="description" content="This is a series of notes for the students of STAT 5361, Statisticl Computing, at UConn." />
+  <meta name="generator" content="bookdown 0.21.5 and GitBook 2.6.7" />
+
+  <meta property="og:title" content="Chapter 4 EM Algorithm | STAT 5361: Statistical Computing, Fall 2019" />
+  <meta property="og:type" content="book" />
+  
+  
+  <meta property="og:description" content="This is a series of notes for the students of STAT 5361, Statisticl Computing, at UConn." />
+  
+
+  <meta name="twitter:card" content="summary" />
+  <meta name="twitter:title" content="Chapter 4 EM Algorithm | STAT 5361: Statistical Computing, Fall 2019" />
+  
+  <meta name="twitter:description" content="This is a series of notes for the students of STAT 5361, Statisticl Computing, at UConn." />
+  
+
+<meta name="author" content="Jun Yan" />
+
+
+<meta name="date" content="2020-12-04" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black" />
+  
+  
+<link rel="prev" href="optim.html"/>
+<link rel="next" href="random-number-generation.html"/>
+<script src="libs/jquery-2.2.3/jquery.min.js"></script>
+<link href="libs/gitbook-2.6.7/css/style.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-table.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-bookdown.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-highlight.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-search.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-fontsettings.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-clipboard.css" rel="stylesheet" />
+
+
+
+
+
+
+
+
+
+<link href="libs/anchor-sections-1.0.1/anchor-sections.css" rel="stylesheet" />
+<script src="libs/anchor-sections-1.0.1/anchor-sections.js"></script>
+
+
+<style type="text/css">
+a.sourceLine { display: inline-block; line-height: 1.25; }
+a.sourceLine { pointer-events: none; color: inherit; text-decoration: inherit; }
+a.sourceLine:empty { height: 1.2em; position: absolute; }
+.sourceCode { overflow: visible; }
+code.sourceCode { white-space: pre; position: relative; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+code.sourceCode { white-space: pre-wrap; }
+a.sourceLine { text-indent: -1em; padding-left: 1em; }
+}
+pre.numberSource a.sourceLine
+  { position: relative; }
+pre.numberSource a.sourceLine:empty
+  { position: absolute; }
+pre.numberSource a.sourceLine::before
+  { content: attr(data-line-number);
+    position: absolute; left: -5em; text-align: right; vertical-align: baseline;
+    border: none; pointer-events: all;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+    color: #aaaaaa;
+  }
+pre.numberSource { margin-left: 3em; border-left: 1px solid #aaaaaa;  padding-left: 4px; }
+div.sourceCode
+  {  }
+@media screen {
+a.sourceLine::before { text-decoration: underline; }
+}
+code span.al { color: #ff0000; font-weight: bold; } /* Alert */
+code span.an { color: #60a0b0; font-weight: bold; font-style: italic; } /* Annotation */
+code span.at { color: #7d9029; } /* Attribute */
+code span.bn { color: #40a070; } /* BaseN */
+code span.bu { } /* BuiltIn */
+code span.cf { color: #007020; font-weight: bold; } /* ControlFlow */
+code span.ch { color: #4070a0; } /* Char */
+code span.cn { color: #880000; } /* Constant */
+code span.co { color: #60a0b0; font-style: italic; } /* Comment */
+code span.cv { color: #60a0b0; font-weight: bold; font-style: italic; } /* CommentVar */
+code span.do { color: #ba2121; font-style: italic; } /* Documentation */
+code span.dt { color: #902000; } /* DataType */
+code span.dv { color: #40a070; } /* DecVal */
+code span.er { color: #ff0000; font-weight: bold; } /* Error */
+code span.ex { } /* Extension */
+code span.fl { color: #40a070; } /* Float */
+code span.fu { color: #06287e; } /* Function */
+code span.im { } /* Import */
+code span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Information */
+code span.kw { color: #007020; font-weight: bold; } /* Keyword */
+code span.op { color: #666666; } /* Operator */
+code span.ot { color: #007020; } /* Other */
+code span.pp { color: #bc7a00; } /* Preprocessor */
+code span.sc { color: #4070a0; } /* SpecialChar */
+code span.ss { color: #bb6688; } /* SpecialString */
+code span.st { color: #4070a0; } /* String */
+code span.va { color: #19177c; } /* Variable */
+code span.vs { color: #4070a0; } /* VerbatimString */
+code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warning */
+</style>
+
+</head>
+
+<body>
+
+
+
+  <div class="book without-animation with-summary font-size-2 font-family-1" data-basepath=".">
+
+    <div class="book-summary">
+      <nav role="navigation">
+
+<ul class="summary">
+<li class="chapter" data-level="1" data-path="index.html"><a href="index.html"><i class="fa fa-check"></i><b>1</b> Prerequisites</a><ul>
+<li class="chapter" data-level="1.1" data-path="index.html"><a href="index.html#a-teaser-example-likelihood-estimation"><i class="fa fa-check"></i><b>1.1</b> A Teaser Example: Likelihood Estimation</a></li>
+<li class="chapter" data-level="1.2" data-path="index.html"><a href="index.html#computer-arithmetics"><i class="fa fa-check"></i><b>1.2</b> Computer Arithmetics</a><ul>
+<li class="chapter" data-level="1.2.1" data-path="index.html"><a href="index.html#integers"><i class="fa fa-check"></i><b>1.2.1</b> Integers</a></li>
+<li class="chapter" data-level="1.2.2" data-path="index.html"><a href="index.html#floating-point"><i class="fa fa-check"></i><b>1.2.2</b> Floating Point</a></li>
+<li class="chapter" data-level="1.2.3" data-path="index.html"><a href="index.html#error-analysis"><i class="fa fa-check"></i><b>1.2.3</b> Error Analysis</a></li>
+<li class="chapter" data-level="1.2.4" data-path="index.html"><a href="index.html#condition-number"><i class="fa fa-check"></i><b>1.2.4</b> Condition Number</a></li>
+</ul></li>
+<li class="chapter" data-level="1.3" data-path="index.html"><a href="index.html#exercises"><i class="fa fa-check"></i><b>1.3</b> Exercises</a></li>
+<li class="chapter" data-level="1.4" data-path="index.html"><a href="index.html#course-project"><i class="fa fa-check"></i><b>1.4</b> Course Project</a></li>
+</ul></li>
+<li class="chapter" data-level="2" data-path="nla.html"><a href="nla.html"><i class="fa fa-check"></i><b>2</b> Numerical Linear Algebra</a></li>
+<li class="chapter" data-level="3" data-path="optim.html"><a href="optim.html"><i class="fa fa-check"></i><b>3</b> Optimization</a><ul>
+<li class="chapter" data-level="3.1" data-path="optim.html"><a href="optim.html#univariate-optimizations"><i class="fa fa-check"></i><b>3.1</b> Univariate Optimizations</a><ul>
+<li class="chapter" data-level="3.1.1" data-path="optim.html"><a href="optim.html#bisection-method"><i class="fa fa-check"></i><b>3.1.1</b> Bisection Method</a></li>
+<li class="chapter" data-level="3.1.2" data-path="optim.html"><a href="optim.html#newtons-method"><i class="fa fa-check"></i><b>3.1.2</b> Newton’s Method</a></li>
+<li class="chapter" data-level="3.1.3" data-path="optim.html"><a href="optim.html#fixed-point-iteration"><i class="fa fa-check"></i><b>3.1.3</b> Fixed Point Iteration</a></li>
+</ul></li>
+<li class="chapter" data-level="3.2" data-path="optim.html"><a href="optim.html#multivariate-optimization"><i class="fa fa-check"></i><b>3.2</b> Multivariate Optimization</a><ul>
+<li class="chapter" data-level="3.2.1" data-path="optim.html"><a href="optim.html#newton-raphson-method"><i class="fa fa-check"></i><b>3.2.1</b> Newton-Raphson Method</a></li>
+<li class="chapter" data-level="3.2.2" data-path="optim.html"><a href="optim.html#variants-of-newton-raphson-method"><i class="fa fa-check"></i><b>3.2.2</b> Variants of Newton-Raphson Method</a></li>
+<li class="chapter" data-level="3.2.3" data-path="optim.html"><a href="optim.html#nelder-mead-simplex-algorithm"><i class="fa fa-check"></i><b>3.2.3</b> Nelder-Mead (Simplex) Algorithm</a></li>
+<li class="chapter" data-level="3.2.4" data-path="optim.html"><a href="optim.html#optimization-with-r"><i class="fa fa-check"></i><b>3.2.4</b> Optimization with R</a></li>
+</ul></li>
+<li class="chapter" data-level="3.3" data-path="optim.html"><a href="optim.html#mm-algorithm"><i class="fa fa-check"></i><b>3.3</b> MM Algorithm</a></li>
+<li class="chapter" data-level="3.4" data-path="optim.html"><a href="optim.html#an-example-lasso-with-coordinate-descent"><i class="fa fa-check"></i><b>3.4</b> An Example: LASSO with Coordinate Descent</a></li>
+<li class="chapter" data-level="3.5" data-path="optim.html"><a href="optim.html#exercises-1"><i class="fa fa-check"></i><b>3.5</b> Exercises</a><ul>
+<li class="chapter" data-level="3.5.1" data-path="optim.html"><a href="optim.html#cauchy-with-unknown-location."><i class="fa fa-check"></i><b>3.5.1</b> Cauchy with unknown location.</a></li>
+<li class="chapter" data-level="3.5.2" data-path="optim.html"><a href="optim.html#many-local-maxima"><i class="fa fa-check"></i><b>3.5.2</b> Many local maxima</a></li>
+<li class="chapter" data-level="3.5.3" data-path="optim.html"><a href="optim.html#modeling-beetle-data"><i class="fa fa-check"></i><b>3.5.3</b> Modeling beetle data</a></li>
+<li class="chapter" data-level="3.5.4" data-path="optim.html"><a href="optim.html#coordinate-descent-for-penalized-least-squares"><i class="fa fa-check"></i><b>3.5.4</b> Coordinate descent for penalized least squares</a></li>
+</ul></li>
+</ul></li>
+<li class="chapter" data-level="4" data-path="em-algorithm.html"><a href="em-algorithm.html"><i class="fa fa-check"></i><b>4</b> EM Algorithm</a><ul>
+<li class="chapter" data-level="4.1" data-path="em-algorithm.html"><a href="em-algorithm.html#introduction"><i class="fa fa-check"></i><b>4.1</b> Introduction</a></li>
+<li class="chapter" data-level="4.2" data-path="em-algorithm.html"><a href="em-algorithm.html#em-algorithm-1"><i class="fa fa-check"></i><b>4.2</b> EM Algorithm</a></li>
+<li class="chapter" data-level="4.3" data-path="em-algorithm.html"><a href="em-algorithm.html#example-clustering-by-em"><i class="fa fa-check"></i><b>4.3</b> Example: Clustering by EM</a></li>
+<li class="chapter" data-level="4.4" data-path="em-algorithm.html"><a href="em-algorithm.html#variants-of-em"><i class="fa fa-check"></i><b>4.4</b> Variants of EM</a><ul>
+<li class="chapter" data-level="4.4.1" data-path="em-algorithm.html"><a href="em-algorithm.html#mcem"><i class="fa fa-check"></i><b>4.4.1</b> MCEM</a></li>
+<li class="chapter" data-level="4.4.2" data-path="em-algorithm.html"><a href="em-algorithm.html#ecm"><i class="fa fa-check"></i><b>4.4.2</b> ECM</a></li>
+</ul></li>
+<li class="chapter" data-level="4.5" data-path="em-algorithm.html"><a href="em-algorithm.html#standard-errors"><i class="fa fa-check"></i><b>4.5</b> Standard Errors</a><ul>
+<li class="chapter" data-level="4.5.1" data-path="em-algorithm.html"><a href="em-algorithm.html#supplemental-em-sem"><i class="fa fa-check"></i><b>4.5.1</b> Supplemental EM (SEM)</a></li>
+<li class="chapter" data-level="4.5.2" data-path="em-algorithm.html"><a href="em-algorithm.html#direct-calculation-of-the-information-matrix"><i class="fa fa-check"></i><b>4.5.2</b> Direct Calculation of the Information Matrix</a></li>
+</ul></li>
+<li class="chapter" data-level="4.6" data-path="em-algorithm.html"><a href="em-algorithm.html#acceleration"><i class="fa fa-check"></i><b>4.6</b> Acceleration</a></li>
+<li class="chapter" data-level="4.7" data-path="em-algorithm.html"><a href="em-algorithm.html#example-hidden-markov-model"><i class="fa fa-check"></i><b>4.7</b> Example: Hidden Markov Model</a></li>
+<li class="chapter" data-level="4.8" data-path="em-algorithm.html"><a href="em-algorithm.html#exercises-2"><i class="fa fa-check"></i><b>4.8</b> Exercises</a><ul>
+<li class="chapter" data-level="4.8.1" data-path="em-algorithm.html"><a href="em-algorithm.html#finite-mixture-regression"><i class="fa fa-check"></i><b>4.8.1</b> Finite mixture regression</a></li>
+<li class="chapter" data-level="4.8.2" data-path="em-algorithm.html"><a href="em-algorithm.html#acceleration-of-em-algorithm"><i class="fa fa-check"></i><b>4.8.2</b> Acceleration of EM algorithm</a></li>
+<li class="chapter" data-level="4.8.3" data-path="em-algorithm.html"><a href="em-algorithm.html#a-poisson-hmm-for-earthquake-data"><i class="fa fa-check"></i><b>4.8.3</b> A Poisson-HMM for earthquake data</a></li>
+</ul></li>
+</ul></li>
+<li class="chapter" data-level="5" data-path="random-number-generation.html"><a href="random-number-generation.html"><i class="fa fa-check"></i><b>5</b> Random Number Generation</a><ul>
+<li class="chapter" data-level="5.1" data-path="random-number-generation.html"><a href="random-number-generation.html#univariate-random-number-generation"><i class="fa fa-check"></i><b>5.1</b> Univariate Random Number Generation</a><ul>
+<li class="chapter" data-level="5.1.1" data-path="random-number-generation.html"><a href="random-number-generation.html#inverse-cdf"><i class="fa fa-check"></i><b>5.1.1</b> Inverse CDF</a></li>
+<li class="chapter" data-level="5.1.2" data-path="random-number-generation.html"><a href="random-number-generation.html#rejection-method"><i class="fa fa-check"></i><b>5.1.2</b> Rejection Method</a></li>
+<li class="chapter" data-level="5.1.3" data-path="random-number-generation.html"><a href="random-number-generation.html#sampling-importance-resampling"><i class="fa fa-check"></i><b>5.1.3</b> Sampling Importance Resampling</a></li>
+</ul></li>
+<li class="chapter" data-level="5.2" data-path="random-number-generation.html"><a href="random-number-generation.html#stochastic-processes"><i class="fa fa-check"></i><b>5.2</b> Stochastic Processes</a><ul>
+<li class="chapter" data-level="5.2.1" data-path="random-number-generation.html"><a href="random-number-generation.html#gaussian-markov-process"><i class="fa fa-check"></i><b>5.2.1</b> Gaussian Markov Process</a></li>
+<li class="chapter" data-level="5.2.2" data-path="random-number-generation.html"><a href="random-number-generation.html#counting-process"><i class="fa fa-check"></i><b>5.2.2</b> Counting Process</a></li>
+<li class="chapter" data-level="5.2.3" data-path="random-number-generation.html"><a href="random-number-generation.html#inhomogeneous-poisson-process"><i class="fa fa-check"></i><b>5.2.3</b> Inhomogeneous Poisson Process</a></li>
+<li class="chapter" data-level="5.2.4" data-path="random-number-generation.html"><a href="random-number-generation.html#jump-diffusion-process"><i class="fa fa-check"></i><b>5.2.4</b> Jump-Diffusion Process</a></li>
+</ul></li>
+<li class="chapter" data-level="5.3" data-path="random-number-generation.html"><a href="random-number-generation.html#exercises-3"><i class="fa fa-check"></i><b>5.3</b> Exercises</a><ul>
+<li class="chapter" data-level="5.3.1" data-path="random-number-generation.html"><a href="random-number-generation.html#rejection-sampling"><i class="fa fa-check"></i><b>5.3.1</b> Rejection sampling</a></li>
+<li class="chapter" data-level="5.3.2" data-path="random-number-generation.html"><a href="random-number-generation.html#mixture-proposal"><i class="fa fa-check"></i><b>5.3.2</b> Mixture Proposal</a></li>
+<li class="chapter" data-level="5.3.3" data-path="random-number-generation.html"><a href="random-number-generation.html#orsteinuhlenbeck-process"><i class="fa fa-check"></i><b>5.3.3</b> Orstein–Uhlenbeck Process</a></li>
+<li class="chapter" data-level="5.3.4" data-path="random-number-generation.html"><a href="random-number-generation.html#poisson-process"><i class="fa fa-check"></i><b>5.3.4</b> Poisson Process</a></li>
+</ul></li>
+</ul></li>
+<li class="chapter" data-level="6" data-path="markov-chain-monte-carlo.html"><a href="markov-chain-monte-carlo.html"><i class="fa fa-check"></i><b>6</b> Markov Chain Monte Carlo</a><ul>
+<li class="chapter" data-level="6.1" data-path="markov-chain-monte-carlo.html"><a href="markov-chain-monte-carlo.html#eample-normal-mixture"><i class="fa fa-check"></i><b>6.1</b> Eample: Normal mixture</a></li>
+<li class="chapter" data-level="6.2" data-path="markov-chain-monte-carlo.html"><a href="markov-chain-monte-carlo.html#general-purpose-gibbs-sampling-with-the-arms"><i class="fa fa-check"></i><b>6.2</b> General-Purpose Gibbs Sampling with the ARMS</a></li>
+<li class="chapter" data-level="6.3" data-path="markov-chain-monte-carlo.html"><a href="markov-chain-monte-carlo.html#exercises-4"><i class="fa fa-check"></i><b>6.3</b> Exercises</a><ul>
+<li class="chapter" data-level="6.3.1" data-path="markov-chain-monte-carlo.html"><a href="markov-chain-monte-carlo.html#normal-mixture-revisited"><i class="fa fa-check"></i><b>6.3.1</b> Normal mixture revisited</a></li>
+</ul></li>
+</ul></li>
+<li class="chapter" data-level="7" data-path="mcinteg.html"><a href="mcinteg.html"><i class="fa fa-check"></i><b>7</b> Monte Carlo Integration</a><ul>
+<li class="chapter" data-level="7.1" data-path="mcinteg.html"><a href="mcinteg.html#introduction-1"><i class="fa fa-check"></i><b>7.1</b> Introduction</a></li>
+<li class="chapter" data-level="7.2" data-path="mcinteg.html"><a href="mcinteg.html#option-pricing"><i class="fa fa-check"></i><b>7.2</b> Option Pricing</a></li>
+<li class="chapter" data-level="7.3" data-path="mcinteg.html"><a href="mcinteg.html#particle-filtering-for-state-space-models"><i class="fa fa-check"></i><b>7.3</b> Particle Filtering for State Space Models</a></li>
+<li class="chapter" data-level="7.4" data-path="mcinteg.html"><a href="mcinteg.html#variance-reduction"><i class="fa fa-check"></i><b>7.4</b> Variance Reduction</a><ul>
+<li class="chapter" data-level="7.4.1" data-path="mcinteg.html"><a href="mcinteg.html#importance-sampling"><i class="fa fa-check"></i><b>7.4.1</b> Importance Sampling</a></li>
+<li class="chapter" data-level="7.4.2" data-path="mcinteg.html"><a href="mcinteg.html#control-variates"><i class="fa fa-check"></i><b>7.4.2</b> Control Variates</a></li>
+<li class="chapter" data-level="7.4.3" data-path="mcinteg.html"><a href="mcinteg.html#antithetic-variates"><i class="fa fa-check"></i><b>7.4.3</b> Antithetic Variates</a></li>
+<li class="chapter" data-level="7.4.4" data-path="mcinteg.html"><a href="mcinteg.html#stratified-sampling"><i class="fa fa-check"></i><b>7.4.4</b> Stratified Sampling</a></li>
+</ul></li>
+<li class="chapter" data-level="7.5" data-path="mcinteg.html"><a href="mcinteg.html#exercises-5"><i class="fa fa-check"></i><b>7.5</b> Exercises</a></li>
+</ul></li>
+<li class="chapter" data-level="8" data-path="boot.html"><a href="boot.html"><i class="fa fa-check"></i><b>8</b> Bootstrap</a><ul>
+<li class="chapter" data-level="8.1" data-path="boot.html"><a href="boot.html#principles-of-bootstrap"><i class="fa fa-check"></i><b>8.1</b> Principles of Bootstrap</a></li>
+<li class="chapter" data-level="8.2" data-path="boot.html"><a href="boot.html#parametric-bootstrap"><i class="fa fa-check"></i><b>8.2</b> Parametric Bootstrap</a><ul>
+<li class="chapter" data-level="8.2.1" data-path="boot.html"><a href="boot.html#goodness-of-fit-test"><i class="fa fa-check"></i><b>8.2.1</b> Goodness-of-Fit Test</a></li>
+</ul></li>
+<li class="chapter" data-level="8.3" data-path="boot.html"><a href="boot.html#block-bootstrap"><i class="fa fa-check"></i><b>8.3</b> Block bootstrap</a></li>
+<li class="chapter" data-level="8.4" data-path="boot.html"><a href="boot.html#semiparametric-bootstrap"><i class="fa fa-check"></i><b>8.4</b> Semiparametric bootstrap</a></li>
+<li class="chapter" data-level="8.5" data-path="boot.html"><a href="boot.html#multiplier-bootstrap"><i class="fa fa-check"></i><b>8.5</b> Multiplier bootstrap</a><ul>
+<li class="chapter" data-level="8.5.1" data-path="boot.html"><a href="boot.html#multiplier-central-limit-theorem"><i class="fa fa-check"></i><b>8.5.1</b> Multiplier central limit theorem</a></li>
+</ul></li>
+<li class="chapter" data-level="8.6" data-path="boot.html"><a href="boot.html#exercises-6"><i class="fa fa-check"></i><b>8.6</b> Exercises</a></li>
+</ul></li>
+<li class="appendix"><span><b>Appendix</b></span></li>
+<li class="chapter" data-level="A" data-path="git-setup.html"><a href="git-setup.html"><i class="fa fa-check"></i><b>A</b> Git Setup</a><ul>
+<li class="chapter" data-level="A.1" data-path="git-setup.html"><a href="git-setup.html#git-windows"><i class="fa fa-check"></i><b>A.1</b> Git for Windows installer</a></li>
+</ul></li>
+<li class="chapter" data-level="B" data-path="git-lesson.html"><a href="git-lesson.html"><i class="fa fa-check"></i><b>B</b> Git Lesson</a><ul>
+<li class="chapter" data-level="B.1" data-path="git-lesson.html"><a href="git-lesson.html#automated-version-control"><i class="fa fa-check"></i><b>B.1</b> Automated Version Control</a></li>
+<li class="chapter" data-level="B.2" data-path="git-lesson.html"><a href="git-lesson.html#setup"><i class="fa fa-check"></i><b>B.2</b> Setup</a></li>
+<li class="chapter" data-level="B.3" data-path="git-lesson.html"><a href="git-lesson.html#creating-a-repository"><i class="fa fa-check"></i><b>B.3</b> Creating a Repository</a></li>
+<li class="chapter" data-level="B.4" data-path="git-lesson.html"><a href="git-lesson.html#setting-up-git-authorship"><i class="fa fa-check"></i><b>B.4</b> Setting up Git Authorship</a></li>
+<li class="chapter" data-level="B.5" data-path="git-lesson.html"><a href="git-lesson.html#tracking-changes"><i class="fa fa-check"></i><b>B.5</b> Tracking Changes</a></li>
+<li class="chapter" data-level="B.6" data-path="git-lesson.html"><a href="git-lesson.html#undo-changes"><i class="fa fa-check"></i><b>B.6</b> Undo Changes</a></li>
+<li class="chapter" data-level="B.7" data-path="git-lesson.html"><a href="git-lesson.html#explore-history"><i class="fa fa-check"></i><b>B.7</b> Explore History</a></li>
+<li class="chapter" data-level="B.8" data-path="git-lesson.html"><a href="git-lesson.html#next-steps"><i class="fa fa-check"></i><b>B.8</b> Next Steps</a></li>
+</ul></li>
+<li class="chapter" data-level="" data-path="references.html"><a href="references.html"><i class="fa fa-check"></i>References</a></li>
+</ul>
+
+      </nav>
+    </div>
+
+    <div class="book-body">
+      <div class="body-inner">
+        <div class="book-header" role="navigation">
+          <h1>
+            <i class="fa fa-circle-o-notch fa-spin"></i><a href="./">STAT 5361: Statistical Computing, Fall 2019</a>
+          </h1>
+        </div>
+
+        <div class="page-wrapper" tabindex="-1" role="main">
+          <div class="page-inner">
+
+            <section class="normal" id="section-">
+<div id="em-algorithm" class="section level1">
+<h1><span class="header-section-number">Chapter 4</span> EM Algorithm</h1>
+<div id="introduction" class="section level2">
+<h2><span class="header-section-number">4.1</span> Introduction</h2>
+<p>The EM algorithm is an application of the MM algorithm.
+Proposed by <span class="citation">Dempster, Laird, and Rubin (<a href="#ref-Demp:Lair:Rubi:maxi:1977">1977</a>)</span>, it is one of the
+pillars of modern computational statistics.
+Every EM algorithm has some notion of missing data.</p>
+<p>Setup:</p>
+<ul>
+<li>Complete data <span class="math inline">\(X = (Y, Z)\)</span>, with density <span class="math inline">\(f(x | \theta)\)</span>.</li>
+<li>Observed data <span class="math inline">\(Y\)</span>. Some function <span class="math inline">\(t(X) = Y\)</span> collapses <span class="math inline">\(X\)</span> into <span class="math inline">\(Y\)</span>.</li>
+<li>Missing data <span class="math inline">\(Z\)</span>.</li>
+</ul>
+<p>The definition of <span class="math inline">\(X\)</span> is left up to the creativity of the statistician.
+The general idea is to choose <span class="math inline">\(X\)</span> so that the MLE is trivial for complete data.</p>
+</div>
+<div id="em-algorithm-1" class="section level2">
+<h2><span class="header-section-number">4.2</span> EM Algorithm</h2>
+<p>The EM algorithm iterates between the two steps until convergence:</p>
+<ol style="list-style-type: decimal">
+<li><p>E-step: compute the conditional expectation
+<span class="math display">\[\begin{equation*}
+  Q(\theta | \theta_n) = E [\log f(X | \theta) | Y = y, \theta_n],
+  \end{equation*}\]</span>
+where <span class="math inline">\(\theta_n\)</span> is the current estimate of <span class="math inline">\(\theta\)</span>.
+Note that expectation needed is for functions of missing data <span class="math inline">\(Z\)</span>
+instead of <span class="math inline">\(Z\)</span> itself, although sometimes it can be <span class="math inline">\(Z\)</span> itself.</p></li>
+<li><p>M-step: maximize <span class="math inline">\(Q(\theta | \theta_n)\)</span> with respect to <span class="math inline">\(\theta\)</span>
+to obtain the new estimate <span class="math inline">\(\theta_{n + 1}\)</span>.</p></li>
+</ol>
+<p>Ascent property:
+Let <span class="math inline">\(g(y | \theta)\)</span> be the observed likelihood. Then the EM algorithm
+enjoys the ascent property:
+<span class="math display">\[\begin{equation*}
+  \log g(y | \theta_{n + 1}) \ge \log g(y | \theta_n).
+\end{equation*}\]</span></p>
+<p>It is sufficient to show the minorization inequality:
+<span class="math display">\[\begin{equation*}
+  \log g(y | \theta) \ge Q(\theta | \theta_n) + \log g(y | \theta_n) - Q(\theta_n | \theta_n).
+\end{equation*}\]</span></p>
+<p>Information inequality:
+For densities <span class="math inline">\(h_1\)</span> and <span class="math inline">\(h_2\)</span> with respect to measure <span class="math inline">\(\mu\)</span>,
+<span class="math inline">\(E_{h_1} \log h_1(X) \ge E_{h_1} \log h_2(X)\)</span>
+with equality only if <span class="math inline">\(h_1 = h_2\)</span> almost everywhere relative to <span class="math inline">\(\mu\)</span>.</p>
+<p>To prove the ascent property,
+let <span class="math inline">\(h_1(x | y, \theta) = f(x|\theta) / g(y | \theta)\)</span> and
+<span class="math inline">\(h_2(x | y, \theta_n) = f(x | \theta_n) / g(y | \theta_n)\)</span>
+be conditional densities of <span class="math inline">\(X\)</span> on the set <span class="math inline">\(\{x: t(x) = y\}\)</span>
+with respect to some measure <span class="math inline">\(\mu_y\)</span>.</p>
+</div>
+<div id="example-clustering-by-em" class="section level2">
+<h2><span class="header-section-number">4.3</span> Example: Clustering by EM</h2>
+<p>Suppose that <span class="math inline">\(y_1, \ldots, y_n\)</span> form a random sample from
+a mixture density <span class="math inline">\(h(y) = \sum_{j=1}^k \pi_j h_j(y | \theta)\)</span>,
+where <span class="math inline">\(\pi_j &gt; 0\)</span>, <span class="math inline">\(j = 1, \ldots, n\)</span>, and <span class="math inline">\(\sum_{j=1}^k \pi_j = 1\)</span>,
+<span class="math inline">\(h_j\)</span> is the density function of group <span class="math inline">\(j\)</span> with parameter <span class="math inline">\(\theta\)</span>.
+For example, each group density can be normal with common variance
+<span class="math inline">\(\sigma^2\)</span> but with group specific mean <span class="math inline">\(\mu_j\)</span>’s.</p>
+<p>Problem: estimate the parameters <span class="math inline">\(\pi_j\)</span>’s and <span class="math inline">\(\theta\)</span>.</p>
+<p>Missing data: let <span class="math inline">\(z_{ij}\)</span> be the indicator such that
+<span class="math inline">\(z_{ij} = 1\)</span> if observation <span class="math inline">\(y_i\)</span> is from group <span class="math inline">\(j\)</span>, and zero otherwise.</p>
+<p>Complete data likelihood:
+<span class="math display">\[
+  \sum_{i=1}^n \sum_{j=1}^k z_{ij}[\log \pi_j + \log h_j(y_i | \theta)].
+\]</span></p>
+<p>E-step: conditional expectation of <span class="math inline">\(z_{ij}\)</span>, <span class="math inline">\(w_{ij}\)</span>, given current
+<span class="math inline">\(\pi_j\)</span>’s and <span class="math inline">\(\theta\)</span>.
+By Bayes’ rule,
+<span class="math display">\[\begin{equation*}
+  w_{ij} = \frac{\pi_j h_j(y_i | \theta)}{\sum_{l=1}^k \pi_l h_l(y_i | \theta)}
+\end{equation*}\]</span></p>
+M-step:
+with missing values filled by their conditional expectations <span class="math inline">\(w_{ij}\)</span>,
+the maximization step separates <span class="math inline">\(\pi\)</span> from <span class="math inline">\(\theta\)</span>.
+
+<p>Question: what if there is no closed form E-step or M-step?</p>
+</div>
+<div id="variants-of-em" class="section level2">
+<h2><span class="header-section-number">4.4</span> Variants of EM</h2>
+<div id="mcem" class="section level3">
+<h3><span class="header-section-number">4.4.1</span> MCEM</h3>
+<p>Classroom examples may give an impression that the E-step consists
+of replacing the missing data by their conditional expectations
+given the observed data at current parameter values.
+Although in many examples this may be the case as the complete
+loglikelihood is a linear function of the missing data <span class="math inline">\(Z\)</span>,
+it is not quite so in general.</p>
+When the E-step has no closed-form, it can be approximated
+by a Monte Carlo process, and this variant of the EM algorithm
+is known as the Monte Carlo EM (MCEM) <span class="citation">(Wei and Tanner <a href="#ref-Wei:Tann:mont:1990">1990</a>)</span>.
+The Monte Carlo E-step goes as the following.
+
+<p>The sample size can be different from iteration to iteration;
+smaller sample size may by sufficient earlier on but larger
+sample sizes are needed in the vicinity of the
+convergence to control the Monte Carlo error.
+Importance sampling can be used as well.</p>
+<p>MCEM routines need to address two challenges <span class="citation">(Levine and Casella <a href="#ref-Lavi:Case:impl:2001">2001</a>)</span>
+(1) how do we minimize the computational cost in obtaining an
+sample? and (2) how do we choose the Monte Carlo sample size?
+Rejection sampling and importance sampling can be used for the first.
+For the second, the number of simulations at iterations in which the
+change in the parameter value is swamped by Monte Carlo error needs to
+be increased in an automated way.</p>
+</div>
+<div id="ecm" class="section level3">
+<h3><span class="header-section-number">4.4.2</span> ECM</h3>
+<p>The Expectation Conditional Maximization (ECM) algorithm
+<span class="citation">(Meng and Rubin <a href="#ref-Meng:Rubi:maxi:1993">1993</a>)</span> is a class of generalized
+EM (GEM) algorithms <span class="citation">(Dempster, Laird, and Rubin <a href="#ref-Demp:Lair:Rubi:maxi:1977">1977</a>)</span>, where the M-step
+is only partially implemented, with the new estimate improving the
+likelihood found in the E-step, but not necessarily maximizing it.</p>
+<p>The ECM algorithm replaces the M-step of the EM algorithm with several
+computationally simpler conditional maximization (CM) steps.
+Each of these CM-steps maximizes the <span class="math inline">\(Q\)</span>-function found in the preceding
+E-step subject to constraints on <span class="math inline">\(\theta\)</span>, where the collection of all
+constraints is such that the maximization is over the full parameter
+space of <span class="math inline">\(\theta\)</span>. It is essentially coordinate ascend!</p>
+<p>A CM-step might be in closed form or it might itself require
+iteration, but because the CM maximizations are over smaller
+dimensional spaces, often they are simpler, faster, and more stable
+than the corresponding full maximizations called for on the M-step of
+the EM algorithm, especially when iteration is required. The ECM
+algorithm typically converges more slowly than the EM in terms of
+number of iterations, but can be faster in total computer time. More
+importantly, the ECM algorithm preserves the appealing convergence
+properties of the EM algorithm, such as its monotone convergence.
+<!-- % http://sfb649.wiwi.hu-berlin.de/fedc_homepage/xplore/ebooks/html/csa/node46.html#SECTION08141000000000000000 --></p>
+</div>
+</div>
+<div id="standard-errors" class="section level2">
+<h2><span class="header-section-number">4.5</span> Standard Errors</h2>
+<!-- % Various methods have been proposed -->
+<!-- % (Louis 1982; Meilijson 1989; Meng and Rubin 1993, and Lange 1995). -->
+<!-- % We focus on Oakes (1999) and its Monte Carlo version, which  -->
+<!-- % is both simple and useful. -->
+<div id="supplemental-em-sem" class="section level3">
+<h3><span class="header-section-number">4.5.1</span> Supplemental EM (SEM)</h3>
+<p><span class="citation">Meng and Rubin (<a href="#ref-Meng:Rubi:usin:1991">1991</a>)</span> proposed a general automated algorithm
+named SEM to obtain numerically stable asymptotic variance matrix
+of the estimator from the EM algorithm.
+The method uses the fact that the rate of convergence of EM
+is governed by the fractions of the missing information to
+find the increased variability due to missing information to
+add to the complete-data variance matrix.</p>
+<p>Keeping the notation of <span class="math inline">\(X = (Y, Z)\)</span>, from the factorization
+<span class="math display">\[
+f(X | \theta) = g(Y | \theta) k(Z | Y; \theta),
+\]</span>
+where <span class="math inline">\(f\)</span>, <span class="math inline">\(g\)</span>, and <span class="math inline">\(k\)</span> are the joint, marginal and
+conditional density of their arguments, respectively.
+The observed loglikelihood is the difference between the
+complete loglikelihood and the conditional loglikelihood
+<span class="math display">\[
+L(\theta | Y) = L(\theta | X) - \log k(Z | Y; \theta).
+\]</span>
+Taking the second derivatives, averaging over
+<span class="math inline">\(k(Z | Y; \theta)\)</span>, and evaluate at the MLE <span class="math inline">\(\theta = \theta^*\)</span>,
+we have
+<span class="math display">\[
+I_o(\theta^* | Y) = I_{oc} - I_{om},
+\]</span>
+where
+<span class="math display">\[
+I_o(\theta | Y) = - \frac{\partial^2 \log g(Y | \theta)}{\partial\theta\partial\theta^{\top}}
+\]</span>
+is the observed information matrix,
+<span class="math display">\[
+I_{oc} = E[I_o(\theta | Y) \vert Y, \theta] \big\vert_{\theta = \theta^*}
+\]</span>
+the conditional expectation of the complete-data observed information
+given the observed data, and
+<span class="math display">\[
+I_{om} = E\left[ - \frac{\partial^2 \log k(Z | Y; \theta)}{\partial\theta\partial\theta^2} \big\vert Y, \theta\right] \big\vert_{\theta = \theta^*}
+\]</span>
+is viewed as the missing information.
+The interpretation is appealing:
+<span class="math display">\[
+\mbox{observed information} = \mbox{complete information} - \mbox{missing information}
+\]</span>
+which is known as the ``missing information principal’’.</p>
+<p>The observed information can be written as
+<span class="math display">\[
+I_o(\theta^* | Y) = (I - R) I_{oc},
+\]</span>
+where <span class="math inline">\(R = I_{om} I_{oc}^{-1}\)</span>.
+It has been shown that the convergence rate of the EM
+algorithm is <span class="math inline">\(R\)</span> <span class="citation">(Dempster, Laird, and Rubin <a href="#ref-Demp:Lair:Rubi:maxi:1977">1977</a>)</span>.
+If an estimate of <span class="math inline">\(R\)</span> is available, the target variance matrix
+can be estimated using
+<span class="math display">\[
+I_{oc}^{-1} (I - R)^{-1} = I_{oc}^{-1} + I_{oc}^{-1}R (I - R)^{-1}.
+\]</span></p>
+<p>The SEM algorithm needs to evaluate <span class="math inline">\(I_{oc}^{-1}\)</span> and <span class="math inline">\(R\)</span>.
+Evaluation of <span class="math inline">\(I_{oc}\)</span> is simplified if <span class="math inline">\(X\)</span> is from an exponential family.
+It can be obtained simply by substituting the conditional expectation
+of the sufficient statistics <span class="math inline">\(S(Y)\)</span> found at the last E-step.
+Non-exponential family cases can be handled by linearization
+of the complete loglikelihood in terms of <span class="math inline">\(S(Y)\)</span>.</p>
+<p>The computation of <span class="math inline">\(R\)</span> is done numerically.
+Each element of <span class="math inline">\(R\)</span> is estimated by the component-wise
+rate of convergence of a ``forced EM’’.
+Let <span class="math inline">\(r_{ij}\)</span> be the <span class="math inline">\((i,j)\)</span>th element of <span class="math inline">\(R\)</span>.
+Let
+<span class="math display">\[
+\theta^{(t)}(i) = (\theta_1^*, \ldots, \theta_{i-1}^*, \theta_i^{(t)}, \theta_{i+1}^*, \ldots, \theta_d^*),
+\]</span>
+that is, only the <span class="math inline">\(i\)</span>th component in the <span class="math inline">\(d\)</span>-dimensional vector
+<span class="math inline">\(\theta^{t}(i)\)</span> is active in the sense that other components are
+fixed at their MLE’s.
+Given <span class="math inline">\(\theta^*\)</span> and <span class="math inline">\(\theta^{(t)}\)</span>, one iteration of the EM
+algorithm can be run to obtain
+<span class="math inline">\(\tilde\theta^{(t+1)}(i) = M\big(\theta^{(t)}(i)\big)\)</span>.
+Then, obtain
+<span class="math display">\[
+r_{ij}^{(t)} = \frac{\tilde\theta_j^{(t+1)}(i) - \theta_j^*}{\theta_i^{(t)} - \theta_i^*},
+\]</span>
+for <span class="math inline">\(j = 1, \ldots, d\)</span>.
+This rate approximates the slope of the map of
+<span class="math inline">\(\theta^{(t + 1)} = M(\theta^{(t)})\)</span>.</p>
+</div>
+<div id="direct-calculation-of-the-information-matrix" class="section level3">
+<h3><span class="header-section-number">4.5.2</span> Direct Calculation of the Information Matrix</h3>
+<p><span class="citation">Oakes (<a href="#ref-Oake:dire:1999">1999</a>)</span> derived an explicit formula for the
+observed information matrix in terms of derivatives of the
+<span class="math inline">\(Q\)</span> function (conditional expectation of the complete-data
+loglikelihood given the observed data) invoked by the EM algorithm.</p>
+<p>Start from the fundamental identity:
+<span class="math display" id="eq:infoiden">\[\begin{equation}
+L(\phi, X) = Q(\phi&#39; | \phi) - E_{X\mid Y,\phi} \log k(X \mid Y; \phi&#39;)
+\tag{4.1}
+\end{equation}\]</span>
+where <span class="math inline">\(Q(\phi&#39; \mid \phi) = E_{X \mid Y,\phi} L_0(\phi&#39;, X)\)</span>, and
+<span class="math inline">\(L_0\)</span> is the complete-data loglikelihood.</p>
+<p>Assuming that the usual exchange of expectation with respect to
+<span class="math inline">\(X\)</span> and differentiation in <span class="math inline">\(\phi\)</span> hold for <span class="math inline">\(\log k(X | Y, \phi)\)</span>.
+This gives two identities
+<span class="math display">\[
+E_{X\mid Y,\phi} \frac{\partial\log k(X\mid Y; \phi)}{\partial \phi} = 0
+\]</span>
+and
+<span class="math display">\[
+E_{X\mid Y,\phi} \frac{\partial^2 \log k(X\mid Y; \phi)}{\partial\phi^2}
++ E_{X\mid Y,\phi} \frac{\partial \log k(X\mid Y; \phi)}{\partial \phi} 
+\left[\frac{\partial \log k(X\mid Y; \phi)}{\partial \phi}\right]^{\top}.
+\]</span></p>
+<p>Differentiation of <a href="em-algorithm.html#eq:infoiden">(4.1)</a> in <span class="math inline">\(\phi&#39;\)</span> gives
+<span class="math display" id="eq:dinfo">\[\begin{equation}
+  \frac{\partial L}{\partial \phi} = 
+  \frac{\partial Q(\phi&#39; | \phi)}{\partial \phi&#39;}
+  - E_{X\mid Y, \phi} \frac{\partial \log k(X\mid Y, \phi&#39;)}{\partial \phi&#39;} .
+  \tag{4.2}
+\end{equation}\]</span>
+Substituting <span class="math inline">\(\phi\)</span> with <span class="math inline">\(\phi&#39;\)</span> makes the second term vanish,
+which leads to
+<span class="math display">\[
+\frac{\partial L}{\partial \phi} = 
+\left\{\frac{\partial Q(\phi&#39; | \phi)}{\partial \phi&#39;} \right\}_{\phi = \phi&#39;}.
+\]</span></p>
+<p>Differentiation of <a href="em-algorithm.html#eq:dinfo">(4.2)</a> in <span class="math inline">\(\phi&#39;\)</span> and <span class="math inline">\(\phi\)</span> gives
+respectively
+<span class="math display">\[
+\frac{\partial^2 L}{\partial \phi&#39;^2} = \frac{\partial^2 L}{\partial \phi&#39;^2}
+- E_{X\mid Y, \phi} \frac{\partial^2 \log k(X\mid Y, \phi&#39;)}{\partial \phi&#39;^2},
+\]</span>
+and
+<span class="math display">\[
+0 = \frac{\partial^2 Q(\phi&#39;|\phi)}{\partial \phi&#39;\partial \phi}
+- E_{X\mid Y, \phi} \frac{\partial \log k(X\mid Y, \phi&#39;)}{\partial \phi&#39;} 
+\left[\frac{\partial \log k(X\mid Y, \phi)}{\partial \phi} \right]^{\top}.
+\]</span>
+Substituting <span class="math inline">\(\phi = \phi&#39;\)</span>, adding the two equations and using
+the information identity give
+<span class="math display">\[
+\frac{\partial^2 L}{\partial \phi^2} = 
+\left\{\frac{\partial^2 Q(\phi&#39;|\phi)}{\partial \phi&#39;^2}
+  + \frac{\partial^2 Q(\phi&#39;|\phi)}{\partial \phi&#39;\partial \phi}
+  \right\}_{\phi&#39; = \phi},
+\]</span>
+which is valid for all <span class="math inline">\(\phi\)</span>.
+The second term is the ``missing information’’ due to the
+fact that only <span class="math inline">\(Y\)</span> instead of <span class="math inline">\(X\)</span> is observed.</p>
+<p>If the complete data is from an exponential family, the
+second term reflects the sensitivity of the imputed complete-data
+sufficient statistic to changes in hypothesized parameter value.</p>
+<!-- %%%% DON'T remove yet; need to find its source! -->
+<!-- % The second derivative can be expressed in terms of complete-data -->
+<!-- % likelihood: -->
+<!-- % \begin{equation*} -->
+<!-- %   \frac{\partial^2}{\partial\theta^2} \log (\theta | \mathbf{x}) -->
+<!-- %   = \left\{ \frac{\partial^2}{\partial\theta'^2} E \log L(\theta'| \mathbf{x}, \mathbf{z}) + \frac{\partial^2}{\partial\theta'\partial\theta} E  \log L(\theta'| \mathbf{x}, \mathbf{z}) \right\} \big\vert_{\theta' = \theta}   -->
+<!-- % \end{equation*} -->
+<!-- % where the expectation is taken with respect to the missing data. -->
+<!-- % Take the derivatives inside the expectations: -->
+<!-- % \begin{equation*} -->
+<!-- %   E\left( \frac{\partial^2}{\partial\theta^2} \log L(\theta | \mathbf{x}, \mathbf{z})\right) + \VAR\left( \frac{\partial}{\partial\theta} \log L(\theta | \mathbf{x}, \mathbf{z}) \right) -->
+<!-- % \end{equation*} -->
+<!-- % which allows Monte Carlo evaluation. -->
+</div>
+</div>
+<div id="acceleration" class="section level2">
+<h2><span class="header-section-number">4.6</span> Acceleration</h2>
+<p>Can we obtain fast convergence without sacrificing the stability of EM?</p>
+</div>
+<div id="example-hidden-markov-model" class="section level2">
+<h2><span class="header-section-number">4.7</span> Example: Hidden Markov Model</h2>
+<p>A hidden Markov model (HMM) is a dependent mixture model.
+The model consists of two parts:
+1) a Markov process for the unobserved state process
+<span class="math inline">\(\{S_t: t = 1, 2, \ldots\}\)</span>; and
+2) a state-dependent process for the observed data
+<span class="math inline">\(\{X_t: t = 1, 2, \ldots\}\)</span> such that when <span class="math inline">\(S_t\)</span> is known,
+the distribution of <span class="math inline">\(X_t\)</span> depends on <span class="math inline">\(S_t\)</span> only and not
+on previous states or observations.
+It can be characterized by
+<span class="math display">\[\begin{align}
+  \Pr(S_t \mid S_1, \ldots, S_{t - 1}) &amp;= \Pr(S_t \mid S_{t-1}),\quad t = 2, 3, \ldots, \\
+  \Pr(X_t \mid S_1, \ldots, S_t; X_1, \ldots, X_{t-1}) &amp;= \Pr(X_t \mid S_t), \quad t = 1, 2, \ldots. 
+\end{align}\]</span>
+HMMs have a wide range of applications.</p>
+<p>Suppose that process <span class="math inline">\(S_t\)</span> has <span class="math inline">\(m\)</span> states.
+Let <span class="math inline">\(\delta\)</span> be the parameters of the initial distribution of <span class="math inline">\(S_t\)</span>.
+Let <span class="math inline">\(\Gamma\)</span> be the probability transition matrix of <span class="math inline">\(S_t\)</span>.
+Let <span class="math inline">\(\theta\)</span> be the parameter vector in <span class="math inline">\(\Pr(X_t | S_t)\)</span>.
+Given the observed data <span class="math inline">\(\{x_t: t = 1, \ldots, T\}\)</span>,
+these parameters can be estimated by an application of
+the EM algorithm where the unobserved states
+<span class="math inline">\(\{s_t: t = 1, \ldots, T\}\)</span> are treated as missing data.</p>
+<p>To devise the EM algorithm, we need the complete data loglikelihood.
+Let <span class="math inline">\(u_j(t) = I(s_t = j)\)</span>, <span class="math inline">\(t = 1, \ldots, T\)</span>, <span class="math inline">\(j = 1, \ldots, m\)</span>,
+and <span class="math inline">\(v_{jk}(t) = I(s_{t-1} = j, s_t = k)\)</span>, <span class="math inline">\(t = 2, \ldots, T\)</span>,
+and <span class="math inline">\(j, k \in \{1, \ldots, m\}\)</span>.
+The complete data loglikelihood is
+<span class="math display">\[\begin{align*}
+ &amp;{=} \log p(s_1, \ldots, s_T, x_1, \ldots, x_T)\\
+ &amp;= \log \delta_{s_1} \prod_{t=2}^T \Gamma_{s_{t-1}, s_t} \prod_{t=1}^T p(x_t | s_t; \theta)\\
+ &amp;= \log \delta_{s_1} + \sum_{t=2}^T \log \Gamma_{s_{t-1}, s_t} + \sum_{t=1}^T \log p(x_t | s_t; \theta)\\
+ &amp;= \sum_{i=1}^m u_j(1) \log \delta_j 
+   + \sum_{j=1}^m \sum_{k=1}^m \sum_{t=2}^T v_{jk}(t) \log \Gamma_{jk}
+   + \sum_{j=1}^m \sum_{t=1}^T u_j(t) \log p(x_t | s_t = j; \theta)
+\end{align*}\]</span></p>
+<p>In the E-step, quantities <span class="math inline">\(u_j(t)\)</span> and <span class="math inline">\(v_{jk}(t)\)</span> needs be replaced with
+their conditional expectations given <span class="math inline">\(\{x_t: t = 1, \ldots, T\}\)</span>.
+Define row vector <span class="math inline">\(\alpha(t)\)</span> as
+<span class="math display">\[
+\alpha(t) = \delta \prod_{r=2}^t \Gamma P(x_r),
+\]</span>
+where <span class="math inline">\(P(x_r | \theta) = diag[p(x_r | 1; \theta), \ldots, p(x_r | m; \theta)]\)</span>.
+This is indeed a probability vector, known as the forward probability,
+because the <span class="math inline">\(j\)</span>th component is <span class="math inline">\(\alpha_j(t) = p(x_1, \ldots, x_t, s_t = j)\)</span>.
+Define vector <span class="math inline">\(\beta(t)\)</span> as
+<span class="math display">\[
+\beta(t) = \prod_{r = t + 1}^T \Gamma P(x_r) \mathbf{1},
+\]</span>
+with the convention that an empty product is the identity matrix,
+where <span class="math inline">\(\mathbf{1}\)</span> is the column vector of ones.
+This is also a probability vector, known as the backward probability,
+because the <span class="math inline">\(j\)</span>th component is
+<span class="math inline">\(\beta_j(t) = p(x_{t+1}, \ldots, x_T | s_t = j)\)</span>.
+The forward probabilities are affected by the initial probabilities
+<span class="math inline">\(\delta\)</span>, and the model does not need to assume stationarity of <span class="math inline">\(S_t\)</span>.
+The backward probabilities, however, are not affected by stationarity
+of <span class="math inline">\(S_t\)</span>.</p>
+<p>It follows that for all <span class="math inline">\(t \in \{1, \ldots, T\}\)</span> and
+<span class="math inline">\(j \in \{1, \ldots, m\}\)</span>,
+<span class="math display">\[
+\alpha_j(t) \beta_j(t) = p(x_1, \ldots, x_T, s_t = j).
+\]</span>
+Consequently, <span class="math inline">\(\alpha(t) \beta(t) = p(x_1, \ldots, x_T) = L_T\)</span> for each <span class="math inline">\(t\)</span>.
+It can be verified that, for <span class="math inline">\(t \in \{1, \ldots, T\}\)</span>,
+<span class="math display" id="eq:condexu">\[\begin{equation}
+p(S_t = j | x_1, \ldots, x_T) = \alpha_j(t) \beta_j(t)  / L_T,
+\tag{4.3}
+\end{equation}\]</span>
+and that, for <span class="math inline">\(t \in \{2, \ldots, T\}\)</span>,
+<span class="math display" id="eq:condexv">\[\begin{equation}
+p(s_{t - 1} = j, s_t = k | x_1, \ldots, x_T) 
+= \alpha_j(t - 1) \Gamma_{jk} p(x_t | k; \theta) \beta_k(t) / L_T.
+\tag{4.4}
+\end{equation}\]</span></p>
+<!-- __equation labels cannot contain underscore__ -->
+<p>Equations <a href="em-algorithm.html#eq:condexu">(4.3)</a> and <a href="em-algorithm.html#eq:condexv">(4.4)</a>, respectively,
+give the needed conditional expectation in the E-step for <span class="math inline">\(u_j(t)\)</span>
+and <span class="math inline">\(v_{jk}(t)\)</span> given the observations <span class="math inline">\(\{x_t: t = 1, \ldots, T\}\)</span>.</p>
+<p>In the M-step, the maximization with respect to three sets of
+parameters <span class="math inline">\(\delta\)</span>, <span class="math inline">\(\Gamma\)</span>, and <span class="math inline">\(\theta\)</span> can be done separately;
+each term in the summation depends only on one set.
+Maximization with respect to <span class="math inline">\(\delta\)</span> and <span class="math inline">\(\Gamma\)</span> has closed-form
+solution, while maximization with respect to <span class="math inline">\(\theta\)</span> needs to be
+done numerically in general.</p>
+</div>
+<div id="exercises-2" class="section level2">
+<h2><span class="header-section-number">4.8</span> Exercises</h2>
+<div id="finite-mixture-regression" class="section level3">
+<h3><span class="header-section-number">4.8.1</span> Finite mixture regression</h3>
+<p>Given <span class="math inline">\(n\)</span> independent observations of the response <span class="math inline">\(Y \in \mathbb{R}\)</span> and
+predictor <span class="math inline">\(\mathbf{X} \in \mathbb{R}^p\)</span>, multiple linear regression models are
+commonly used to explore the conditional mean structure of <span class="math inline">\(Y\)</span> given
+<span class="math inline">\(\mathbf{X}\)</span>. However, in many applications, the underlying assumption that the
+regression relationship is homogeneous across all the observations
+<span class="math inline">\((y_1, \mathbf{x}_1),\ldots,(y_n, \mathbf{x}_n)\)</span>
+can be easily violated. Instead, the observations may form several distinct clusters indicating mixed relationships between the response and the predictors. Such heterogeneity can be more appropriately
+modeled by a <strong>finite mixture regression model</strong>, consisting of, say, <span class="math inline">\(m\)</span>
+homogeneous groups/components.</p>
+<p>Suppose the density of <span class="math inline">\(y_i\)</span> (conditional on <span class="math inline">\(\mathbf{x}_i\)</span>), is given by
+<span class="math display" id="eq:mixregequal">\[\begin{eqnarray}
+f(y_i\mid \mathbf{x}_i,\boldsymbol{\Psi})= \sum_{j=1}^{m} \pi_{j}\phi(y_i;\mathbf{x}_i^{\top}\boldsymbol{\beta}_{j}, \sigma^2),\qquad i=1,\ldots,n,
+\tag{4.5}
+\end{eqnarray}\]</span>
+where <span class="math inline">\(\pi_j\)</span>s are called mixing proportions, <span class="math inline">\(\boldsymbol{\beta}_j\)</span> is the regression coefficient vector for the <span class="math inline">\(j\)</span>th group, <span class="math inline">\(\phi(\cdot\:;\mu,\sigma^2)\)</span> denotes the density function of <span class="math inline">\(N(\mu,\sigma^2)\)</span>, and <span class="math inline">\(\boldsymbol{\Psi}=(\pi_1,\boldsymbol{\beta}_1,\ldots,\pi_m,\boldsymbol{\beta}_m,\sigma)^T\)</span> collects all the unknown parameters.</p>
+<p>Maximum likelihood estimation is commonly used to infer the unknown arameter
+<span class="math inline">\(\boldsymbol{\Psi}\)</span> in <a href="em-algorithm.html#eq:mixregequal">(4.5)</a>, i.e.,
+<span class="math display" id="eq:mixlinloglh">\[\begin{equation}
+\hat{\boldsymbol{\Psi}}_{\mbox{mle}}=\arg\max_{\boldsymbol{\Psi}}\sum_{i=1}^n\log\left\{\sum_{j=1}^m\pi_j\phi(y_i;\textbf{x}_i^{\top}\boldsymbol{\beta}_{j},\sigma^2)\right\}.
+\tag{4.6}
+\end{equation}\]</span>
+The MLE does not have an explicit form and the problem is usually solved by the EM algorithm.</p>
+<p>Let <span class="math inline">\(z_{ij} = 1\)</span> if <span class="math inline">\(i\)</span>th observation is from <span class="math inline">\(j\)</span>th component} and zero otherwise. Denote the complete data by <span class="math inline">\(\{(\mathbf{x}_{i}, \mathbf{z}_{i}, y_{i}); i =1,2,\ldots,n\}\)</span>, where the component labels
+<span class="math inline">\(\mathbf{z}_{i} = (z_{i1}, z_{i2}, \ldots, z_{im})\)</span> are not observable or “missing” in practice. The complete log-likelihood can be written as
+<span class="math display">\[
+l_{n}^{c}(\boldsymbol{\Psi})=\sum_{i=1}^{n}\sum_{j=1}^{m}z_{ij}\log \left\{\pi_{j}\phi(y_{i}-\mathbf{x}_{i}^{\top}\boldsymbol{\beta}_{j};0,\sigma^{2})\right\}.
+\]</span>
+In the E-step, we calculate the conditional expectation of the complete
+log-likelihood with respect to <span class="math inline">\(\mathbf{z}_{i}\)</span>, and in the M-step, we maximize the obtained conditional expectation with respect to <span class="math inline">\(\boldsymbol{\Psi}\)</span>.</p>
+<p>At the <span class="math inline">\(k\)</span>th iteration, the E-Step computes the conditional expectation of <span class="math inline">\(l_{n}^{c}(\boldsymbol{\Psi})\)</span>:
+<span class="math display">\[\begin{align*}
+Q(\boldsymbol{\Psi}\mid \boldsymbol{\Psi}^{(k)}) =\sum_{i=1}^{n}\sum_{j=1}^{m}p_{ij}^{(k+1)} \left\{\log\pi_{j}+\log\phi(y_{i}-\textbf{x}_{i}^{\top}\boldsymbol{\beta}_{j};0,\sigma^{2})\right\},
+\end{align*}\]</span>
+where
+<span class="math display">\[\begin{align*}
+p_{ij}^{(k+1)}&amp;=E(z_{ij}\mid y_{i},\textbf{x}_{i};\boldsymbol{\Psi}^{(k)})
+=\frac{\pi_{j}^{(k)}\phi(y_{i}-\textbf{x}_{i}^{\top}\boldsymbol{\beta}_{j}^{(k)};0,\sigma^{2^{(k)}})}{\sum_{j=1}^{m}\pi_{j}^{(k)}\phi(y_{i}-\textbf{x}_{i}^{\top}\boldsymbol{\beta}_{j}^{(k)};0,\sigma^{2^{(k)}})}.
+\end{align*}\]</span>
+The M-Step maximizes <span class="math inline">\(Q(\boldsymbol{\Psi} \mid \boldsymbol{\Psi}^{(k)})\)</span> to obtain
+<span class="math display">\[\begin{align*}
+   \pi_{j}^{(k+1)} &amp;=\frac{\sum_{i=1}^{n}p_{ij}^{(k+1)}}{n}\\
+    \boldsymbol{\beta}_{j}^{(k+1)}&amp;=\left(\sum_{i=1}^{n}\textbf{x}_i\textbf{x}_{i}^{\top}p_{ij}^{(k+1)}\right)^{-1}\left(\sum_{i=1}^{n}\textbf{x}_ip_{ij}^{(k+1)}y_i\right),\qquad j=1,\ldots,m;\\
+    \sigma^{2^{(k+1)}}&amp;=\frac{\sum_{j=1}^{m}\sum_{i=1}^{n}p_{ij}^{(k+1)}(y_{i}-\textbf{x}_{i}^{\top}\boldsymbol{\beta}_{j}^{(k+1)})^{2}}{n}.
+\end{align*}\]</span></p>
+<ol style="list-style-type: decimal">
+<li><p>Follow the lecture notes to verify the validity of the provided E- and M-steps. That is, derive the updating rules in the given algorithm based on
+the construction of an EM algorithm.</p></li>
+<li><p>Implement this algorithm in R with a function <code>regmix_em</code>.
+The inputs of the functions are
+<code>y</code> for the response vector,
+<code>xmat</code> for the design matrix,
+<code>pi.init</code> for initial values of <span class="math inline">\(\pi_j\)</span>’s (a vector of <span class="math inline">\(K\times 1\)</span> vector),
+<code>beta.init</code> for initial values of <span class="math inline">\(\boldsymbol{\beta}_j\)</span>’s (a matrix of
+<span class="math inline">\(p \times K\)</span> where <span class="math inline">\(p\)</span> is <code>ncol(xmat)</code> and <span class="math inline">\(K\)</span> is the number
+of components in the mixture),
+<code>sigma.init</code> for initial values of <span class="math inline">\(\sigma\)</span>,
+and a <code>control</code> list for controlling max iteration number and
+convergence tolerance.
+The output of this function is the EM estimate of all the parameters.</p></li>
+<li><p>Here is a function to generate data from the mixture regression model.</p></li>
+</ol>
+<div class="sourceCode" id="cb78"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb78-1" data-line-number="1">regmix_sim &lt;-<span class="st"> </span><span class="cf">function</span>(n, pi, beta, sigma) {</a>
+<a class="sourceLine" id="cb78-2" data-line-number="2">    K &lt;-<span class="st"> </span><span class="kw">ncol</span>(beta)</a>
+<a class="sourceLine" id="cb78-3" data-line-number="3">    p &lt;-<span class="st"> </span><span class="kw">NROW</span>(beta)</a>
+<a class="sourceLine" id="cb78-4" data-line-number="4">    xmat &lt;-<span class="st"> </span><span class="kw">matrix</span>(<span class="kw">rnorm</span>(n <span class="op">*</span><span class="st"> </span>p), n, p) <span class="co"># normal covaraites</span></a>
+<a class="sourceLine" id="cb78-5" data-line-number="5">    error &lt;-<span class="st"> </span><span class="kw">matrix</span>(<span class="kw">rnorm</span>(n <span class="op">*</span><span class="st"> </span>K, <span class="dt">sd =</span> sigma), n, K)</a>
+<a class="sourceLine" id="cb78-6" data-line-number="6">    ymat &lt;-<span class="st"> </span>xmat <span class="op">%*%</span><span class="st"> </span>beta <span class="op">+</span><span class="st"> </span>error <span class="co"># n by K matrix</span></a>
+<a class="sourceLine" id="cb78-7" data-line-number="7">    ind &lt;-<span class="st"> </span><span class="kw">t</span>(<span class="kw">rmultinom</span>(n, <span class="dt">size =</span> <span class="dv">1</span>, <span class="dt">prob =</span> pi))</a>
+<a class="sourceLine" id="cb78-8" data-line-number="8">    y &lt;-<span class="st"> </span><span class="kw">rowSums</span>(ymat <span class="op">*</span><span class="st"> </span>ind)</a>
+<a class="sourceLine" id="cb78-9" data-line-number="9">    <span class="kw">data.frame</span>(y, xmat)</a>
+<a class="sourceLine" id="cb78-10" data-line-number="10">}</a></code></pre></div>
+<p>Generate data with the following and estimate the parameters.</p>
+<div class="sourceCode" id="cb79"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb79-1" data-line-number="1">n &lt;-<span class="st"> </span><span class="dv">400</span></a>
+<a class="sourceLine" id="cb79-2" data-line-number="2">pi &lt;-<span class="st"> </span><span class="kw">c</span>(.<span class="dv">3</span>, <span class="fl">.4</span>, <span class="fl">.3</span>)</a>
+<a class="sourceLine" id="cb79-3" data-line-number="3">bet &lt;-<span class="st"> </span><span class="kw">matrix</span>(<span class="kw">c</span>( <span class="dv">1</span>,  <span class="dv">1</span>,  <span class="dv">1</span>, </a>
+<a class="sourceLine" id="cb79-4" data-line-number="4">                <span class="dv">-1</span>, <span class="dv">-1</span>, <span class="dv">-1</span>), <span class="dv">2</span>, <span class="dv">3</span>)</a>
+<a class="sourceLine" id="cb79-5" data-line-number="5">sig &lt;-<span class="st"> </span><span class="dv">1</span></a>
+<a class="sourceLine" id="cb79-6" data-line-number="6"><span class="kw">set.seed</span>(<span class="dv">1205</span>)</a>
+<a class="sourceLine" id="cb79-7" data-line-number="7">dat &lt;-<span class="st"> </span><span class="kw">regmix_sim</span>(n, pi, bet, sig)</a>
+<a class="sourceLine" id="cb79-8" data-line-number="8">## regmix_em(y = dat[,1], xmat = dat[,-1], </a>
+<a class="sourceLine" id="cb79-9" data-line-number="9">##           pi.init = pi / pi / length(pi),</a>
+<a class="sourceLine" id="cb79-10" data-line-number="10">##           beta.init = matrix(rnorm(6), 2, 3),</a>
+<a class="sourceLine" id="cb79-11" data-line-number="11">##           sigma.init = sig / sig, </a>
+<a class="sourceLine" id="cb79-12" data-line-number="12">##           control = list(maxit = 500, tol = 1e-5))</a></code></pre></div>
+</div>
+<div id="acceleration-of-em-algorithm" class="section level3">
+<h3><span class="header-section-number">4.8.2</span> Acceleration of EM algorithm</h3>
+<p>Use the SQUAREM package to accelerate the EM algorithm of the finite mixture regression.
+See Ravi Varadhan’s <a href="https://higherlogicdownload.s3.amazonaws.com/AMSTAT/a8c53bb5-2075-48c8-baae-f2c3ab55357b/UploadedImages/LIDA-IG-newsletter-January2018.pdf">article</a> for his example.</p>
+<ol style="list-style-type: decimal">
+<li><p>Write a function <code>regmix_em1step()</code> to implement the one-step EM iteration.</p></li>
+<li><p>Wrap your implementation of the EM algorithm to a function that uses <code>regmix_em1step()</code>.</p></li>
+<li><p>Call <code>SQUAREM::squarem()</code> with appropriate inputs to find the MLE.</p></li>
+<li><p>Compare the speed of the two versions with package <code>microbenchmark</code>.</p></li>
+</ol>
+</div>
+<div id="a-poisson-hmm-for-earthquake-data" class="section level3">
+<h3><span class="header-section-number">4.8.3</span> A Poisson-HMM for earthquake data</h3>
+<p>Consider a <span class="math inline">\(m\)</span>-state HMM where the observed data follows
+a Poisson distribution with mean <span class="math inline">\(\lambda_i\)</span> for state <span class="math inline">\(i\)</span>,
+<span class="math inline">\(i = 1, \ldots, m\)</span>, respectively.
+This model has three sets of parameters
+initial distribution <span class="math inline">\(\delta\)</span>, transition probability matrix <span class="math inline">\(\Gamma\)</span>,
+and Poisson means <span class="math inline">\(\lambda = (\lambda_1, \ldots, \lambda_m)\)</span>.
+Suppose the observed data is a vector <span class="math inline">\(x\)</span>.
+Write a function <code>poisson.hmm.em()</code> that implements the EM
+algorithm for this model with these argument:</p>
+<ul>
+<li><code>x</code>: the observed data;</li>
+<li><code>m</code>: the number of states;</li>
+<li><code>lambda</code>: initial value of <span class="math inline">\(\lambda\)</span>;</li>
+<li><code>Gamma</code>: initial value of <span class="math inline">\(\Gamma\)</span>;</li>
+<li><code>delta</code>: initial value of <span class="math inline">\(\delta\)</span>;</li>
+<li><code>control</code>: a named list similar to 
+that specifies the tolerance, maximum number of iteration, and
+whether or not trace the iteration.</li>
+</ul>
+<p>Apply the function to model the frequency of major earthquakes
+(magnitude 7 or above) in the world from 1900 to 2015 with a
+2-state HMM and a 3-state HMM.</p>
+<div class="sourceCode" id="cb80"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb80-1" data-line-number="1">## frequency of major earthquake in the world from 1900 to 2015</a>
+<a class="sourceLine" id="cb80-2" data-line-number="2">## raw data accessed at http://earthquake.usgs.gov/earthquakes/search/</a>
+<a class="sourceLine" id="cb80-3" data-line-number="3">qk7freq &lt;-<span class="st"> </span><span class="kw">c</span>(<span class="dv">3</span>, <span class="dv">2</span>, <span class="dv">4</span>, <span class="dv">1</span>, <span class="dv">2</span>, <span class="dv">5</span>, <span class="dv">8</span>, <span class="dv">3</span>, <span class="dv">2</span>, <span class="dv">5</span>,</a>
+<a class="sourceLine" id="cb80-4" data-line-number="4">             <span class="dv">5</span>, <span class="dv">7</span>, <span class="dv">3</span>, <span class="dv">4</span>, <span class="dv">6</span>, <span class="dv">4</span>, <span class="dv">8</span>, <span class="dv">5</span>, <span class="dv">12</span>, <span class="dv">8</span>, </a>
+<a class="sourceLine" id="cb80-5" data-line-number="5">             <span class="dv">7</span>, <span class="dv">9</span>, <span class="dv">7</span>, <span class="dv">12</span>, <span class="dv">9</span>, <span class="dv">12</span>, <span class="dv">13</span>, <span class="dv">11</span>, <span class="dv">16</span>, <span class="dv">15</span>, </a>
+<a class="sourceLine" id="cb80-6" data-line-number="6">             <span class="dv">9</span>, <span class="dv">19</span>, <span class="dv">9</span>, <span class="dv">8</span>, <span class="dv">12</span>, <span class="dv">14</span>, <span class="dv">11</span>, <span class="dv">9</span>, <span class="dv">21</span>, <span class="dv">14</span>, </a>
+<a class="sourceLine" id="cb80-7" data-line-number="7">             <span class="dv">7</span>, <span class="dv">13</span>, <span class="dv">11</span>, <span class="dv">18</span>, <span class="dv">13</span>, <span class="dv">5</span>, <span class="dv">10</span>, <span class="dv">13</span>, <span class="dv">11</span>, <span class="dv">9</span>, </a>
+<a class="sourceLine" id="cb80-8" data-line-number="8">             <span class="dv">13</span>, <span class="dv">11</span>, <span class="dv">7</span>, <span class="dv">9</span>, <span class="dv">6</span>, <span class="dv">10</span>, <span class="dv">8</span>, <span class="dv">21</span>, <span class="dv">8</span>, <span class="dv">8</span>, </a>
+<a class="sourceLine" id="cb80-9" data-line-number="9">             <span class="dv">13</span>, <span class="dv">12</span>, <span class="dv">10</span>, <span class="dv">17</span>, <span class="dv">12</span>, <span class="dv">18</span>, <span class="dv">9</span>, <span class="dv">11</span>, <span class="dv">22</span>, <span class="dv">14</span>, </a>
+<a class="sourceLine" id="cb80-10" data-line-number="10">             <span class="dv">17</span>, <span class="dv">20</span>, <span class="dv">16</span>, <span class="dv">9</span>, <span class="dv">11</span>, <span class="dv">13</span>, <span class="dv">14</span>, <span class="dv">10</span>, <span class="dv">12</span>, <span class="dv">8</span>, </a>
+<a class="sourceLine" id="cb80-11" data-line-number="11">             <span class="dv">6</span>, <span class="dv">10</span>, <span class="dv">7</span>, <span class="dv">14</span>, <span class="dv">14</span>, <span class="dv">15</span>, <span class="dv">11</span>, <span class="dv">13</span>, <span class="dv">11</span>,  <span class="dv">9</span>, </a>
+<a class="sourceLine" id="cb80-12" data-line-number="12">             <span class="dv">18</span>, <span class="dv">17</span>, <span class="dv">13</span>, <span class="dv">12</span>, <span class="dv">13</span>, <span class="dv">20</span>, <span class="dv">15</span>, <span class="dv">16</span>, <span class="dv">12</span>, <span class="dv">18</span>, </a>
+<a class="sourceLine" id="cb80-13" data-line-number="13">             <span class="dv">15</span>, <span class="dv">16</span>, <span class="dv">13</span>, <span class="dv">15</span>, <span class="dv">16</span>, <span class="dv">11</span>, <span class="dv">11</span>, <span class="dv">18</span>, <span class="dv">12</span>, <span class="dv">17</span>, </a>
+<a class="sourceLine" id="cb80-14" data-line-number="14">             <span class="dv">24</span>, <span class="dv">20</span>, <span class="dv">16</span>, <span class="dv">19</span>, <span class="dv">12</span>, <span class="dv">19</span>)</a>
+<a class="sourceLine" id="cb80-15" data-line-number="15"></a>
+<a class="sourceLine" id="cb80-16" data-line-number="16"></a>
+<a class="sourceLine" id="cb80-17" data-line-number="17">## forward/backward probability for Poisson-HMM from </a>
+<a class="sourceLine" id="cb80-18" data-line-number="18">## Zucchini and MacDonald (2009): </a>
+<a class="sourceLine" id="cb80-19" data-line-number="19">## Hidden Markov Models for Time Series: An Introduction with R.</a>
+<a class="sourceLine" id="cb80-20" data-line-number="20">pois.HMM.lalphabeta &lt;-<span class="st"> </span><span class="cf">function</span>(x, m, lambda, gamma, <span class="dt">delta =</span> <span class="ot">NULL</span>) {</a>
+<a class="sourceLine" id="cb80-21" data-line-number="21">    <span class="cf">if</span> (<span class="kw">is.null</span>(delta)) </a>
+<a class="sourceLine" id="cb80-22" data-line-number="22">        delta &lt;-<span class="st"> </span><span class="kw">solve</span>(<span class="kw">t</span>(<span class="kw">diag</span>(m) <span class="op">-</span><span class="st"> </span>gamma <span class="op">+</span><span class="st"> </span><span class="dv">1</span>), <span class="kw">rep</span>(<span class="dv">1</span>, m))</a>
+<a class="sourceLine" id="cb80-23" data-line-number="23">    n &lt;-<span class="st"> </span><span class="kw">length</span>(x)</a>
+<a class="sourceLine" id="cb80-24" data-line-number="24">    lalpha &lt;-<span class="st"> </span>lbeta &lt;-<span class="st"> </span><span class="kw">matrix</span>(<span class="ot">NA</span>, m, n)</a>
+<a class="sourceLine" id="cb80-25" data-line-number="25">    allprobs &lt;-<span class="st"> </span><span class="kw">outer</span>(x, lambda, dpois)</a>
+<a class="sourceLine" id="cb80-26" data-line-number="26">    foo &lt;-<span class="st"> </span>delta <span class="op">*</span><span class="st"> </span>allprobs[<span class="dv">1</span>, ]</a>
+<a class="sourceLine" id="cb80-27" data-line-number="27">    sumfoo &lt;-<span class="st"> </span><span class="kw">sum</span>(foo)</a>
+<a class="sourceLine" id="cb80-28" data-line-number="28">    lscale &lt;-<span class="st"> </span><span class="kw">log</span>(sumfoo)</a>
+<a class="sourceLine" id="cb80-29" data-line-number="29">    foo &lt;-<span class="st"> </span>foo<span class="op">/</span>sumfoo</a>
+<a class="sourceLine" id="cb80-30" data-line-number="30">    lalpha[, <span class="dv">1</span>] &lt;-<span class="st"> </span><span class="kw">log</span>(foo) <span class="op">+</span><span class="st"> </span>lscale</a>
+<a class="sourceLine" id="cb80-31" data-line-number="31">    <span class="cf">for</span> (i <span class="cf">in</span> <span class="dv">2</span><span class="op">:</span>n) {</a>
+<a class="sourceLine" id="cb80-32" data-line-number="32">        foo &lt;-<span class="st"> </span>foo <span class="op">%*%</span><span class="st"> </span>gamma <span class="op">*</span><span class="st"> </span>allprobs[i, ]</a>
+<a class="sourceLine" id="cb80-33" data-line-number="33">        sumfoo &lt;-<span class="st"> </span><span class="kw">sum</span>(foo)</a>
+<a class="sourceLine" id="cb80-34" data-line-number="34">        lscale &lt;-<span class="st"> </span>lscale <span class="op">+</span><span class="st"> </span><span class="kw">log</span>(sumfoo)</a>
+<a class="sourceLine" id="cb80-35" data-line-number="35">        foo &lt;-<span class="st"> </span>foo<span class="op">/</span>sumfoo</a>
+<a class="sourceLine" id="cb80-36" data-line-number="36">        lalpha[, i] &lt;-<span class="st"> </span><span class="kw">log</span>(foo) <span class="op">+</span><span class="st"> </span>lscale</a>
+<a class="sourceLine" id="cb80-37" data-line-number="37">    }</a>
+<a class="sourceLine" id="cb80-38" data-line-number="38">    lbeta[, n] &lt;-<span class="st"> </span><span class="kw">rep</span>(<span class="dv">0</span>, m)</a>
+<a class="sourceLine" id="cb80-39" data-line-number="39">    foo &lt;-<span class="st"> </span><span class="kw">rep</span>(<span class="dv">1</span><span class="op">/</span>m, m)</a>
+<a class="sourceLine" id="cb80-40" data-line-number="40">    lscale &lt;-<span class="st"> </span><span class="kw">log</span>(m)</a>
+<a class="sourceLine" id="cb80-41" data-line-number="41">    <span class="cf">for</span> (i <span class="cf">in</span> (n <span class="op">-</span><span class="st"> </span><span class="dv">1</span>)<span class="op">:</span><span class="dv">1</span>) {</a>
+<a class="sourceLine" id="cb80-42" data-line-number="42">        foo &lt;-<span class="st"> </span>gamma <span class="op">%*%</span><span class="st"> </span>(allprobs[i <span class="op">+</span><span class="st"> </span><span class="dv">1</span>, ] <span class="op">*</span><span class="st"> </span>foo)</a>
+<a class="sourceLine" id="cb80-43" data-line-number="43">        lbeta[, i] &lt;-<span class="st"> </span><span class="kw">log</span>(foo) <span class="op">+</span><span class="st"> </span>lscale</a>
+<a class="sourceLine" id="cb80-44" data-line-number="44">        sumfoo &lt;-<span class="st"> </span><span class="kw">sum</span>(foo)</a>
+<a class="sourceLine" id="cb80-45" data-line-number="45">        foo &lt;-<span class="st"> </span>foo<span class="op">/</span>sumfoo</a>
+<a class="sourceLine" id="cb80-46" data-line-number="46">        lscale &lt;-<span class="st"> </span>lscale <span class="op">+</span><span class="st"> </span><span class="kw">log</span>(sumfoo)</a>
+<a class="sourceLine" id="cb80-47" data-line-number="47">    }</a>
+<a class="sourceLine" id="cb80-48" data-line-number="48">    <span class="kw">list</span>(<span class="dt">la =</span> lalpha, <span class="dt">lb =</span> lbeta)</a>
+<a class="sourceLine" id="cb80-49" data-line-number="49">}</a></code></pre></div>
+
+</div>
+</div>
+</div>
+<h3>References</h3>
+<div id="refs" class="references">
+<div id="ref-Demp:Lair:Rubi:maxi:1977">
+<p>Dempster, Arthur P, Nan M Laird, and Donald B Rubin. 1977. “Maximum Likelihood from Incomplete Data via the EM Algorithm.” <em>Journal of the Royal Statistical Society. Series B (Methodological)</em> 39 (1). JSTOR: 1–38.</p>
+</div>
+<div id="ref-Lavi:Case:impl:2001">
+<p>Levine, Richard A, and George Casella. 2001. “Implementations of the Monte Carlo EM Algorithm.” <em>Journal of Computational and Graphical Statistics</em> 10 (3). Taylor &amp; Francis: 422–39.</p>
+</div>
+<div id="ref-Meng:Rubi:usin:1991">
+<p>Meng, Xiao-Li, and Donald B Rubin. 1991. “Using EM to Obtain Asymptotic Variance-Covariance Matrices: The SEM Algorithm.” <em>Journal of the American Statistical Association</em> 86 (416). Taylor &amp; Francis: 899–909.</p>
+</div>
+<div id="ref-Meng:Rubi:maxi:1993">
+<p>Meng, Xiao-Li, and Donald B Rubin. 1993. “Maximum Likelihood Estimation via the ECM Algorithm: A General Framework.” <em>Biometrika</em> 80 (2). Biometrika Trust: 267–78.</p>
+</div>
+<div id="ref-Oake:dire:1999">
+<p>Oakes, David. 1999. “Direct Calculation of the Information Matrix via the EM.” <em>Journal of the Royal Statistical Society: Series B (Statistical Methodology)</em> 61 (2). Wiley Online Library: 479–82.</p>
+</div>
+<div id="ref-Wei:Tann:mont:1990">
+<p>Wei, Greg CG, and Martin A Tanner. 1990. “A Monte Carlo Implementation of the EM Algorithm and the Poor Man’s Data Augmentation Algorithms.” <em>Journal of the American Statistical Association</em> 85 (411). Taylor &amp; Francis: 699–704.</p>
+</div>
+</div>
+            </section>
+
+          </div>
+        </div>
+      </div>
+<a href="optim.html" class="navigation navigation-prev " aria-label="Previous page"><i class="fa fa-angle-left"></i></a>
+<a href="random-number-generation.html" class="navigation navigation-next " aria-label="Next page"><i class="fa fa-angle-right"></i></a>
+    </div>
+  </div>
+<script src="libs/gitbook-2.6.7/js/app.min.js"></script>
+<script src="libs/gitbook-2.6.7/js/lunr.js"></script>
+<script src="libs/gitbook-2.6.7/js/clipboard.min.js"></script>
+<script src="libs/gitbook-2.6.7/js/plugin-search.js"></script>
+<script src="libs/gitbook-2.6.7/js/plugin-sharing.js"></script>
+<script src="libs/gitbook-2.6.7/js/plugin-fontsettings.js"></script>
+<script src="libs/gitbook-2.6.7/js/plugin-bookdown.js"></script>
+<script src="libs/gitbook-2.6.7/js/jquery.highlight.js"></script>
+<script src="libs/gitbook-2.6.7/js/plugin-clipboard.js"></script>
+<script>
+gitbook.require(["gitbook"], function(gitbook) {
+gitbook.start({
+"sharing": {
+"github": false,
+"facebook": true,
+"twitter": true,
+"linkedin": false,
+"weibo": false,
+"instapaper": false,
+"vk": false,
+"all": ["facebook", "twitter", "linkedin", "weibo", "instapaper"]
+},
+"fontsettings": {
+"theme": "white",
+"family": "sans",
+"size": 2
+},
+"edit": {
+"link": null,
+"text": null
+},
+"history": {
+"link": null,
+"text": null
+},
+"view": {
+"link": null,
+"text": null
+},
+"download": null,
+"toc": {
+"collapse": "subsection"
+}
+});
+});
+</script>
+
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+  (function () {
+    var script = document.createElement("script");
+    script.type = "text/javascript";
+    var src = "true";
+    if (src === "" || src === "true") src = "https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-MML-AM_CHTML";
+    if (location.protocol !== "file:")
+      if (/^https?:/.test(src))
+        src = src.replace(/^https?:/, '');
+    script.src = src;
+    document.getElementsByTagName("head")[0].appendChild(script);
+  })();
+</script>
+</body>
+
+</html>

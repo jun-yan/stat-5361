@@ -1,0 +1,1076 @@
+<!DOCTYPE html>
+<html lang="" xml:lang="">
+<head>
+
+  <meta charset="utf-8" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <title>Chapter 5 Random Number Generation | STAT 5361: Statistical Computing, Fall 2019</title>
+  <meta name="description" content="This is a series of notes for the students of STAT 5361, Statisticl Computing, at UConn." />
+  <meta name="generator" content="bookdown 0.21.5 and GitBook 2.6.7" />
+
+  <meta property="og:title" content="Chapter 5 Random Number Generation | STAT 5361: Statistical Computing, Fall 2019" />
+  <meta property="og:type" content="book" />
+  
+  
+  <meta property="og:description" content="This is a series of notes for the students of STAT 5361, Statisticl Computing, at UConn." />
+  
+
+  <meta name="twitter:card" content="summary" />
+  <meta name="twitter:title" content="Chapter 5 Random Number Generation | STAT 5361: Statistical Computing, Fall 2019" />
+  
+  <meta name="twitter:description" content="This is a series of notes for the students of STAT 5361, Statisticl Computing, at UConn." />
+  
+
+<meta name="author" content="Jun Yan" />
+
+
+<meta name="date" content="2020-12-04" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black" />
+  
+  
+<link rel="prev" href="em-algorithm.html"/>
+<link rel="next" href="markov-chain-monte-carlo.html"/>
+<script src="libs/jquery-2.2.3/jquery.min.js"></script>
+<link href="libs/gitbook-2.6.7/css/style.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-table.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-bookdown.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-highlight.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-search.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-fontsettings.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-clipboard.css" rel="stylesheet" />
+
+
+
+
+
+
+
+
+
+<link href="libs/anchor-sections-1.0.1/anchor-sections.css" rel="stylesheet" />
+<script src="libs/anchor-sections-1.0.1/anchor-sections.js"></script>
+
+
+<style type="text/css">
+a.sourceLine { display: inline-block; line-height: 1.25; }
+a.sourceLine { pointer-events: none; color: inherit; text-decoration: inherit; }
+a.sourceLine:empty { height: 1.2em; position: absolute; }
+.sourceCode { overflow: visible; }
+code.sourceCode { white-space: pre; position: relative; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+code.sourceCode { white-space: pre-wrap; }
+a.sourceLine { text-indent: -1em; padding-left: 1em; }
+}
+pre.numberSource a.sourceLine
+  { position: relative; }
+pre.numberSource a.sourceLine:empty
+  { position: absolute; }
+pre.numberSource a.sourceLine::before
+  { content: attr(data-line-number);
+    position: absolute; left: -5em; text-align: right; vertical-align: baseline;
+    border: none; pointer-events: all;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+    color: #aaaaaa;
+  }
+pre.numberSource { margin-left: 3em; border-left: 1px solid #aaaaaa;  padding-left: 4px; }
+div.sourceCode
+  {  }
+@media screen {
+a.sourceLine::before { text-decoration: underline; }
+}
+code span.al { color: #ff0000; font-weight: bold; } /* Alert */
+code span.an { color: #60a0b0; font-weight: bold; font-style: italic; } /* Annotation */
+code span.at { color: #7d9029; } /* Attribute */
+code span.bn { color: #40a070; } /* BaseN */
+code span.bu { } /* BuiltIn */
+code span.cf { color: #007020; font-weight: bold; } /* ControlFlow */
+code span.ch { color: #4070a0; } /* Char */
+code span.cn { color: #880000; } /* Constant */
+code span.co { color: #60a0b0; font-style: italic; } /* Comment */
+code span.cv { color: #60a0b0; font-weight: bold; font-style: italic; } /* CommentVar */
+code span.do { color: #ba2121; font-style: italic; } /* Documentation */
+code span.dt { color: #902000; } /* DataType */
+code span.dv { color: #40a070; } /* DecVal */
+code span.er { color: #ff0000; font-weight: bold; } /* Error */
+code span.ex { } /* Extension */
+code span.fl { color: #40a070; } /* Float */
+code span.fu { color: #06287e; } /* Function */
+code span.im { } /* Import */
+code span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Information */
+code span.kw { color: #007020; font-weight: bold; } /* Keyword */
+code span.op { color: #666666; } /* Operator */
+code span.ot { color: #007020; } /* Other */
+code span.pp { color: #bc7a00; } /* Preprocessor */
+code span.sc { color: #4070a0; } /* SpecialChar */
+code span.ss { color: #bb6688; } /* SpecialString */
+code span.st { color: #4070a0; } /* String */
+code span.va { color: #19177c; } /* Variable */
+code span.vs { color: #4070a0; } /* VerbatimString */
+code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warning */
+</style>
+
+</head>
+
+<body>
+
+
+
+  <div class="book without-animation with-summary font-size-2 font-family-1" data-basepath=".">
+
+    <div class="book-summary">
+      <nav role="navigation">
+
+<ul class="summary">
+<li class="chapter" data-level="1" data-path="index.html"><a href="index.html"><i class="fa fa-check"></i><b>1</b> Prerequisites</a><ul>
+<li class="chapter" data-level="1.1" data-path="index.html"><a href="index.html#a-teaser-example-likelihood-estimation"><i class="fa fa-check"></i><b>1.1</b> A Teaser Example: Likelihood Estimation</a></li>
+<li class="chapter" data-level="1.2" data-path="index.html"><a href="index.html#computer-arithmetics"><i class="fa fa-check"></i><b>1.2</b> Computer Arithmetics</a><ul>
+<li class="chapter" data-level="1.2.1" data-path="index.html"><a href="index.html#integers"><i class="fa fa-check"></i><b>1.2.1</b> Integers</a></li>
+<li class="chapter" data-level="1.2.2" data-path="index.html"><a href="index.html#floating-point"><i class="fa fa-check"></i><b>1.2.2</b> Floating Point</a></li>
+<li class="chapter" data-level="1.2.3" data-path="index.html"><a href="index.html#error-analysis"><i class="fa fa-check"></i><b>1.2.3</b> Error Analysis</a></li>
+<li class="chapter" data-level="1.2.4" data-path="index.html"><a href="index.html#condition-number"><i class="fa fa-check"></i><b>1.2.4</b> Condition Number</a></li>
+</ul></li>
+<li class="chapter" data-level="1.3" data-path="index.html"><a href="index.html#exercises"><i class="fa fa-check"></i><b>1.3</b> Exercises</a></li>
+<li class="chapter" data-level="1.4" data-path="index.html"><a href="index.html#course-project"><i class="fa fa-check"></i><b>1.4</b> Course Project</a></li>
+</ul></li>
+<li class="chapter" data-level="2" data-path="nla.html"><a href="nla.html"><i class="fa fa-check"></i><b>2</b> Numerical Linear Algebra</a></li>
+<li class="chapter" data-level="3" data-path="optim.html"><a href="optim.html"><i class="fa fa-check"></i><b>3</b> Optimization</a><ul>
+<li class="chapter" data-level="3.1" data-path="optim.html"><a href="optim.html#univariate-optimizations"><i class="fa fa-check"></i><b>3.1</b> Univariate Optimizations</a><ul>
+<li class="chapter" data-level="3.1.1" data-path="optim.html"><a href="optim.html#bisection-method"><i class="fa fa-check"></i><b>3.1.1</b> Bisection Method</a></li>
+<li class="chapter" data-level="3.1.2" data-path="optim.html"><a href="optim.html#newtons-method"><i class="fa fa-check"></i><b>3.1.2</b> Newton’s Method</a></li>
+<li class="chapter" data-level="3.1.3" data-path="optim.html"><a href="optim.html#fixed-point-iteration"><i class="fa fa-check"></i><b>3.1.3</b> Fixed Point Iteration</a></li>
+</ul></li>
+<li class="chapter" data-level="3.2" data-path="optim.html"><a href="optim.html#multivariate-optimization"><i class="fa fa-check"></i><b>3.2</b> Multivariate Optimization</a><ul>
+<li class="chapter" data-level="3.2.1" data-path="optim.html"><a href="optim.html#newton-raphson-method"><i class="fa fa-check"></i><b>3.2.1</b> Newton-Raphson Method</a></li>
+<li class="chapter" data-level="3.2.2" data-path="optim.html"><a href="optim.html#variants-of-newton-raphson-method"><i class="fa fa-check"></i><b>3.2.2</b> Variants of Newton-Raphson Method</a></li>
+<li class="chapter" data-level="3.2.3" data-path="optim.html"><a href="optim.html#nelder-mead-simplex-algorithm"><i class="fa fa-check"></i><b>3.2.3</b> Nelder-Mead (Simplex) Algorithm</a></li>
+<li class="chapter" data-level="3.2.4" data-path="optim.html"><a href="optim.html#optimization-with-r"><i class="fa fa-check"></i><b>3.2.4</b> Optimization with R</a></li>
+</ul></li>
+<li class="chapter" data-level="3.3" data-path="optim.html"><a href="optim.html#mm-algorithm"><i class="fa fa-check"></i><b>3.3</b> MM Algorithm</a></li>
+<li class="chapter" data-level="3.4" data-path="optim.html"><a href="optim.html#an-example-lasso-with-coordinate-descent"><i class="fa fa-check"></i><b>3.4</b> An Example: LASSO with Coordinate Descent</a></li>
+<li class="chapter" data-level="3.5" data-path="optim.html"><a href="optim.html#exercises-1"><i class="fa fa-check"></i><b>3.5</b> Exercises</a><ul>
+<li class="chapter" data-level="3.5.1" data-path="optim.html"><a href="optim.html#cauchy-with-unknown-location."><i class="fa fa-check"></i><b>3.5.1</b> Cauchy with unknown location.</a></li>
+<li class="chapter" data-level="3.5.2" data-path="optim.html"><a href="optim.html#many-local-maxima"><i class="fa fa-check"></i><b>3.5.2</b> Many local maxima</a></li>
+<li class="chapter" data-level="3.5.3" data-path="optim.html"><a href="optim.html#modeling-beetle-data"><i class="fa fa-check"></i><b>3.5.3</b> Modeling beetle data</a></li>
+<li class="chapter" data-level="3.5.4" data-path="optim.html"><a href="optim.html#coordinate-descent-for-penalized-least-squares"><i class="fa fa-check"></i><b>3.5.4</b> Coordinate descent for penalized least squares</a></li>
+</ul></li>
+</ul></li>
+<li class="chapter" data-level="4" data-path="em-algorithm.html"><a href="em-algorithm.html"><i class="fa fa-check"></i><b>4</b> EM Algorithm</a><ul>
+<li class="chapter" data-level="4.1" data-path="em-algorithm.html"><a href="em-algorithm.html#introduction"><i class="fa fa-check"></i><b>4.1</b> Introduction</a></li>
+<li class="chapter" data-level="4.2" data-path="em-algorithm.html"><a href="em-algorithm.html#em-algorithm-1"><i class="fa fa-check"></i><b>4.2</b> EM Algorithm</a></li>
+<li class="chapter" data-level="4.3" data-path="em-algorithm.html"><a href="em-algorithm.html#example-clustering-by-em"><i class="fa fa-check"></i><b>4.3</b> Example: Clustering by EM</a></li>
+<li class="chapter" data-level="4.4" data-path="em-algorithm.html"><a href="em-algorithm.html#variants-of-em"><i class="fa fa-check"></i><b>4.4</b> Variants of EM</a><ul>
+<li class="chapter" data-level="4.4.1" data-path="em-algorithm.html"><a href="em-algorithm.html#mcem"><i class="fa fa-check"></i><b>4.4.1</b> MCEM</a></li>
+<li class="chapter" data-level="4.4.2" data-path="em-algorithm.html"><a href="em-algorithm.html#ecm"><i class="fa fa-check"></i><b>4.4.2</b> ECM</a></li>
+</ul></li>
+<li class="chapter" data-level="4.5" data-path="em-algorithm.html"><a href="em-algorithm.html#standard-errors"><i class="fa fa-check"></i><b>4.5</b> Standard Errors</a><ul>
+<li class="chapter" data-level="4.5.1" data-path="em-algorithm.html"><a href="em-algorithm.html#supplemental-em-sem"><i class="fa fa-check"></i><b>4.5.1</b> Supplemental EM (SEM)</a></li>
+<li class="chapter" data-level="4.5.2" data-path="em-algorithm.html"><a href="em-algorithm.html#direct-calculation-of-the-information-matrix"><i class="fa fa-check"></i><b>4.5.2</b> Direct Calculation of the Information Matrix</a></li>
+</ul></li>
+<li class="chapter" data-level="4.6" data-path="em-algorithm.html"><a href="em-algorithm.html#acceleration"><i class="fa fa-check"></i><b>4.6</b> Acceleration</a></li>
+<li class="chapter" data-level="4.7" data-path="em-algorithm.html"><a href="em-algorithm.html#example-hidden-markov-model"><i class="fa fa-check"></i><b>4.7</b> Example: Hidden Markov Model</a></li>
+<li class="chapter" data-level="4.8" data-path="em-algorithm.html"><a href="em-algorithm.html#exercises-2"><i class="fa fa-check"></i><b>4.8</b> Exercises</a><ul>
+<li class="chapter" data-level="4.8.1" data-path="em-algorithm.html"><a href="em-algorithm.html#finite-mixture-regression"><i class="fa fa-check"></i><b>4.8.1</b> Finite mixture regression</a></li>
+<li class="chapter" data-level="4.8.2" data-path="em-algorithm.html"><a href="em-algorithm.html#acceleration-of-em-algorithm"><i class="fa fa-check"></i><b>4.8.2</b> Acceleration of EM algorithm</a></li>
+<li class="chapter" data-level="4.8.3" data-path="em-algorithm.html"><a href="em-algorithm.html#a-poisson-hmm-for-earthquake-data"><i class="fa fa-check"></i><b>4.8.3</b> A Poisson-HMM for earthquake data</a></li>
+</ul></li>
+</ul></li>
+<li class="chapter" data-level="5" data-path="random-number-generation.html"><a href="random-number-generation.html"><i class="fa fa-check"></i><b>5</b> Random Number Generation</a><ul>
+<li class="chapter" data-level="5.1" data-path="random-number-generation.html"><a href="random-number-generation.html#univariate-random-number-generation"><i class="fa fa-check"></i><b>5.1</b> Univariate Random Number Generation</a><ul>
+<li class="chapter" data-level="5.1.1" data-path="random-number-generation.html"><a href="random-number-generation.html#inverse-cdf"><i class="fa fa-check"></i><b>5.1.1</b> Inverse CDF</a></li>
+<li class="chapter" data-level="5.1.2" data-path="random-number-generation.html"><a href="random-number-generation.html#rejection-method"><i class="fa fa-check"></i><b>5.1.2</b> Rejection Method</a></li>
+<li class="chapter" data-level="5.1.3" data-path="random-number-generation.html"><a href="random-number-generation.html#sampling-importance-resampling"><i class="fa fa-check"></i><b>5.1.3</b> Sampling Importance Resampling</a></li>
+</ul></li>
+<li class="chapter" data-level="5.2" data-path="random-number-generation.html"><a href="random-number-generation.html#stochastic-processes"><i class="fa fa-check"></i><b>5.2</b> Stochastic Processes</a><ul>
+<li class="chapter" data-level="5.2.1" data-path="random-number-generation.html"><a href="random-number-generation.html#gaussian-markov-process"><i class="fa fa-check"></i><b>5.2.1</b> Gaussian Markov Process</a></li>
+<li class="chapter" data-level="5.2.2" data-path="random-number-generation.html"><a href="random-number-generation.html#counting-process"><i class="fa fa-check"></i><b>5.2.2</b> Counting Process</a></li>
+<li class="chapter" data-level="5.2.3" data-path="random-number-generation.html"><a href="random-number-generation.html#inhomogeneous-poisson-process"><i class="fa fa-check"></i><b>5.2.3</b> Inhomogeneous Poisson Process</a></li>
+<li class="chapter" data-level="5.2.4" data-path="random-number-generation.html"><a href="random-number-generation.html#jump-diffusion-process"><i class="fa fa-check"></i><b>5.2.4</b> Jump-Diffusion Process</a></li>
+</ul></li>
+<li class="chapter" data-level="5.3" data-path="random-number-generation.html"><a href="random-number-generation.html#exercises-3"><i class="fa fa-check"></i><b>5.3</b> Exercises</a><ul>
+<li class="chapter" data-level="5.3.1" data-path="random-number-generation.html"><a href="random-number-generation.html#rejection-sampling"><i class="fa fa-check"></i><b>5.3.1</b> Rejection sampling</a></li>
+<li class="chapter" data-level="5.3.2" data-path="random-number-generation.html"><a href="random-number-generation.html#mixture-proposal"><i class="fa fa-check"></i><b>5.3.2</b> Mixture Proposal</a></li>
+<li class="chapter" data-level="5.3.3" data-path="random-number-generation.html"><a href="random-number-generation.html#orsteinuhlenbeck-process"><i class="fa fa-check"></i><b>5.3.3</b> Orstein–Uhlenbeck Process</a></li>
+<li class="chapter" data-level="5.3.4" data-path="random-number-generation.html"><a href="random-number-generation.html#poisson-process"><i class="fa fa-check"></i><b>5.3.4</b> Poisson Process</a></li>
+</ul></li>
+</ul></li>
+<li class="chapter" data-level="6" data-path="markov-chain-monte-carlo.html"><a href="markov-chain-monte-carlo.html"><i class="fa fa-check"></i><b>6</b> Markov Chain Monte Carlo</a><ul>
+<li class="chapter" data-level="6.1" data-path="markov-chain-monte-carlo.html"><a href="markov-chain-monte-carlo.html#eample-normal-mixture"><i class="fa fa-check"></i><b>6.1</b> Eample: Normal mixture</a></li>
+<li class="chapter" data-level="6.2" data-path="markov-chain-monte-carlo.html"><a href="markov-chain-monte-carlo.html#general-purpose-gibbs-sampling-with-the-arms"><i class="fa fa-check"></i><b>6.2</b> General-Purpose Gibbs Sampling with the ARMS</a></li>
+<li class="chapter" data-level="6.3" data-path="markov-chain-monte-carlo.html"><a href="markov-chain-monte-carlo.html#exercises-4"><i class="fa fa-check"></i><b>6.3</b> Exercises</a><ul>
+<li class="chapter" data-level="6.3.1" data-path="markov-chain-monte-carlo.html"><a href="markov-chain-monte-carlo.html#normal-mixture-revisited"><i class="fa fa-check"></i><b>6.3.1</b> Normal mixture revisited</a></li>
+</ul></li>
+</ul></li>
+<li class="chapter" data-level="7" data-path="mcinteg.html"><a href="mcinteg.html"><i class="fa fa-check"></i><b>7</b> Monte Carlo Integration</a><ul>
+<li class="chapter" data-level="7.1" data-path="mcinteg.html"><a href="mcinteg.html#introduction-1"><i class="fa fa-check"></i><b>7.1</b> Introduction</a></li>
+<li class="chapter" data-level="7.2" data-path="mcinteg.html"><a href="mcinteg.html#option-pricing"><i class="fa fa-check"></i><b>7.2</b> Option Pricing</a></li>
+<li class="chapter" data-level="7.3" data-path="mcinteg.html"><a href="mcinteg.html#particle-filtering-for-state-space-models"><i class="fa fa-check"></i><b>7.3</b> Particle Filtering for State Space Models</a></li>
+<li class="chapter" data-level="7.4" data-path="mcinteg.html"><a href="mcinteg.html#variance-reduction"><i class="fa fa-check"></i><b>7.4</b> Variance Reduction</a><ul>
+<li class="chapter" data-level="7.4.1" data-path="mcinteg.html"><a href="mcinteg.html#importance-sampling"><i class="fa fa-check"></i><b>7.4.1</b> Importance Sampling</a></li>
+<li class="chapter" data-level="7.4.2" data-path="mcinteg.html"><a href="mcinteg.html#control-variates"><i class="fa fa-check"></i><b>7.4.2</b> Control Variates</a></li>
+<li class="chapter" data-level="7.4.3" data-path="mcinteg.html"><a href="mcinteg.html#antithetic-variates"><i class="fa fa-check"></i><b>7.4.3</b> Antithetic Variates</a></li>
+<li class="chapter" data-level="7.4.4" data-path="mcinteg.html"><a href="mcinteg.html#stratified-sampling"><i class="fa fa-check"></i><b>7.4.4</b> Stratified Sampling</a></li>
+</ul></li>
+<li class="chapter" data-level="7.5" data-path="mcinteg.html"><a href="mcinteg.html#exercises-5"><i class="fa fa-check"></i><b>7.5</b> Exercises</a></li>
+</ul></li>
+<li class="chapter" data-level="8" data-path="boot.html"><a href="boot.html"><i class="fa fa-check"></i><b>8</b> Bootstrap</a><ul>
+<li class="chapter" data-level="8.1" data-path="boot.html"><a href="boot.html#principles-of-bootstrap"><i class="fa fa-check"></i><b>8.1</b> Principles of Bootstrap</a></li>
+<li class="chapter" data-level="8.2" data-path="boot.html"><a href="boot.html#parametric-bootstrap"><i class="fa fa-check"></i><b>8.2</b> Parametric Bootstrap</a><ul>
+<li class="chapter" data-level="8.2.1" data-path="boot.html"><a href="boot.html#goodness-of-fit-test"><i class="fa fa-check"></i><b>8.2.1</b> Goodness-of-Fit Test</a></li>
+</ul></li>
+<li class="chapter" data-level="8.3" data-path="boot.html"><a href="boot.html#block-bootstrap"><i class="fa fa-check"></i><b>8.3</b> Block bootstrap</a></li>
+<li class="chapter" data-level="8.4" data-path="boot.html"><a href="boot.html#semiparametric-bootstrap"><i class="fa fa-check"></i><b>8.4</b> Semiparametric bootstrap</a></li>
+<li class="chapter" data-level="8.5" data-path="boot.html"><a href="boot.html#multiplier-bootstrap"><i class="fa fa-check"></i><b>8.5</b> Multiplier bootstrap</a><ul>
+<li class="chapter" data-level="8.5.1" data-path="boot.html"><a href="boot.html#multiplier-central-limit-theorem"><i class="fa fa-check"></i><b>8.5.1</b> Multiplier central limit theorem</a></li>
+</ul></li>
+<li class="chapter" data-level="8.6" data-path="boot.html"><a href="boot.html#exercises-6"><i class="fa fa-check"></i><b>8.6</b> Exercises</a></li>
+</ul></li>
+<li class="appendix"><span><b>Appendix</b></span></li>
+<li class="chapter" data-level="A" data-path="git-setup.html"><a href="git-setup.html"><i class="fa fa-check"></i><b>A</b> Git Setup</a><ul>
+<li class="chapter" data-level="A.1" data-path="git-setup.html"><a href="git-setup.html#git-windows"><i class="fa fa-check"></i><b>A.1</b> Git for Windows installer</a></li>
+</ul></li>
+<li class="chapter" data-level="B" data-path="git-lesson.html"><a href="git-lesson.html"><i class="fa fa-check"></i><b>B</b> Git Lesson</a><ul>
+<li class="chapter" data-level="B.1" data-path="git-lesson.html"><a href="git-lesson.html#automated-version-control"><i class="fa fa-check"></i><b>B.1</b> Automated Version Control</a></li>
+<li class="chapter" data-level="B.2" data-path="git-lesson.html"><a href="git-lesson.html#setup"><i class="fa fa-check"></i><b>B.2</b> Setup</a></li>
+<li class="chapter" data-level="B.3" data-path="git-lesson.html"><a href="git-lesson.html#creating-a-repository"><i class="fa fa-check"></i><b>B.3</b> Creating a Repository</a></li>
+<li class="chapter" data-level="B.4" data-path="git-lesson.html"><a href="git-lesson.html#setting-up-git-authorship"><i class="fa fa-check"></i><b>B.4</b> Setting up Git Authorship</a></li>
+<li class="chapter" data-level="B.5" data-path="git-lesson.html"><a href="git-lesson.html#tracking-changes"><i class="fa fa-check"></i><b>B.5</b> Tracking Changes</a></li>
+<li class="chapter" data-level="B.6" data-path="git-lesson.html"><a href="git-lesson.html#undo-changes"><i class="fa fa-check"></i><b>B.6</b> Undo Changes</a></li>
+<li class="chapter" data-level="B.7" data-path="git-lesson.html"><a href="git-lesson.html#explore-history"><i class="fa fa-check"></i><b>B.7</b> Explore History</a></li>
+<li class="chapter" data-level="B.8" data-path="git-lesson.html"><a href="git-lesson.html#next-steps"><i class="fa fa-check"></i><b>B.8</b> Next Steps</a></li>
+</ul></li>
+<li class="chapter" data-level="" data-path="references.html"><a href="references.html"><i class="fa fa-check"></i>References</a></li>
+</ul>
+
+      </nav>
+    </div>
+
+    <div class="book-body">
+      <div class="body-inner">
+        <div class="book-header" role="navigation">
+          <h1>
+            <i class="fa fa-circle-o-notch fa-spin"></i><a href="./">STAT 5361: Statistical Computing, Fall 2019</a>
+          </h1>
+        </div>
+
+        <div class="page-wrapper" tabindex="-1" role="main">
+          <div class="page-inner">
+
+            <section class="normal" id="section-">
+<div id="random-number-generation" class="section level1">
+<h1><span class="header-section-number">Chapter 5</span> Random Number Generation</h1>
+<p>(Wiki)
+A pseudorandom number generator (PRNG), also known as a deterministic
+random bit generator (DRBG), is an algorithm for generating a sequence
+of numbers whose properties approximate the properties of sequences of
+random numbers. The PRNG-generated sequence is not truly random, because
+it is completely determined by a relatively small set of initial values,
+called the PRNG’s seed (which may include truly random values).</p>
+<div id="univariate-random-number-generation" class="section level2">
+<h2><span class="header-section-number">5.1</span> Univariate Random Number Generation</h2>
+<p>Random number from standard uniform distribution <span class="math inline">\(U(0, 1)\)</span> is crucial.
+To illustrate that pseudorandom numbers are deterministic,
+consider a multiplicative random number generator
+
+<span class="math display">\[
+I_{n+1} = 7^5 I_n\mathrm{mod} (2^{31} - 1).
+\]</span></p>
+<div class="sourceCode" id="cb81"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb81-1" data-line-number="1">runif.my &lt;-<span class="st"> </span><span class="cf">function</span>(n, seed) {</a>
+<a class="sourceLine" id="cb81-2" data-line-number="2">  ret &lt;-<span class="st"> </span><span class="kw">double</span>(n)</a>
+<a class="sourceLine" id="cb81-3" data-line-number="3">  last &lt;-<span class="st"> </span>seed</a>
+<a class="sourceLine" id="cb81-4" data-line-number="4">  p &lt;-<span class="st"> </span><span class="dv">2</span><span class="op">^</span><span class="dv">31</span> <span class="op">-</span><span class="st"> </span><span class="dv">1</span></a>
+<a class="sourceLine" id="cb81-5" data-line-number="5">  <span class="cf">for</span> (i <span class="cf">in</span> <span class="dv">1</span><span class="op">:</span>n) {</a>
+<a class="sourceLine" id="cb81-6" data-line-number="6">    last &lt;-<span class="st"> </span>(<span class="dv">7</span><span class="op">^</span><span class="dv">5</span> <span class="op">*</span><span class="st"> </span>last) <span class="op">%%</span><span class="st"> </span>p</a>
+<a class="sourceLine" id="cb81-7" data-line-number="7">    ret[i] &lt;-<span class="st"> </span>last <span class="op">/</span><span class="st"> </span>p</a>
+<a class="sourceLine" id="cb81-8" data-line-number="8">  }</a>
+<a class="sourceLine" id="cb81-9" data-line-number="9">  ret</a>
+<a class="sourceLine" id="cb81-10" data-line-number="10">}</a>
+<a class="sourceLine" id="cb81-11" data-line-number="11"></a>
+<a class="sourceLine" id="cb81-12" data-line-number="12">u &lt;-<span class="st"> </span><span class="kw">runif.my</span>(<span class="dv">1000</span>, <span class="dv">2</span>)</a></code></pre></div>
+<p>The randomness can be viewed from a histogram and can be tested,
+for example, with the KS test.</p>
+<div class="sourceCode" id="cb82"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb82-1" data-line-number="1"><span class="kw">hist</span>(u)</a></code></pre></div>
+<p><img src="04-rng_files/figure-html/unif-ks-1.png" width="672" /></p>
+<div class="sourceCode" id="cb83"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb83-1" data-line-number="1"><span class="kw">ks.test</span>(u, <span class="st">&quot;punif&quot;</span>)</a></code></pre></div>
+<pre><code>## 
+##  One-sample Kolmogorov-Smirnov test
+## 
+## data:  u
+## D = 0.020604, p-value = 0.7896
+## alternative hypothesis: two-sided</code></pre>
+<p>In <code>R</code>, check <code>?RNG</code>.</p>
+<p>We assume that generation from <span class="math inline">\(U(0,1)\)</span> has been solved for all
+practical purposes and focus on turning uniform variables to
+variables with other desired distributions.</p>
+<div id="inverse-cdf" class="section level3">
+<h3><span class="header-section-number">5.1.1</span> Inverse CDF</h3>
+<p>For a non-decreasing function <span class="math inline">\(F\)</span> on <span class="math inline">\(\mathbb{R}\)</span>,
+the generalized inverse of <span class="math inline">\(F\)</span>, <span class="math inline">\(F^-\)</span>, is the function
+<span class="math display">\[
+F^-(u) = \inf\{x: F(x) \ge u\}.
+\]</span>
+If <span class="math inline">\(U\)</span> is <span class="math inline">\(U(0, 1)\)</span>, then <span class="math inline">\(F^-(U)\)</span> has distribution <span class="math inline">\(F\)</span>.
+For continuous variables, <span class="math inline">\(F^-\)</span> is simply <span class="math inline">\(F^{-1}\)</span>, the quantile
+function or inverse probability integral transformation.
+This works for both continuous and non-continuous variables.</p>
+<!-- \begin{example} -->
+<p>Average numbers of searches for Poisson variate generation
+with mean <span class="math inline">\(\lambda\)</span> (Ross’s Simulation book, p.51).
+Given a <span class="math inline">\(U\)</span>, the inversion algorithm successively checks if the Poisson
+variate is 0, 1, 2, and so on, which on average takes <span class="math inline">\(1 + \lambda\)</span> searches.
+It can be greatly improved by first checking on the integers that
+are closest to <span class="math inline">\(\lambda\)</span>.
+Let <span class="math inline">\(I\)</span> be the integer part of <span class="math inline">\(\lambda\)</span>.
+To generate a Poisson variate <span class="math inline">\(X\)</span>, check whether or not <span class="math inline">\(X \le I\)</span>
+by seeing whether or not <span class="math inline">\(U \le F(I)\)</span>.
+Then search downward starting from <span class="math inline">\(I\)</span> if <span class="math inline">\(X \le I\)</span> and upward
+from <span class="math inline">\(I + 1\)</span> otherwise.</p>
+<p>On average the number of searches needed by this algorithm is roughly
+1 more than the mean absolute difference between <span class="math inline">\(X\)</span> and <span class="math inline">\(\lambda\)</span>.
+By <span class="math inline">\(N(\lambda, \lambda)\)</span> approximation, this is approximately
+<span class="math display">\[
+1 + E |X - \lambda| = 1 + 0.798 \sqrt{\lambda}.
+\]</span></p>
+<p>The <code>{rpois()}</code> function in R uses an efficient algorithm
+that generates variables for <span class="math inline">\(\lambda \ge 10\)</span> by truncating suitable
+normal deviates and applying a correction with low probability
+<span class="citation">(Ahrens and Dieter <a href="#ref-Ahre:Diet:comp:1982">1982</a>)</span>.
+<!-- \end{example} --></p>
+</div>
+<div id="rejection-method" class="section level3">
+<h3><span class="header-section-number">5.1.2</span> Rejection Method</h3>
+<p>Idea: To sample from <span class="math inline">\(f\)</span>, we sample from <span class="math inline">\(g\)</span>
+and accept the sample with certain rate to
+make sure the resulting variable follows <span class="math inline">\(f\)</span>.</p>
+<p>Setup:
+1) densities <span class="math inline">\(f\)</span> and <span class="math inline">\(g\)</span> has the same support.
+2) <span class="math inline">\(f(x) \le M g(x)\)</span> for some <span class="math inline">\(M &gt; 0\)</span>.</p>
+<p>The rejection algorithm:</p>
+<ol style="list-style-type: decimal">
+<li>Generate <span class="math inline">\(Y\)</span> from <span class="math inline">\(g\)</span>.</li>
+<li>Generate <span class="math inline">\(U\)</span> from standard uniform.</li>
+<li>If <span class="math inline">\(U \le f(Y) / [M g(Y)]\)</span>, output <span class="math inline">\(X = Y\)</span>;
+otherwise, return to step 1.</li>
+</ol>
+<p>Validity proof:
+For <span class="math inline">\(x\)</span> in <span class="math inline">\(\mathcal{X}\)</span>, the support of <span class="math inline">\(f\)</span> and <span class="math inline">\(g\)</span>,
+show that
+<span class="math inline">\(\Pr(X \le x) = \Pr(Y \le x \mid \mbox{Accept}) = \int_{-\infty}^x f(y) \mathrm{d}y\)</span>.</p>
+<p>Fundamental theorem of simulation:
+Simulating from <span class="math inline">\(X \sim f(x)\)</span> is equivalent to
+simulating from <span class="math inline">\((X, U) ~ \mathcal{U}\{\{x, u\}: 0 &lt; u &lt; f(x)\}\)</span>.
+(Hint: the marginal density of <span class="math inline">\(X\)</span> is <span class="math inline">\(f(x)\)</span>.)</p>
+<p>Efficiency:
+The probability of acceptance is exactly <span class="math inline">\(1 / M\)</span>.
+The expected number of trials until a variable is accepted is <span class="math inline">\(M\)</span>.</p>
+<p>Among choices of <span class="math inline">\(g\)</span>, <span class="math inline">\(g_i\)</span>’s, the optimal sampler minimizes <span class="math inline">\(M\)</span>.</p>
+<div class="sourceCode" id="cb85"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb85-1" data-line-number="1">rNormTail &lt;-<span class="st"> </span><span class="cf">function</span>(n, c) {</a>
+<a class="sourceLine" id="cb85-2" data-line-number="2">    lambda &lt;-<span class="st"> </span>(c <span class="op">+</span><span class="st"> </span><span class="kw">sqrt</span>(c <span class="op">*</span><span class="st"> </span>c <span class="op">+</span><span class="st"> </span><span class="dv">4</span>)) <span class="op">/</span><span class="st"> </span><span class="dv">2</span></a>
+<a class="sourceLine" id="cb85-3" data-line-number="3">    alpha &lt;-<span class="st"> </span><span class="kw">exp</span>(<span class="fl">0.5</span> <span class="op">*</span><span class="st"> </span>lambda <span class="op">*</span><span class="st"> </span>lambda <span class="op">-</span><span class="st"> </span>lambda <span class="op">*</span><span class="st"> </span>c) <span class="op">/</span></a>
+<a class="sourceLine" id="cb85-4" data-line-number="4"><span class="st">        </span><span class="kw">sqrt</span>(<span class="dv">2</span> <span class="op">*</span><span class="st"> </span>pi) <span class="op">/</span><span class="st"> </span>lambda <span class="op">/</span><span class="st"> </span>(<span class="dv">1</span> <span class="op">-</span><span class="st"> </span><span class="kw">pnorm</span>(c))</a>
+<a class="sourceLine" id="cb85-5" data-line-number="5">    x &lt;-<span class="st"> </span><span class="kw">rep</span>(<span class="ot">NA</span>, n)</a>
+<a class="sourceLine" id="cb85-6" data-line-number="6">    <span class="cf">for</span> (i <span class="cf">in</span> <span class="dv">1</span><span class="op">:</span>n) {</a>
+<a class="sourceLine" id="cb85-7" data-line-number="7">        <span class="cf">while</span> (<span class="ot">TRUE</span>) {</a>
+<a class="sourceLine" id="cb85-8" data-line-number="8">            cand &lt;-<span class="st"> </span><span class="kw">rexp</span>(<span class="dv">1</span>, lambda)</a>
+<a class="sourceLine" id="cb85-9" data-line-number="9">            ratio &lt;-<span class="st"> </span><span class="kw">dnorm</span>(cand <span class="op">+</span><span class="st"> </span>c) <span class="op">/</span><span class="st"> </span>(<span class="dv">1</span> <span class="op">-</span><span class="st"> </span><span class="kw">pnorm</span>(c)) <span class="op">/</span><span class="st"> </span><span class="kw">dexp</span>(cand, lambda) <span class="op">/</span><span class="st"> </span>alpha</a>
+<a class="sourceLine" id="cb85-10" data-line-number="10">            u &lt;-<span class="st"> </span><span class="kw">runif</span>(<span class="dv">1</span>)</a>
+<a class="sourceLine" id="cb85-11" data-line-number="11">            <span class="cf">if</span> (u <span class="op">&lt;</span><span class="st"> </span>ratio) <span class="cf">break</span></a>
+<a class="sourceLine" id="cb85-12" data-line-number="12">        }</a>
+<a class="sourceLine" id="cb85-13" data-line-number="13">        x[i] &lt;-<span class="st"> </span>cand</a>
+<a class="sourceLine" id="cb85-14" data-line-number="14">    }</a>
+<a class="sourceLine" id="cb85-15" data-line-number="15">    x <span class="op">+</span><span class="st"> </span>c</a>
+<a class="sourceLine" id="cb85-16" data-line-number="16">}</a>
+<a class="sourceLine" id="cb85-17" data-line-number="17"></a>
+<a class="sourceLine" id="cb85-18" data-line-number="18"></a>
+<a class="sourceLine" id="cb85-19" data-line-number="19">rNormTail.f &lt;-<span class="st"> </span><span class="cf">function</span>(n, c, <span class="dt">batSize =</span> n) {</a>
+<a class="sourceLine" id="cb85-20" data-line-number="20">    lambda &lt;-<span class="st"> </span>(c <span class="op">+</span><span class="st"> </span><span class="kw">sqrt</span>(c <span class="op">*</span><span class="st"> </span>c <span class="op">+</span><span class="st"> </span><span class="dv">4</span>)) <span class="op">/</span><span class="st"> </span><span class="dv">2</span></a>
+<a class="sourceLine" id="cb85-21" data-line-number="21">    alpha &lt;-<span class="st"> </span><span class="kw">exp</span>(<span class="fl">0.5</span> <span class="op">*</span><span class="st"> </span>lambda <span class="op">*</span><span class="st"> </span>lambda <span class="op">-</span><span class="st"> </span>lambda <span class="op">*</span><span class="st"> </span>c) <span class="op">/</span></a>
+<a class="sourceLine" id="cb85-22" data-line-number="22"><span class="st">        </span><span class="kw">sqrt</span>(<span class="dv">2</span> <span class="op">*</span><span class="st"> </span>pi) <span class="op">/</span><span class="st"> </span>lambda <span class="op">/</span><span class="st"> </span>(<span class="dv">1</span> <span class="op">-</span><span class="st"> </span><span class="kw">pnorm</span>(c))</a>
+<a class="sourceLine" id="cb85-23" data-line-number="23">    x &lt;-<span class="st"> </span><span class="kw">rep</span>(<span class="ot">NA</span>, n)</a>
+<a class="sourceLine" id="cb85-24" data-line-number="24">    ndone &lt;-<span class="st"> </span><span class="dv">0</span></a>
+<a class="sourceLine" id="cb85-25" data-line-number="25">    <span class="cf">while</span> (<span class="ot">TRUE</span>) {</a>
+<a class="sourceLine" id="cb85-26" data-line-number="26">        cand &lt;-<span class="st"> </span><span class="kw">rexp</span>(batSize, lambda)</a>
+<a class="sourceLine" id="cb85-27" data-line-number="27">        ratio &lt;-<span class="st"> </span><span class="kw">dnorm</span>(cand <span class="op">+</span><span class="st"> </span>c) <span class="op">/</span><span class="st"> </span>(<span class="dv">1</span> <span class="op">-</span><span class="st"> </span><span class="kw">pnorm</span>(c)) <span class="op">/</span><span class="st"> </span><span class="kw">dexp</span>(cand, lambda) <span class="op">/</span><span class="st"> </span>alpha</a>
+<a class="sourceLine" id="cb85-28" data-line-number="28">        u &lt;-<span class="st"> </span><span class="kw">runif</span>(batSize)</a>
+<a class="sourceLine" id="cb85-29" data-line-number="29">        accept &lt;-<span class="st"> </span>u <span class="op">&lt;</span><span class="st"> </span>ratio</a>
+<a class="sourceLine" id="cb85-30" data-line-number="30">        naccpt &lt;-<span class="st"> </span><span class="kw">sum</span>(accept)</a>
+<a class="sourceLine" id="cb85-31" data-line-number="31">        ntodo &lt;-<span class="st"> </span>n <span class="op">-</span><span class="st"> </span>ndone</a>
+<a class="sourceLine" id="cb85-32" data-line-number="32">        ngood &lt;-<span class="st"> </span><span class="kw">min</span>(ntodo, naccpt)</a>
+<a class="sourceLine" id="cb85-33" data-line-number="33">        sample &lt;-<span class="st"> </span>cand[accept][<span class="dv">1</span><span class="op">:</span>ngood]</a>
+<a class="sourceLine" id="cb85-34" data-line-number="34">        x[ndone <span class="op">+</span><span class="st"> </span><span class="dv">1</span><span class="op">:</span>ngood] &lt;-<span class="st"> </span>sample</a>
+<a class="sourceLine" id="cb85-35" data-line-number="35">        ndone &lt;-<span class="st"> </span>ndone <span class="op">+</span><span class="st"> </span>ngood</a>
+<a class="sourceLine" id="cb85-36" data-line-number="36">        <span class="cf">if</span> (ndone <span class="op">==</span><span class="st"> </span>n) <span class="cf">break</span></a>
+<a class="sourceLine" id="cb85-37" data-line-number="37">    }</a>
+<a class="sourceLine" id="cb85-38" data-line-number="38">    x <span class="op">+</span><span class="st"> </span>c</a>
+<a class="sourceLine" id="cb85-39" data-line-number="39">}</a>
+<a class="sourceLine" id="cb85-40" data-line-number="40"></a>
+<a class="sourceLine" id="cb85-41" data-line-number="41">cc &lt;-<span class="st"> </span><span class="dv">7</span></a>
+<a class="sourceLine" id="cb85-42" data-line-number="42">n &lt;-<span class="st"> </span><span class="dv">1000</span></a>
+<a class="sourceLine" id="cb85-43" data-line-number="43"></a>
+<a class="sourceLine" id="cb85-44" data-line-number="44">x1 &lt;-<span class="st"> </span><span class="kw">qnorm</span>(<span class="kw">runif</span>(n, <span class="kw">pnorm</span>(cc), <span class="dv">1</span>))</a>
+<a class="sourceLine" id="cb85-45" data-line-number="45">x2 &lt;-<span class="st"> </span><span class="kw">rNormTail</span>(n, cc)</a>
+<a class="sourceLine" id="cb85-46" data-line-number="46">x3 &lt;-<span class="st"> </span><span class="kw">rNormTail.f</span>(n, cc)</a>
+<a class="sourceLine" id="cb85-47" data-line-number="47"></a>
+<a class="sourceLine" id="cb85-48" data-line-number="48"><span class="kw">hist</span>(x1, <span class="dt">freq=</span><span class="ot">FALSE</span>)</a>
+<a class="sourceLine" id="cb85-49" data-line-number="49"><span class="kw">curve</span>(<span class="kw">dnorm</span>(x) <span class="op">/</span><span class="st"> </span>(<span class="dv">1</span> <span class="op">-</span><span class="st"> </span><span class="kw">pnorm</span>(cc)), <span class="dv">7</span>, <span class="kw">max</span>(x1), <span class="dt">add=</span><span class="ot">TRUE</span>)</a></code></pre></div>
+<p><img src="04-rng_files/figure-html/normtail-1.png" width="672" /></p>
+<div class="sourceCode" id="cb86"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb86-1" data-line-number="1"><span class="kw">library</span>(microbenchmark)</a>
+<a class="sourceLine" id="cb86-2" data-line-number="2"><span class="kw">microbenchmark</span>(x1 &lt;-<span class="st"> </span><span class="kw">qnorm</span>(<span class="kw">runif</span>(n, <span class="kw">pnorm</span>(cc), <span class="dv">1</span>)),</a>
+<a class="sourceLine" id="cb86-3" data-line-number="3">               x2 &lt;-<span class="st"> </span><span class="kw">rNormTail</span>(n, cc),</a>
+<a class="sourceLine" id="cb86-4" data-line-number="4">               x3 &lt;-<span class="st"> </span><span class="kw">rNormTail.f</span>(n, cc, n),</a>
+<a class="sourceLine" id="cb86-5" data-line-number="5">               x4 &lt;-<span class="st"> </span><span class="kw">rNormTail.f</span>(n, cc, n <span class="op">/</span><span class="st"> </span><span class="dv">2</span>))</a></code></pre></div>
+<pre><code>## Unit: microseconds
+##                                 expr      min        lq       mean   median
+##  x1 &lt;- qnorm(runif(n, pnorm(cc), 1))   91.211   92.8255   97.03013   96.368
+##               x2 &lt;- rNormTail(n, cc) 6240.373 6396.4580 7144.71968 6479.923
+##          x3 &lt;- rNormTail.f(n, cc, n)  363.100  369.5605  385.57957  379.774
+##        x4 &lt;- rNormTail.f(n, cc, n/2)  293.763  302.6890  318.16556  315.494
+##         uq       max neval
+##   100.0890   109.158   100
+##  6545.1260 14682.738   100
+##   391.4545   496.655   100
+##   325.3295   390.709   100</code></pre>
+</div>
+<div id="sampling-importance-resampling" class="section level3">
+<h3><span class="header-section-number">5.1.3</span> Sampling Importance Resampling</h3>
+<div class="sourceCode" id="cb88"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb88-1" data-line-number="1">##&#39; Sampling importance resampling</a>
+<a class="sourceLine" id="cb88-2" data-line-number="2">##&#39;</a>
+<a class="sourceLine" id="cb88-3" data-line-number="3">##&#39; @param n desired sample size</a>
+<a class="sourceLine" id="cb88-4" data-line-number="4">##&#39; @param density target density</a>
+<a class="sourceLine" id="cb88-5" data-line-number="5">##&#39; @param envolope density of the sampler</a>
+<a class="sourceLine" id="cb88-6" data-line-number="6">##&#39; @param sampler random number generation of the sampler</a>
+<a class="sourceLine" id="cb88-7" data-line-number="7">##&#39; @param m sample size to draw from the sampler</a>
+<a class="sourceLine" id="cb88-8" data-line-number="8">##&#39; @return vector of random sample from the target density</a>
+<a class="sourceLine" id="cb88-9" data-line-number="9">sir &lt;-<span class="st"> </span><span class="cf">function</span>(n, density, envolope, sampler, <span class="dt">m =</span> <span class="dv">20</span> <span class="op">*</span><span class="st"> </span>n) {</a>
+<a class="sourceLine" id="cb88-10" data-line-number="10">    y &lt;-<span class="st"> </span><span class="kw">sampler</span>(m)</a>
+<a class="sourceLine" id="cb88-11" data-line-number="11">    weight &lt;-<span class="st"> </span><span class="kw">density</span>(y) <span class="op">/</span><span class="st"> </span><span class="kw">envolope</span>(y)</a>
+<a class="sourceLine" id="cb88-12" data-line-number="12">    weight &lt;-<span class="st"> </span>weight <span class="op">/</span><span class="st"> </span><span class="kw">sum</span>(weight)</a>
+<a class="sourceLine" id="cb88-13" data-line-number="13">    ## resample</a>
+<a class="sourceLine" id="cb88-14" data-line-number="14">    <span class="kw">sample</span>(y, <span class="dt">size =</span> n, <span class="dt">replace =</span> <span class="ot">TRUE</span>, <span class="dt">prob =</span> weight)</a>
+<a class="sourceLine" id="cb88-15" data-line-number="15">}</a>
+<a class="sourceLine" id="cb88-16" data-line-number="16"></a>
+<a class="sourceLine" id="cb88-17" data-line-number="17">n &lt;-<span class="st"> </span><span class="dv">5000</span></a>
+<a class="sourceLine" id="cb88-18" data-line-number="18">## sample from normal using cauchy as sampler</a>
+<a class="sourceLine" id="cb88-19" data-line-number="19">x &lt;-<span class="st"> </span><span class="kw">sir</span>(n, dnorm, dcauchy, rcauchy)</a>
+<a class="sourceLine" id="cb88-20" data-line-number="20"><span class="kw">hist</span>(x, <span class="dt">prob =</span> <span class="ot">TRUE</span>)</a>
+<a class="sourceLine" id="cb88-21" data-line-number="21"><span class="kw">curve</span>(<span class="kw">dnorm</span>(x), <span class="dt">add =</span> <span class="ot">TRUE</span>, <span class="dt">col=</span><span class="st">&quot;darkblue&quot;</span>)</a></code></pre></div>
+<p><img src="04-rng_files/figure-html/sir-1.png" width="672" /></p>
+<div class="sourceCode" id="cb89"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb89-1" data-line-number="1"><span class="kw">length</span>(<span class="kw">unique</span>(x)) <span class="co"># not equal to n</span></a></code></pre></div>
+<pre><code>## [1] 4834</code></pre>
+<div class="sourceCode" id="cb91"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb91-1" data-line-number="1">## sample from cauchy using normal as sampler: bad!</a>
+<a class="sourceLine" id="cb91-2" data-line-number="2">y &lt;-<span class="st"> </span><span class="kw">sir</span>(n, dcauchy, dnorm, rnorm)</a>
+<a class="sourceLine" id="cb91-3" data-line-number="3"><span class="kw">hist</span>(y, <span class="dt">xlim =</span> <span class="kw">c</span>(<span class="op">-</span><span class="dv">7</span>, <span class="dv">7</span>), <span class="dt">prob =</span> <span class="ot">TRUE</span>)</a>
+<a class="sourceLine" id="cb91-4" data-line-number="4"><span class="kw">curve</span>(<span class="kw">dcauchy</span>(x), <span class="dt">add =</span> <span class="ot">TRUE</span>, <span class="dt">col =</span> <span class="st">&quot;darkblue&quot;</span>)</a></code></pre></div>
+<p><img src="04-rng_files/figure-html/sir-2.png" width="672" /></p>
+<!-- \begin{example} -->
+<!--    Uni-modal beta from uniform. -->
+<!-- \end{example} -->
+<!-- \begin{example} -->
+<!-- Normal from double exponential. -->
+<!-- Consider double exponential distribution with rate $\alpha > 0$ -->
+<!-- as proposal density: -->
+<!-- $g(x| \alpha) = \frac{\alpha}{2}\exp(-\alpha |x|)$. -->
+<!-- Show that -->
+<!-- \begin{equation*} -->
+<!--   \frac{f(x)}{g(x | \alpha)} \le \frac{\sqrt{2 / \pi} \exp(\alpha^2 / 2)}{\alpha} -->
+<!-- \end{equation*} -->
+<!-- Use \code{curve} to show the shape of this ratio. -->
+<!-- \end{example} -->
+<!-- \begin{example} -->
+<!-- A nonstandard density \citep[p.50]{Robe:Case:mont:2004}. -->
+<!-- Consider density  -->
+<!-- $f(x) \propto \exp(-x^2 / 2)\big(\sin(6x)^2 + 3 \cos(x)^2\sin(4x)^2 + 1\big)$. -->
+<!-- An envelope function is $g(x) = 5 \exp(-x^2 / 2)$. -->
+<!-- \input{ch06-rng/rejsamp} -->
+<!-- \end{example} -->
+<!-- \subsection{Adaptive Rejection Sampling} -->
+<!-- For log-concave density $f(x)$, construct proposal distribution -->
+<!-- as piecewise exponential distributions; that is, segments of -->
+<!-- multiple exponential distributions attached end to end. -->
+<!-- The idea of envelope based on a set of points -->
+<!-- $S_n = \{x_i, i = 0, \ldots, n+1\}$. -->
+<!-- Given the convexity of $h(x) = \log f(x)$, the line connecting  -->
+<!-- $(x_i, h(x_i))$ and $(x_{i+1}, h(x_{i+1}))$ is below $h$ in  -->
+<!-- $[x_i, x_{i+1}]$ and above $h$ outside this interval. -->
+<!-- The envelop can be normalized to a piecewise exponential  -->
+<!-- density $g_n(x)$, with $f(x) / g_n(x) \le \omega_n$. -->
+<!-- Define upper and lower envelop: -->
+<!-- $l_n(x) \le f(x) \le u_n(x) = \omega_n g_n(x)$. -->
+<!-- The ARS algorithm: -->
+<!-- \begin{enumerate} -->
+<!-- \item Initialize $n$ and $S_n$. -->
+<!-- \item Generate $X ~ g_n(x)$ and $U \sim U(0,1)$. -->
+<!-- \item If $U \le l_n(X) / [\omega_n g_n(X)]$, accept $X$; -->
+<!--   otherwise, -->
+<!--   if $U \le f(X) / [\omega_n g_n(X)]$, accept $X$, -->
+<!--   and update $S_n$ to $S_{n+1} = S_n \cup \{X\}$. -->
+<!-- \end{enumerate} -->
+<!-- The two envelopes become increasingly accurate. -->
+<!-- The number of evaluation of $f$ is progressively reduced. -->
+<!-- R package \pkg{ars}. -->
+<!-- \subsection{Adaptive Rejection Metropolis Sampling} -->
+<!-- \citep{Gilk:Best:Tan:adap:1995} -->
+<!-- For non log-concave densities. -->
+<!-- R packages \pkg{HI} and \pkg{dlm}. -->
+<!-- \subsection{Transformation} -->
+<!-- Examples from math stats: -->
+<!-- exponential and Weibull; -->
+<!-- exponential and uniform; -->
+<!-- gamma and beta; -->
+<!-- normal and chi squared; -->
+<!-- chi squared and F. -->
+<!-- \begin{example} -->
+<!-- Box--Muller algorithm for normal. -->
+<!-- For independent standard uniform variables $U_1$ and $U_2$, -->
+<!-- \begin{equation*} -->
+<!--   X_1 = \sqrt{- 2 \log U_1} \cos(2 \pi U_2) -->
+<!--   \quad -->
+<!--   X_2 = \sqrt{- 2 \log U_1} \sin(2 \pi U_2) -->
+<!-- \end{equation*} -->
+<!-- are independent $N(0, 1)$ variables. -->
+<!-- \end{example} -->
+<!-- \section{Multivariate} -->
+<!-- \paragraph{Rejection sampling} -->
+<!-- \begin{example} -->
+<!-- Conditional sampling from elliptical distributions -->
+<!-- \citep{Wang:Yan:prac:2013}. -->
+<!-- \end{example} -->
+<!-- \paragraph{Sequential conditioning} -->
+<!-- \begin{example} -->
+<!-- Multinomial. -->
+<!-- Consider multinomial distribution with $n$ trials and probability -->
+<!-- vector $(p_1, \ldots, p_k)$. -->
+<!-- Sample $X_1, \ldots, X_2$ sequentially: -->
+<!-- $X_1$ is binomial$(n, p_1)$; -->
+<!-- $X_2 | X_1 = x_1$ is binomial$\big(n - x_1, p_2 / (1 - p_1)\big)$; -->
+<!-- $\ldots$; -->
+<!-- $X_j | X_1 = x_1, \ldots, X_{j-1} = x_{j-1}$ -->
+<!-- is binomial$\big(n - x_1 - \ldots - x_{j-1}, p_j / ( 1 - p_1 - \ldots - p_{j-1}) \big)$. -->
+<!-- \end{example} -->
+<!-- \begin{example} -->
+<!-- GEVr distribution. -->
+<!-- Consider a random sample of size $m$ from some distribution function $G$. -->
+<!-- It has been shown \citep{Tawn:extr:1988} that, as $m \rightarrow \infty$,  -->
+<!-- the top $r \ll m$ order statistics, when normalized by some constants,  -->
+<!-- converge in distribution to the GEV$_r$ distribution with density function -->
+<!-- \begin{equation} -->
+<!-- \label{eq:gevr} -->
+<!-- f_r (x_1,x_2, ..., x_r | \mu, \sigma, \xi) = \sigma^{-r}\exp\Big\{-(1+\xi z_r)^{-\frac{1}{\xi}} - \left(\frac{1}{\xi}+1\right)\sum_{j=1}^{r}\log(1+\xi z_j)\Big\} -->
+<!-- \end{equation} -->
+<!-- for some location parameter $\mu$, scale parameter $\sigma > 0$ -->
+<!-- and shape parameter $\xi$,  -->
+<!-- where $x_1 >  \cdots> x_r$, $z_j = (x_j - \mu) / \sigma$,  -->
+<!-- and $ 1 + \xi z_j > 0 $ for $j=1,2,..., r$. -->
+<!-- When $r = 1$, this is the density of the GEV distribution. -->
+<!-- \input{ch06-rng/gevr} -->
+<!-- \end{example} -->
+<!-- \section{Copulas} -->
+<!-- Multivariate distributions with given margins are characterized by -->
+<!-- copulas, which is the unique characterization of the dependence structure. -->
+<!-- From Sklar's Theorem, every continuous multivariate distribution function -->
+<!-- $F$ has a representation  -->
+<!-- \[ -->
+<!-- F(x_1, \ldots, x_p) = C\Big( F_1(x_1), \ldots, F_p(x_p) \Big) -->
+<!-- \] -->
+<!-- where $F_i$ is the distribution function of margin $i$,  -->
+<!-- $i = 1, \ldots, p$, and $C$ is a unique \emph{copula} function. -->
+<!-- From the probability integral transformation, it is clear that $C$ is -->
+<!-- the distribution function of multivariate standard uniform variables. -->
+<!-- Every continuous multivariate distribution uniquely determines a copula, -->
+<!-- which can be used to ``couple'' given marginal distributions. -->
+<!-- Copulas are invariant to monotone transformations.  -->
+<!-- Kendall's tau and Spearman's rho depend only on the copulas as opposed to -->
+<!-- marginal distributions, and are therefore better association measures than -->
+<!-- Pearson's linear correlation coefficient. -->
+<!-- \input{ch06-rng/copula} -->
+<!-- \section{Stochastic processes} -->
+<!-- Application in survival analysis. -->
+<!-- For example, how to generate survival times from the Cox model -->
+<!-- with a general smooth baseline hazard function? -->
+<!-- \subsection{Poisson process} -->
+<!-- \paragraph{Homogeneous} -->
+<!-- Independent exponential arrival. -->
+<!-- Conditional on the total number of events in an interval -->
+<!-- $(0, \tau]$, the event times are distributed as order statistics -->
+<!-- from a random sample with uniform distribution over $(0, \tau]$. -->
+<!-- \paragraph{Nonhomogeneous} -->
+<!-- The inversion method \citep[p.96]{Cinl:intr:1975}: -->
+<!-- Let $\Lambda(t)$, $t > 0$, be a continuous, nondecreasing  -->
+<!-- mean function of a nonhomogeneous Poisson process.  -->
+<!-- If $\Lambda(T_1), \Lambda(T_2), \ldots$ -->
+<!-- are event times from a homogeneous Poisson process with rate one, -->
+<!-- then $T_1, T_2, \ldots$ are event times from a nonhomogeneous -->
+<!-- Poisson process with mean function $\Lambda(t)$. -->
+<!-- The order statistics method \citep{Cox:Lewi:stat:1966}: -->
+<!-- Let $T_1, T_2, \ldots$ be random variables representing the event -->
+<!-- times of a nonhomogeneous Poisson process with continuous mean function  -->
+<!-- $\Lambda(t)$, $t > 0$. -->
+<!-- Let $N_t$ be the cumulative number of events by time $t$. -->
+<!-- Conditional on $N_{\tau} = n$ over the interval $(0, \tau]$, -->
+<!-- the event times $T_1, T_2, \ldots$ are distributed as order statistics -->
+<!-- from a random sample with distribution function  -->
+<!-- $F(t) = \Lambda(t) / \Lambda(\tau)$, $t \in (0, \tau]$. -->
+<!-- The thinning method (process analog of the acceptance-rejection method) -->
+<!-- \citep{Lewi:Shed:simu:1979}: -->
+<!-- Let $\lambda_{\max} = \max_{t \in (0, \tau]} \lambda(t)$. -->
+<!-- Suppose that $S_1, S_2, \ldots$ are event times from a homogeneous  -->
+<!-- Poisson process with rate function $\lambda(t)$.  -->
+<!-- If the $i$th event time $S_i$ is independently accepted with -->
+<!-- probability $\lambda(t) / \lambda_{\max}$, the the remaining event -->
+<!-- times form a realization from a nonhomogeneous Poisson process with  -->
+<!-- rate function $\lambda(t)$ in $(0, \tau]$. -->
+<!-- Discussion: what are the pros and cons of these methods? -->
+<!-- \paragraph{Applications} -->
+<!-- Survival or recurrent event times from Cox models with  -->
+<!-- timevarying covariates or timevarying coefficients or both. -->
+<!-- \paragraph{Two Dimensional?} -->
+<!-- \section{Applications} -->
+<!-- \subsection{Monte Carlo Integration} -->
+<!-- Evaluate integral -->
+<!-- \begin{equation*} -->
+<!--   E_f[ h(X)] = \int_{\mathcal{X}} h(x) f(x) \dif x. -->
+<!-- \end{equation*} -->
+<!-- If sampling from $f$ can be done, -->
+<!-- approximate by sample average -->
+<!-- \begin{equation*} -->
+<!--   \bar h_n = \frac{1}{n}\sum_{j=1}^n h(X_j), -->
+<!-- \end{equation*} -->
+<!-- where $X_1, \ldots, X_n$ are a random sample from $f$. -->
+<!-- The convergence is enforced by the SLLN. -->
+<!-- The speed of the convergence can be assessed if $E h^2(X) < \infty$ -->
+<!-- with the CLT. -->
+<!-- The order of the Monte Carlo error is $\sqrt{\VAR[h(X)] / n}$. -->
+<!-- The error of estimating $E_f[ h(X)]$ declines at the rate of $n^{-1/2}$. -->
+<!-- This is slower than the quadrature method with $n$ quadrature  -->
+<!-- points, which has a rate of $O(n^{-k}$ for $k \ge 2$ typically. -->
+<!-- \subsection{Importance Sampling} -->
+<!-- Importance sampling, also known as weighted sampling,  -->
+<!-- is a technique for variance reduction in Monte Carlo integration. -->
+<!-- Evaluate integral -->
+<!-- \begin{equation*} -->
+<!--   E_f[ h(X)] = \int_{\mathcal{X}} h(x) \frac{f(x)}{g(x)} g(x) \dif x, -->
+<!-- \end{equation*} -->
+<!-- where $g$ is another density such that  -->
+<!-- $g(x) > 0$ when $h(x) f(x) \ne 0$. -->
+<!-- Let $Y_1, \ldots, Y_n$ be a random sample from $g$. -->
+<!-- An unbiased estimator of $E_f[ h(X)]$ is a weighted average -->
+<!-- \[ -->
+<!-- \frac{1}{n}\sum_{i=1}^n h(Y_i) w(Y_i), -->
+<!-- \] -->
+<!-- where $w(Y_i) =  f(Y_i) / g(Y_i)$ is called importance weight. -->
+<!-- Convergence assured by SLLN. -->
+<!-- But the variance is finite only if -->
+<!-- \begin{equation*} -->
+<!--   E_g[h^2(X) f^2(X) / g^2(X)] < \infty. -->
+<!-- \end{equation*} -->
+<!-- In order for the weighted estimator has smaller variance than the naive -->
+<!-- estimator, we need to have -->
+<!-- \[ -->
+<!-- \int\left[\frac{h(x) f(x)}{g(x)}\right]^2 g(x) \dif x -->
+<!-- \le \int h^2(x) f(x) \dif x. -->
+<!-- \] -->
+<!-- The choice of $g$ that minimizes the variance of the estimator is -->
+<!-- \begin{equation*} -->
+<!--   g^*(x) = \frac{|h(x)| f(x)}{\int_{\mathcal{X}} |h(z)| f(z) \dif z}. -->
+<!-- \end{equation*} -->
+<!-- The proof is straightforward with Jensen's inequality -->
+<!-- \citep[Theorem 3.12]{Robe:Case:mont:2004}. -->
+<!-- The result is slightly irrelevant since $\int |h(z) f(z) \dif z$ -->
+<!-- is exactly what we need to find out. -->
+<!-- Nonetheless, it implies that the variance of the weighted estimator -->
+<!-- is lower if $g(z)$ resembles $|h(z)| f(z)$, in which case, -->
+<!-- random points are sampled where they are needed most for accuracy. -->
+<!-- \begin{example} -->
+<!-- Conditional tail expectation (CTE) or tail value at risk (TVaR): -->
+<!-- \[ -->
+<!-- E[X | X > X_{\alpha}] -->
+<!-- \] -->
+<!-- where $X_{\alpha}$ is the upper $\alpha$-quantile. -->
+<!-- Suppose that $X$ is a $N(0, 1)$ variable. -->
+<!-- An importance sampler with an exponential proposal -->
+<!-- can be devised to evaluate the CTE. -->
+<!-- A related problem is: how to sample from the conditional tail -->
+<!-- distribution? -->
+<!-- \end{example} -->
+<!-- Comparison with rejection method. -->
+<!-- Both have a proposal density. -->
+<!-- The goals (outputs) are different. -->
+</div>
+</div>
+<div id="stochastic-processes" class="section level2">
+<h2><span class="header-section-number">5.2</span> Stochastic Processes</h2>
+<p>A stochastic or random process is a collection of random variables indexed by certain set. The indexing set is often a subset of time or space. When the indexing set is multidimensional, the stochastic process is also called a random field.</p>
+<div id="gaussian-markov-process" class="section level3">
+<h3><span class="header-section-number">5.2.1</span> Gaussian Markov Process</h3>
+<p>Simulation of Brownian motion and Brianian bridge on a grid time grid.</p>
+<div class="sourceCode" id="cb92"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb92-1" data-line-number="1">## Brownian motion</a>
+<a class="sourceLine" id="cb92-2" data-line-number="2">rBM &lt;-<span class="st"> </span><span class="cf">function</span>(tgrid, <span class="dt">x0 =</span> <span class="dv">0</span>) {</a>
+<a class="sourceLine" id="cb92-3" data-line-number="3">    dt &lt;-<span class="st"> </span><span class="kw">diff</span>(tgrid)</a>
+<a class="sourceLine" id="cb92-4" data-line-number="4">    z &lt;-<span class="st"> </span><span class="kw">rnorm</span>(<span class="kw">length</span>(dt), <span class="dt">sd =</span> <span class="kw">sqrt</span>(dt))</a>
+<a class="sourceLine" id="cb92-5" data-line-number="5">    <span class="kw">c</span>(x0, <span class="kw">cumsum</span>(z) <span class="op">+</span><span class="st"> </span>x0)</a>
+<a class="sourceLine" id="cb92-6" data-line-number="6">}</a>
+<a class="sourceLine" id="cb92-7" data-line-number="7"></a>
+<a class="sourceLine" id="cb92-8" data-line-number="8"></a>
+<a class="sourceLine" id="cb92-9" data-line-number="9">## Brownian bridge</a>
+<a class="sourceLine" id="cb92-10" data-line-number="10">rBB &lt;-<span class="st"> </span><span class="cf">function</span>(tgrid, x, y) {</a>
+<a class="sourceLine" id="cb92-11" data-line-number="11">    n &lt;-<span class="st"> </span><span class="kw">length</span>(tgrid)</a>
+<a class="sourceLine" id="cb92-12" data-line-number="12">    w &lt;-<span class="st"> </span><span class="kw">double</span>(n)</a>
+<a class="sourceLine" id="cb92-13" data-line-number="13">    a &lt;-<span class="st"> </span>tgrid[<span class="dv">1</span>]; w[<span class="dv">1</span>] &lt;-<span class="st"> </span>x</a>
+<a class="sourceLine" id="cb92-14" data-line-number="14">    b &lt;-<span class="st"> </span>tgrid[n]; w[n] &lt;-<span class="st"> </span>y</a>
+<a class="sourceLine" id="cb92-15" data-line-number="15">    <span class="cf">for</span> (i <span class="cf">in</span> <span class="dv">2</span><span class="op">:</span>(n<span class="dv">-1</span>)) {</a>
+<a class="sourceLine" id="cb92-16" data-line-number="16">        t &lt;-<span class="st"> </span>tgrid[i]</a>
+<a class="sourceLine" id="cb92-17" data-line-number="17">        mu &lt;-<span class="st"> </span>((b <span class="op">-</span><span class="st"> </span>t) <span class="op">*</span><span class="st"> </span>x <span class="op">+</span><span class="st"> </span>(t <span class="op">-</span><span class="st"> </span>a) <span class="op">*</span><span class="st"> </span>y) <span class="op">/</span><span class="st"> </span>(b <span class="op">-</span><span class="st"> </span>a)</a>
+<a class="sourceLine" id="cb92-18" data-line-number="18">        sigma &lt;-<span class="st"> </span><span class="kw">sqrt</span>((t <span class="op">-</span><span class="st"> </span>a) <span class="op">*</span><span class="st"> </span>(b <span class="op">-</span><span class="st"> </span>t) <span class="op">/</span><span class="st"> </span>(b <span class="op">-</span><span class="st"> </span>a))</a>
+<a class="sourceLine" id="cb92-19" data-line-number="19">        w[i] &lt;-<span class="st"> </span>x &lt;-<span class="st"> </span><span class="kw">rnorm</span>(<span class="dv">1</span>, mu, sigma)</a>
+<a class="sourceLine" id="cb92-20" data-line-number="20">        a &lt;-<span class="st"> </span>tgrid[i]</a>
+<a class="sourceLine" id="cb92-21" data-line-number="21">    }</a>
+<a class="sourceLine" id="cb92-22" data-line-number="22">    w</a>
+<a class="sourceLine" id="cb92-23" data-line-number="23">}</a></code></pre></div>
+<p>The square root diffusion process has a closed-form transition distribution,
+which is a scaled non-central chi-squared.</p>
+<div class="sourceCode" id="cb93"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb93-1" data-line-number="1">rcir &lt;-<span class="st"> </span><span class="cf">function</span>(n, r0, alpha, b, sigma, dt) {</a>
+<a class="sourceLine" id="cb93-2" data-line-number="2">    df  &lt;-<span class="st"> </span><span class="dv">4</span> <span class="op">*</span><span class="st"> </span>alpha <span class="op">*</span><span class="st"> </span>b <span class="op">/</span><span class="st"> </span>sigma <span class="op">/</span><span class="st"> </span>sigma</a>
+<a class="sourceLine" id="cb93-3" data-line-number="3">    ee &lt;-<span class="st"> </span><span class="kw">exp</span>(<span class="op">-</span><span class="st"> </span>alpha <span class="op">*</span><span class="st"> </span>dt)</a>
+<a class="sourceLine" id="cb93-4" data-line-number="4">    cc &lt;-<span class="st"> </span>sigma<span class="op">^</span><span class="dv">2</span> <span class="op">*</span><span class="st"> </span>(<span class="dv">1</span> <span class="op">-</span><span class="st"> </span>ee) <span class="op">/</span><span class="st"> </span><span class="dv">4</span> <span class="op">/</span><span class="st"> </span>alpha</a>
+<a class="sourceLine" id="cb93-5" data-line-number="5">    lambda &lt;-<span class="st"> </span>ee <span class="op">*</span><span class="st"> </span>r0 <span class="op">/</span><span class="st"> </span>cc</a>
+<a class="sourceLine" id="cb93-6" data-line-number="6">    <span class="kw">rchisq</span>(n, <span class="dt">df =</span> df, <span class="dt">ncp =</span> lambda) <span class="op">*</span><span class="st"> </span>cc</a>
+<a class="sourceLine" id="cb93-7" data-line-number="7">}</a></code></pre></div>
+<p>The transition density would otherwise be approximated by the Euler
+scheme with a fine time grid.</p>
+<div class="sourceCode" id="cb94"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb94-1" data-line-number="1">rcir_euler &lt;-<span class="st"> </span><span class="cf">function</span>(n, r0, alpha, b, sigma, dt, <span class="dt">ng =</span> <span class="dv">10</span>) {</a>
+<a class="sourceLine" id="cb94-2" data-line-number="2">    ddt &lt;-<span class="st"> </span>dt <span class="op">/</span><span class="st"> </span>ng</a>
+<a class="sourceLine" id="cb94-3" data-line-number="3">    <span class="kw">sapply</span>(<span class="dv">1</span><span class="op">:</span>n, <span class="cf">function</span>(idx) {</a>
+<a class="sourceLine" id="cb94-4" data-line-number="4">        <span class="cf">for</span> (i <span class="cf">in</span> <span class="kw">seq</span>(<span class="dv">1</span><span class="op">:</span>ng)) {</a>
+<a class="sourceLine" id="cb94-5" data-line-number="5">            rt &lt;-<span class="st"> </span>r0 <span class="op">+</span><span class="st"> </span>alpha <span class="op">*</span><span class="st"> </span>(b <span class="op">-</span><span class="st"> </span>r0) <span class="op">*</span><span class="st"> </span>ddt <span class="op">+</span></a>
+<a class="sourceLine" id="cb94-6" data-line-number="6"><span class="st">                </span>sigma <span class="op">*</span><span class="st"> </span><span class="kw">sqrt</span>(r0 <span class="op">*</span><span class="st"> </span>ddt) <span class="op">*</span><span class="st"> </span><span class="kw">rnorm</span>(<span class="dv">1</span>)</a>
+<a class="sourceLine" id="cb94-7" data-line-number="7">            rt &lt;-<span class="st"> </span><span class="kw">max</span>(<span class="dv">0</span>, rt)</a>
+<a class="sourceLine" id="cb94-8" data-line-number="8">            r0 &lt;-<span class="st"> </span>rt</a>
+<a class="sourceLine" id="cb94-9" data-line-number="9">        }</a>
+<a class="sourceLine" id="cb94-10" data-line-number="10">        rt</a>
+<a class="sourceLine" id="cb94-11" data-line-number="11">    })</a>
+<a class="sourceLine" id="cb94-12" data-line-number="12">}</a></code></pre></div>
+<p>Here is an illustration.</p>
+<div class="sourceCode" id="cb95"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb95-1" data-line-number="1">r0 &lt;-<span class="st"> </span><span class="fl">.05</span></a>
+<a class="sourceLine" id="cb95-2" data-line-number="2">alpha &lt;-<span class="st"> </span><span class="fl">.2</span></a>
+<a class="sourceLine" id="cb95-3" data-line-number="3">b &lt;-<span class="st"> </span><span class="fl">.05</span></a>
+<a class="sourceLine" id="cb95-4" data-line-number="4">sigma &lt;-<span class="st"> </span><span class="dv">1</span></a>
+<a class="sourceLine" id="cb95-5" data-line-number="5">dt &lt;-<span class="st"> </span><span class="fl">.1</span></a>
+<a class="sourceLine" id="cb95-6" data-line-number="6">n &lt;-<span class="st"> </span><span class="dv">1000</span></a>
+<a class="sourceLine" id="cb95-7" data-line-number="7"></a>
+<a class="sourceLine" id="cb95-8" data-line-number="8">x1 &lt;-<span class="st"> </span><span class="kw">rcir</span>      (n, r0, alpha, b, sigma, dt)</a>
+<a class="sourceLine" id="cb95-9" data-line-number="9">x2 &lt;-<span class="st"> </span><span class="kw">rcir_euler</span>(n, r0, alpha, b, sigma, dt)</a>
+<a class="sourceLine" id="cb95-10" data-line-number="10"><span class="kw">qqplot</span>(x1, x2)</a>
+<a class="sourceLine" id="cb95-11" data-line-number="11"><span class="kw">abline</span>(<span class="dv">0</span>, <span class="dv">1</span>)</a></code></pre></div>
+<p><img src="04-rng_files/figure-html/rcir_illustration-1.png" width="672" /></p>
+</div>
+<div id="counting-process" class="section level3">
+<h3><span class="header-section-number">5.2.2</span> Counting Process</h3>
+<p>A counting process is a stochastic process <span class="math inline">\(\{N(t); t ≥ 0\}\)</span> with values that are non-negative, integer, and non-decreasing. It is often used to model the occurrence of certain event.</p>
+<div id="homogeneous-poission-process" class="section level4">
+<h4><span class="header-section-number">5.2.2.1</span> Homogeneous Poission Process</h4>
+<p>A counting process is a homogeneous Poission process if it satisfies three conditions:</p>
+<ul>
+<li><span class="math inline">\(N(0) = 0\)</span>;</li>
+<li>the occurrences of events in disjoint time intervals are independent;</li>
+<li>the number of events in any interval of length <span class="math inline">\(t\)</span> is a Poisson random variable with mean <span class="math inline">\(\lambda t\)</span>.</li>
+</ul>
+<p>It can be shown that, conditional on the total number of events in an interval <span class="math inline">\((0, \tau]\)</span>, the event times are distributed as order statistics from a random sample with uniform distribution over <span class="math inline">\((0, \tau]\)</span>. Simulation of a homogeneous Poisson process with indensity <span class="math inline">\(\lambda\)</span> over <span class="math inline">\((0, \tau]\)</span> can then be done in two steps.</p>
+<ol style="list-style-type: decimal">
+<li>Generate <span class="math inline">\(N\)</span> from a Poisson distribution with mean <span class="math inline">\(\lambda \tau\)</span>.</li>
+<li>Generate <span class="math inline">\(N\)</span> variables from the uniform distribution over <span class="math inline">\((0, \tau]\)</span> and get their order statistics.</li>
+</ol>
+<p>The resulting <span class="math inline">\(N\)</span> variables are the simulated event times.</p>
+<p>It can be shown that the inter-arrival distribution of a homogeneous Poisson process with intensity <span class="math inline">\(\lambda\)</span> are independent and identically distributed exponential variables with rate <span class="math inline">\(\lambda\)</span>. This result gives an alternative simulation approach.</p>
+</div>
+</div>
+<div id="inhomogeneous-poisson-process" class="section level3">
+<h3><span class="header-section-number">5.2.3</span> Inhomogeneous Poisson Process</h3>
+<p>An inhomogeneous Poisson process is a characterized by an intensity function <span class="math inline">\(\lambda(t)\)</span> such that</p>
+<ul>
+<li>N(0) = 0;</li>
+<li>the occurrences of events in disjoint time intervals are indepdent;</li>
+<li>the number of events in an interval <span class="math inline">\((0, \tau]\)</span> is a Poissoin random
+variable with mean <span class="math inline">\(\Lambda(\tau) = \int_0^\tau \lambda(t) \mathrm{d}{t}\)</span>.</li>
+</ul>
+<p>The inversion method generates inter-arrival event times
+<span class="citation">(Cinlar <a href="#ref-Cinl:intr:1975">1975</a>, 96)</span>. Consider an nonhomomegeneous Poisson process
+with mean function <span class="math inline">\(\Lambda(t)\)</span>, <span class="math inline">\(t &gt; 0\)</span>, which is continuous and
+nondecreasing. If <span class="math inline">\(\Lambda(T_1), \Lambda(T_2), \ldots\)</span> are event times
+from a homogeneous Poisson process with rate one, then
+<span class="math inline">\(T_1, T_2, \ldots\)</span> are event times from a nonhomogeneous Poisson
+process with mean function <span class="math inline">\(\Lambda(t)\)</span>.
+The algorithm works as follows.</p>
+<ol style="list-style-type: decimal">
+<li>Generate <span class="math inline">\(S_1, S_2, \ldots\)</span> from a homogeneous Poisson process with rate one.</li>
+<li>Let <span class="math inline">\(T_i = \Lambda^{-1}(S_i)\)</span>, <span class="math inline">\(i = 1, 2, \ldots\)</span>.</li>
+</ol>
+<p>The order statistics method :
+Let <span class="math inline">\(T_1, T_2, \ldots\)</span> be random variables representing the event
+times of a nonhomogeneous Poisson process with continuous mean function
+<span class="math inline">\(\Lambda(t)\)</span>, <span class="math inline">\(t &gt; 0\)</span>.
+Let <span class="math inline">\(N_t\)</span> be the cumulative number of events by time <span class="math inline">\(t\)</span>.
+Conditional on <span class="math inline">\(N_{\tau} = n\)</span> over the interval <span class="math inline">\((0, \tau]\)</span>,
+the event times <span class="math inline">\(T_1, T_2, \ldots\)</span> are distributed as order statistics
+from a random sample with distribution function
+<span class="math inline">\(F(t) = \Lambda(t) / \Lambda(\tau)\)</span>, <span class="math inline">\(t \in (0, \tau]\)</span>.</p>
+<p>The thinning method (process analog of the acceptance-rejection method)
+<span class="citation">(Lewis and Shedler <a href="#ref-Lewi:Shed:simu:1979">1979</a>)</span>:
+Let <span class="math inline">\(\lambda_{\max} = \max_{t \in (0, \tau]} \lambda(t)\)</span>.
+Suppose that <span class="math inline">\(S_1, S_2, \ldots\)</span> are event times from a homogeneous
+Poisson process with rate function <span class="math inline">\(\lambda_{\max}\)</span>.
+If the <span class="math inline">\(i\)</span>th event time <span class="math inline">\(S_i\)</span> is independently accepted with
+probability <span class="math inline">\(\lambda(t) / \lambda_{\max}\)</span>, the the remaining event
+times form a realization from a nonhomogeneous Poisson process with
+rate function <span class="math inline">\(\lambda(t)\)</span> in <span class="math inline">\((0, \tau]\)</span>.</p>
+<div class="sourceCode" id="cb96"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb96-1" data-line-number="1">## simulation of a nonhomegeneous Poisson process</a>
+<a class="sourceLine" id="cb96-2" data-line-number="2">## with the thinning method</a>
+<a class="sourceLine" id="cb96-3" data-line-number="3">rnhpp &lt;-<span class="st"> </span><span class="cf">function</span>(intensity, intmax, tmax) {</a>
+<a class="sourceLine" id="cb96-4" data-line-number="4">    n &lt;-<span class="st"> </span><span class="kw">rpois</span>(<span class="dv">1</span>, intmax)</a>
+<a class="sourceLine" id="cb96-5" data-line-number="5">    tt &lt;-<span class="st"> </span><span class="kw">runif</span>(n, <span class="dv">0</span>, tmax)</a>
+<a class="sourceLine" id="cb96-6" data-line-number="6">    u &lt;-<span class="st"> </span><span class="kw">runif</span>(n)</a>
+<a class="sourceLine" id="cb96-7" data-line-number="7">    accept &lt;-<span class="st"> </span>u <span class="op">&lt;</span><span class="st"> </span><span class="kw">intensity</span>(tt) <span class="op">/</span><span class="st"> </span>intmax</a>
+<a class="sourceLine" id="cb96-8" data-line-number="8">    <span class="kw">sort</span>(tt[accept])</a>
+<a class="sourceLine" id="cb96-9" data-line-number="9">}</a>
+<a class="sourceLine" id="cb96-10" data-line-number="10"></a>
+<a class="sourceLine" id="cb96-11" data-line-number="11">intfun &lt;-<span class="st"> </span><span class="cf">function</span>(x) <span class="kw">sin</span>(<span class="dv">2</span> <span class="op">*</span><span class="st"> </span>pi <span class="op">*</span><span class="st"> </span>x) <span class="op">+</span><span class="st"> </span><span class="dv">1</span></a>
+<a class="sourceLine" id="cb96-12" data-line-number="12"></a>
+<a class="sourceLine" id="cb96-13" data-line-number="13">ff &lt;-<span class="st"> </span><span class="kw">rnhpp</span>(intfun, <span class="dv">2</span>, <span class="dv">1</span>)</a>
+<a class="sourceLine" id="cb96-14" data-line-number="14"><span class="kw">hist</span>(<span class="kw">unlist</span>(<span class="kw">replicate</span>(<span class="dv">10000</span>, <span class="kw">rnhpp</span>(intfun, <span class="dv">2</span>, <span class="dv">1</span>))))</a></code></pre></div>
+<p><img src="04-rng_files/figure-html/nhpp-thinning-1.png" width="672" /></p>
+<p>Discussion: what are the pros and cons of these methods?</p>
+</div>
+<div id="jump-diffusion-process" class="section level3">
+<h3><span class="header-section-number">5.2.4</span> Jump-Diffusion Process</h3>
+<p>Simulation from a jump-diffusion process on a given time grid in a
+simple setting with a homogeneous Poisson process for the jump events
+and a lognormal jump sizes.</p>
+<div class="sourceCode" id="cb97"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb97-1" data-line-number="1">## jump rate: constant lambda</a>
+<a class="sourceLine" id="cb97-2" data-line-number="2">## jump size: log normal distribution with meanlog and sdlog</a>
+<a class="sourceLine" id="cb97-3" data-line-number="3">rjd &lt;-<span class="st"> </span><span class="cf">function</span>(tgrid, x0, mu, sigma, lambda, meanlog, sdlog) {</a>
+<a class="sourceLine" id="cb97-4" data-line-number="4">    dt &lt;-<span class="st"> </span><span class="kw">diff</span>(tgrid)</a>
+<a class="sourceLine" id="cb97-5" data-line-number="5">    n &lt;-<span class="st"> </span><span class="kw">length</span>(dt)</a>
+<a class="sourceLine" id="cb97-6" data-line-number="6">    ddiff &lt;-<span class="st"> </span>(mu <span class="op">-</span><span class="st"> </span><span class="fl">0.5</span> <span class="op">*</span><span class="st"> </span>sigma <span class="op">*</span><span class="st"> </span>sigma) <span class="op">*</span><span class="st"> </span>dt <span class="op">+</span><span class="st"> </span>sigma <span class="op">*</span><span class="st"> </span><span class="kw">sqrt</span>(dt) <span class="op">*</span><span class="st"> </span><span class="kw">rnorm</span>(n)</a>
+<a class="sourceLine" id="cb97-7" data-line-number="7">    njump &lt;-<span class="st"> </span><span class="kw">rpois</span>(n, dt <span class="op">*</span><span class="st"> </span>lambda)</a>
+<a class="sourceLine" id="cb97-8" data-line-number="8">    jsize &lt;-<span class="st"> </span><span class="kw">ifelse</span>(njump <span class="op">==</span><span class="st"> </span><span class="dv">0</span>, <span class="dv">0</span>,</a>
+<a class="sourceLine" id="cb97-9" data-line-number="9">                    <span class="kw">rnorm</span>(n, meanlog <span class="op">*</span><span class="st"> </span>njump, sdlog <span class="op">*</span><span class="st"> </span><span class="kw">sqrt</span>(njump)))</a>
+<a class="sourceLine" id="cb97-10" data-line-number="10">    dx  &lt;-<span class="st"> </span>ddiff <span class="op">+</span><span class="st"> </span>jsize</a>
+<a class="sourceLine" id="cb97-11" data-line-number="11">    <span class="kw">c</span>(x0, x0 <span class="op">+</span><span class="st"> </span><span class="kw">cumsum</span>(dx))</a>
+<a class="sourceLine" id="cb97-12" data-line-number="12">}</a>
+<a class="sourceLine" id="cb97-13" data-line-number="13"></a>
+<a class="sourceLine" id="cb97-14" data-line-number="14">meanlog &lt;-<span class="st"> </span><span class="dv">0</span>; sdlog &lt;-<span class="st"> </span><span class="fl">0.02</span></a>
+<a class="sourceLine" id="cb97-15" data-line-number="15">lambda &lt;-<span class="st"> </span><span class="dv">2</span>; mu &lt;-<span class="st"> </span><span class="fl">.01</span>; sigma &lt;-<span class="st"> </span><span class="kw">sqrt</span>(.<span class="dv">02</span>)</a>
+<a class="sourceLine" id="cb97-16" data-line-number="16">x0  &lt;-<span class="st"> </span><span class="fl">.05</span></a>
+<a class="sourceLine" id="cb97-17" data-line-number="17">tgrid &lt;-<span class="st"> </span><span class="kw">seq</span>(<span class="dv">0</span>, <span class="dv">10</span>, <span class="dt">by =</span> <span class="fl">.01</span>)</a>
+<a class="sourceLine" id="cb97-18" data-line-number="18"><span class="kw">plot</span>(<span class="kw">ts</span>(xx &lt;-<span class="st"> </span><span class="kw">rjd</span>(tgrid, x0, mu, sigma, lambda, meanlog, sdlog)))</a></code></pre></div>
+<p><img src="04-rng_files/figure-html/jd-1.png" width="672" /></p>
+</div>
+</div>
+<div id="exercises-3" class="section level2">
+<h2><span class="header-section-number">5.3</span> Exercises</h2>
+<div id="rejection-sampling" class="section level3">
+<h3><span class="header-section-number">5.3.1</span> Rejection sampling</h3>
+<p>Let <span class="math inline">\(f\)</span> and <span class="math inline">\(g\)</span> be two probability densities on <span class="math inline">\((0,\infty)\)</span>, such that
+<span class="math display">\[\begin{align*}
+  f(x) \propto \sqrt{4+x}\,x^{\theta-1} e^{-x}, \quad
+  g(x) \propto (2 x^{\theta-1} + x^{\theta-1/2}) e^{-x}, \quad x&gt;0.
+\end{align*}\]</span></p>
+<ul>
+<li>Find the value of the normalizing constant for <span class="math inline">\(g\)</span>, i.e.,
+the constant <span class="math inline">\(C\)</span> such that
+<span class="math display">\[\begin{align*}
+  C\int_0^\infty (2 x^{\theta-1} +  x^{\theta-1/2}) e^{-x} \mathrm{d}x=1.
+\end{align*}\]</span>
+Show that <span class="math inline">\(g\)</span> is a mixture of Gamma distributions. Identify the
+component distributions and their weights in the mixture.</li>
+<li>Design a procedure (pseudo-code) to sample from <span class="math inline">\(g\)</span>;
+implement it in an R function;
+draw a sample of size <span class="math inline">\(n = 10,000\)</span> using your function for at least one
+<span class="math inline">\(\theta\)</span> value;
+plot the kernel density estimation of <span class="math inline">\(g\)</span> from your sample and the true
+density in one figure.</li>
+<li>Design a procedure (pseudo-code) to use rejection sampling to sample from
+<span class="math inline">\(f\)</span> using <span class="math inline">\(g\)</span> as the instrumental distribution. Overlay the estimated
+kernel density of a random sample generated by your procedure and <span class="math inline">\(f\)</span>.</li>
+</ul>
+</div>
+<div id="mixture-proposal" class="section level3">
+<h3><span class="header-section-number">5.3.2</span> Mixture Proposal</h3>
+<p>Let <span class="math inline">\(f\)</span> be a probability density on <span class="math inline">\((0,1)\)</span> such that
+<span class="math display">\[\begin{align*}
+  f(x) \propto \frac{x^{\theta-1}}{1+x^2} + \sqrt{2+x^2}
+  (1-x)^{\beta-1}, \quad 0&lt;x&lt;1.
+\end{align*}\]</span></p>
+<ul>
+<li>Design a procedure (pseudo-code) to sample from <span class="math inline">\(f\)</span> using a mixture of
+Beta distributions as the instrumental density. That is, the instrumental
+density should have the form
+<span class="math display">\[\begin{align*}
+  \sum_{k=1}^m p_k g_k(x),
+\end{align*}\]</span>
+where <span class="math inline">\(p_k\)</span> are weights and <span class="math inline">\(g_k\)</span> are densities of Beta
+distributions. Specify your choice of the mixture. Implement your
+algorithm in an R function. Graph the estimated density of a random sample
+of <span class="math inline">\(n = 10,000\)</span> generated by your procedure and <span class="math inline">\(f\)</span> for at least one
+<span class="math inline">\((\theta, \beta)\)</span>.</li>
+<li>As shown in class, <span class="math inline">\(f(x)\)</span> can also be sampled using
+rejection sampling, by dealing with the two components
+<span class="math display">\[\begin{align*}
+  \frac{x^{\theta-1}}{1+x^2}, \quad \sqrt{2+x^2}
+  (1-x)^{\beta-1}
+\end{align*}\]</span>
+separately using individual Beta distributions. Design a procedure
+(pseudo-code) to do this; implement it with an R function; overlay the
+estimated density of a random sample of size <span class="math inline">\(n = 10,000\)</span> generated by
+your procedure and <span class="math inline">\(f\)</span>.</li>
+</ul>
+</div>
+<div id="orsteinuhlenbeck-process" class="section level3">
+<h3><span class="header-section-number">5.3.3</span> Orstein–Uhlenbeck Process</h3>
+<p>Consider the Ornstein-Uhlenbeck process
+<span class="math display">\[\begin{align*}
+  \mathrm{d}r(t) = \alpha(b - r(t))\,\mathrm{d}t + \sigma\,\mathrm{d}W(t),
+\end{align*}\]</span>
+where <span class="math inline">\(\alpha &gt; 0\)</span>, <span class="math inline">\(\sigma &gt; 0\)</span>, and <span class="math inline">\(b\)</span> are constants.</p>
+<ol style="list-style-type: decimal">
+<li><p>Show that for <span class="math inline">\(t&gt;0\)</span> and <span class="math inline">\(\Delta&gt;0\)</span>,
+<span class="math display">\[\begin{align*}
+ r(t+\Delta)
+ =
+ e^{-\alpha\Delta} r(t) + b(1-e^{-\alpha\Delta}) + 
+ \frac{\sigma}{\sqrt{2\alpha}} \sqrt{1-e^{-2\alpha\Delta}} Z,
+  \end{align*}\]</span>
+where <span class="math inline">\(Z\sim N(0,1)\)</span>.</p></li>
+<li><p>Use the transition distribution from the last part
+to implement a random walk construction for the
+process on time interval <span class="math inline">\([0,T]\)</span>. Your code should take <span class="math inline">\(\alpha\)</span>,
+<span class="math inline">\(\sigma\)</span>, <span class="math inline">\(b\)</span>, the initial value <span class="math inline">\(r(0)\)</span>, <span class="math inline">\(T\)</span>, and the time step
+<span class="math inline">\(\Delta\)</span> of the random walk as input arguments. For <span class="math inline">\(r(0)=1\)</span>,
+<span class="math inline">\(T=500\)</span>, and <span class="math inline">\(\Delta = 1/500\)</span>, plot a sample path for each
+combination of the following values,
+<span class="math display">\[\begin{align*}
+ \alpha \in \{0.1, 1, 5\},\ \sigma \in \{0.1, 0.2, 0.5\},\
+ b\in\{-5, 5\}.
+  \end{align*}\]</span>
+Comment on how the behavior of <span class="math inline">\(r(t)\)</span> depends on <span class="math inline">\(\alpha\)</span> and
+<span class="math inline">\(\sigma\)</span>.</p></li>
+<li><p>Use the Euler–Maruyama method (or the Euler method; see Wiki) to approximate
+a simulation from the process. Specifically, partition the time interval
+into a grid with subintervals of equal length <span class="math inline">\(\delta &gt; 0\)</span> for a small <span class="math inline">\(\delta\)</span>;
+approximate <span class="math inline">\(r(t + \delta)\)</span> by a normal random variable with mean
+<span class="math inline">\(r(t) + \alpha(b - r(t)) \delta\)</span> and standard deviation <span class="math inline">\(\sigma \delta\)</span>.
+Write a function to implement this approximation with <span class="math inline">\(\delta\)</span> as one of the
+arguments. For <span class="math inline">\(\delta \in \{1, 0.5, 0.1, 0.01\}\)</span>, generate a sample of size 1000
+for <span class="math inline">\(r(1)\)</span>. Plot the kernel densities against the true density.</p></li>
+</ol>
+</div>
+<div id="poisson-process" class="section level3">
+<h3><span class="header-section-number">5.3.4</span> Poisson Process</h3>
+<p>Let <span class="math inline">\(\lambda(t) = \sqrt{t} + e^{-t} \sin(2 \pi t)\)</span>
+be the intensity function of Poisson process over <span class="math inline">\(t \in [0, 5]\)</span>.
+Let <span class="math inline">\(N(t)\)</span> be the number of events by time <span class="math inline">\(t\)</span>.</p>
+<ol style="list-style-type: decimal">
+<li><p>What is the distribution of <span class="math inline">\(N(5)\)</span> and its parameter(s)?
+Use Mathematica or Maple for integration if needed.</p></li>
+<li><p>Write a function to simulate from this Poisson process.</p></li>
+<li><p>Generate events from this Poisson process 1,000 times. Pool all
+the event points together as a sample and plot their kernel density.
+Overlay <span class="math inline">\(\lambda(t) / \int_0^5 \lambda(s) \mathrm{d}s\)</span> with the kernel density.</p></li>
+</ol>
+
+</div>
+</div>
+</div>
+<h3>References</h3>
+<div id="refs" class="references">
+<div id="ref-Ahre:Diet:comp:1982">
+<p>Ahrens, Joachim H, and Ulrich Dieter. 1982. “Computer Generation of Poisson Deviates from Modified Normal Distributions.” <em>ACM Transactions on Mathematical Software (TOMS)</em> 8 (2). ACM: 163–79.</p>
+</div>
+<div id="ref-Cinl:intr:1975">
+<p>Cinlar, Erhan. 1975. <em>Introduction to Stochastic Processes</em>. Englewood Cliffs, NJ: Printice-Hall.</p>
+</div>
+<div id="ref-Lewi:Shed:simu:1979">
+<p>Lewis, Peter A, and Gerald S Shedler. 1979. “Simulation of Nonhomogeneous Poisson Processes by Thinning.” <em>Naval Research Logistics Quarterly</em> 26 (3). Wiley Online Library: 403–13.</p>
+</div>
+</div>
+            </section>
+
+          </div>
+        </div>
+      </div>
+<a href="em-algorithm.html" class="navigation navigation-prev " aria-label="Previous page"><i class="fa fa-angle-left"></i></a>
+<a href="markov-chain-monte-carlo.html" class="navigation navigation-next " aria-label="Next page"><i class="fa fa-angle-right"></i></a>
+    </div>
+  </div>
+<script src="libs/gitbook-2.6.7/js/app.min.js"></script>
+<script src="libs/gitbook-2.6.7/js/lunr.js"></script>
+<script src="libs/gitbook-2.6.7/js/clipboard.min.js"></script>
+<script src="libs/gitbook-2.6.7/js/plugin-search.js"></script>
+<script src="libs/gitbook-2.6.7/js/plugin-sharing.js"></script>
+<script src="libs/gitbook-2.6.7/js/plugin-fontsettings.js"></script>
+<script src="libs/gitbook-2.6.7/js/plugin-bookdown.js"></script>
+<script src="libs/gitbook-2.6.7/js/jquery.highlight.js"></script>
+<script src="libs/gitbook-2.6.7/js/plugin-clipboard.js"></script>
+<script>
+gitbook.require(["gitbook"], function(gitbook) {
+gitbook.start({
+"sharing": {
+"github": false,
+"facebook": true,
+"twitter": true,
+"linkedin": false,
+"weibo": false,
+"instapaper": false,
+"vk": false,
+"all": ["facebook", "twitter", "linkedin", "weibo", "instapaper"]
+},
+"fontsettings": {
+"theme": "white",
+"family": "sans",
+"size": 2
+},
+"edit": {
+"link": null,
+"text": null
+},
+"history": {
+"link": null,
+"text": null
+},
+"view": {
+"link": null,
+"text": null
+},
+"download": null,
+"toc": {
+"collapse": "subsection"
+}
+});
+});
+</script>
+
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+  (function () {
+    var script = document.createElement("script");
+    script.type = "text/javascript";
+    var src = "true";
+    if (src === "" || src === "true") src = "https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-MML-AM_CHTML";
+    if (location.protocol !== "file:")
+      if (/^https?:/.test(src))
+        src = src.replace(/^https?:/, '');
+    script.src = src;
+    document.getElementsByTagName("head")[0].appendChild(script);
+  })();
+</script>
+</body>
+
+</html>

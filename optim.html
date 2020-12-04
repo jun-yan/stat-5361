@@ -1,0 +1,1000 @@
+<!DOCTYPE html>
+<html lang="" xml:lang="">
+<head>
+
+  <meta charset="utf-8" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <title>Chapter 3 Optimization | STAT 5361: Statistical Computing, Fall 2019</title>
+  <meta name="description" content="This is a series of notes for the students of STAT 5361, Statisticl Computing, at UConn." />
+  <meta name="generator" content="bookdown 0.21.5 and GitBook 2.6.7" />
+
+  <meta property="og:title" content="Chapter 3 Optimization | STAT 5361: Statistical Computing, Fall 2019" />
+  <meta property="og:type" content="book" />
+  
+  
+  <meta property="og:description" content="This is a series of notes for the students of STAT 5361, Statisticl Computing, at UConn." />
+  
+
+  <meta name="twitter:card" content="summary" />
+  <meta name="twitter:title" content="Chapter 3 Optimization | STAT 5361: Statistical Computing, Fall 2019" />
+  
+  <meta name="twitter:description" content="This is a series of notes for the students of STAT 5361, Statisticl Computing, at UConn." />
+  
+
+<meta name="author" content="Jun Yan" />
+
+
+<meta name="date" content="2020-12-04" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black" />
+  
+  
+<link rel="prev" href="nla.html"/>
+<link rel="next" href="em-algorithm.html"/>
+<script src="libs/jquery-2.2.3/jquery.min.js"></script>
+<link href="libs/gitbook-2.6.7/css/style.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-table.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-bookdown.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-highlight.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-search.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-fontsettings.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-clipboard.css" rel="stylesheet" />
+
+
+
+
+
+
+
+
+
+<link href="libs/anchor-sections-1.0.1/anchor-sections.css" rel="stylesheet" />
+<script src="libs/anchor-sections-1.0.1/anchor-sections.js"></script>
+
+
+<style type="text/css">
+a.sourceLine { display: inline-block; line-height: 1.25; }
+a.sourceLine { pointer-events: none; color: inherit; text-decoration: inherit; }
+a.sourceLine:empty { height: 1.2em; position: absolute; }
+.sourceCode { overflow: visible; }
+code.sourceCode { white-space: pre; position: relative; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+code.sourceCode { white-space: pre-wrap; }
+a.sourceLine { text-indent: -1em; padding-left: 1em; }
+}
+pre.numberSource a.sourceLine
+  { position: relative; }
+pre.numberSource a.sourceLine:empty
+  { position: absolute; }
+pre.numberSource a.sourceLine::before
+  { content: attr(data-line-number);
+    position: absolute; left: -5em; text-align: right; vertical-align: baseline;
+    border: none; pointer-events: all;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+    color: #aaaaaa;
+  }
+pre.numberSource { margin-left: 3em; border-left: 1px solid #aaaaaa;  padding-left: 4px; }
+div.sourceCode
+  {  }
+@media screen {
+a.sourceLine::before { text-decoration: underline; }
+}
+code span.al { color: #ff0000; font-weight: bold; } /* Alert */
+code span.an { color: #60a0b0; font-weight: bold; font-style: italic; } /* Annotation */
+code span.at { color: #7d9029; } /* Attribute */
+code span.bn { color: #40a070; } /* BaseN */
+code span.bu { } /* BuiltIn */
+code span.cf { color: #007020; font-weight: bold; } /* ControlFlow */
+code span.ch { color: #4070a0; } /* Char */
+code span.cn { color: #880000; } /* Constant */
+code span.co { color: #60a0b0; font-style: italic; } /* Comment */
+code span.cv { color: #60a0b0; font-weight: bold; font-style: italic; } /* CommentVar */
+code span.do { color: #ba2121; font-style: italic; } /* Documentation */
+code span.dt { color: #902000; } /* DataType */
+code span.dv { color: #40a070; } /* DecVal */
+code span.er { color: #ff0000; font-weight: bold; } /* Error */
+code span.ex { } /* Extension */
+code span.fl { color: #40a070; } /* Float */
+code span.fu { color: #06287e; } /* Function */
+code span.im { } /* Import */
+code span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Information */
+code span.kw { color: #007020; font-weight: bold; } /* Keyword */
+code span.op { color: #666666; } /* Operator */
+code span.ot { color: #007020; } /* Other */
+code span.pp { color: #bc7a00; } /* Preprocessor */
+code span.sc { color: #4070a0; } /* SpecialChar */
+code span.ss { color: #bb6688; } /* SpecialString */
+code span.st { color: #4070a0; } /* String */
+code span.va { color: #19177c; } /* Variable */
+code span.vs { color: #4070a0; } /* VerbatimString */
+code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warning */
+</style>
+
+</head>
+
+<body>
+
+
+
+  <div class="book without-animation with-summary font-size-2 font-family-1" data-basepath=".">
+
+    <div class="book-summary">
+      <nav role="navigation">
+
+<ul class="summary">
+<li class="chapter" data-level="1" data-path="index.html"><a href="index.html"><i class="fa fa-check"></i><b>1</b> Prerequisites</a><ul>
+<li class="chapter" data-level="1.1" data-path="index.html"><a href="index.html#a-teaser-example-likelihood-estimation"><i class="fa fa-check"></i><b>1.1</b> A Teaser Example: Likelihood Estimation</a></li>
+<li class="chapter" data-level="1.2" data-path="index.html"><a href="index.html#computer-arithmetics"><i class="fa fa-check"></i><b>1.2</b> Computer Arithmetics</a><ul>
+<li class="chapter" data-level="1.2.1" data-path="index.html"><a href="index.html#integers"><i class="fa fa-check"></i><b>1.2.1</b> Integers</a></li>
+<li class="chapter" data-level="1.2.2" data-path="index.html"><a href="index.html#floating-point"><i class="fa fa-check"></i><b>1.2.2</b> Floating Point</a></li>
+<li class="chapter" data-level="1.2.3" data-path="index.html"><a href="index.html#error-analysis"><i class="fa fa-check"></i><b>1.2.3</b> Error Analysis</a></li>
+<li class="chapter" data-level="1.2.4" data-path="index.html"><a href="index.html#condition-number"><i class="fa fa-check"></i><b>1.2.4</b> Condition Number</a></li>
+</ul></li>
+<li class="chapter" data-level="1.3" data-path="index.html"><a href="index.html#exercises"><i class="fa fa-check"></i><b>1.3</b> Exercises</a></li>
+<li class="chapter" data-level="1.4" data-path="index.html"><a href="index.html#course-project"><i class="fa fa-check"></i><b>1.4</b> Course Project</a></li>
+</ul></li>
+<li class="chapter" data-level="2" data-path="nla.html"><a href="nla.html"><i class="fa fa-check"></i><b>2</b> Numerical Linear Algebra</a></li>
+<li class="chapter" data-level="3" data-path="optim.html"><a href="optim.html"><i class="fa fa-check"></i><b>3</b> Optimization</a><ul>
+<li class="chapter" data-level="3.1" data-path="optim.html"><a href="optim.html#univariate-optimizations"><i class="fa fa-check"></i><b>3.1</b> Univariate Optimizations</a><ul>
+<li class="chapter" data-level="3.1.1" data-path="optim.html"><a href="optim.html#bisection-method"><i class="fa fa-check"></i><b>3.1.1</b> Bisection Method</a></li>
+<li class="chapter" data-level="3.1.2" data-path="optim.html"><a href="optim.html#newtons-method"><i class="fa fa-check"></i><b>3.1.2</b> Newton’s Method</a></li>
+<li class="chapter" data-level="3.1.3" data-path="optim.html"><a href="optim.html#fixed-point-iteration"><i class="fa fa-check"></i><b>3.1.3</b> Fixed Point Iteration</a></li>
+</ul></li>
+<li class="chapter" data-level="3.2" data-path="optim.html"><a href="optim.html#multivariate-optimization"><i class="fa fa-check"></i><b>3.2</b> Multivariate Optimization</a><ul>
+<li class="chapter" data-level="3.2.1" data-path="optim.html"><a href="optim.html#newton-raphson-method"><i class="fa fa-check"></i><b>3.2.1</b> Newton-Raphson Method</a></li>
+<li class="chapter" data-level="3.2.2" data-path="optim.html"><a href="optim.html#variants-of-newton-raphson-method"><i class="fa fa-check"></i><b>3.2.2</b> Variants of Newton-Raphson Method</a></li>
+<li class="chapter" data-level="3.2.3" data-path="optim.html"><a href="optim.html#nelder-mead-simplex-algorithm"><i class="fa fa-check"></i><b>3.2.3</b> Nelder-Mead (Simplex) Algorithm</a></li>
+<li class="chapter" data-level="3.2.4" data-path="optim.html"><a href="optim.html#optimization-with-r"><i class="fa fa-check"></i><b>3.2.4</b> Optimization with R</a></li>
+</ul></li>
+<li class="chapter" data-level="3.3" data-path="optim.html"><a href="optim.html#mm-algorithm"><i class="fa fa-check"></i><b>3.3</b> MM Algorithm</a></li>
+<li class="chapter" data-level="3.4" data-path="optim.html"><a href="optim.html#an-example-lasso-with-coordinate-descent"><i class="fa fa-check"></i><b>3.4</b> An Example: LASSO with Coordinate Descent</a></li>
+<li class="chapter" data-level="3.5" data-path="optim.html"><a href="optim.html#exercises-1"><i class="fa fa-check"></i><b>3.5</b> Exercises</a><ul>
+<li class="chapter" data-level="3.5.1" data-path="optim.html"><a href="optim.html#cauchy-with-unknown-location."><i class="fa fa-check"></i><b>3.5.1</b> Cauchy with unknown location.</a></li>
+<li class="chapter" data-level="3.5.2" data-path="optim.html"><a href="optim.html#many-local-maxima"><i class="fa fa-check"></i><b>3.5.2</b> Many local maxima</a></li>
+<li class="chapter" data-level="3.5.3" data-path="optim.html"><a href="optim.html#modeling-beetle-data"><i class="fa fa-check"></i><b>3.5.3</b> Modeling beetle data</a></li>
+<li class="chapter" data-level="3.5.4" data-path="optim.html"><a href="optim.html#coordinate-descent-for-penalized-least-squares"><i class="fa fa-check"></i><b>3.5.4</b> Coordinate descent for penalized least squares</a></li>
+</ul></li>
+</ul></li>
+<li class="chapter" data-level="4" data-path="em-algorithm.html"><a href="em-algorithm.html"><i class="fa fa-check"></i><b>4</b> EM Algorithm</a><ul>
+<li class="chapter" data-level="4.1" data-path="em-algorithm.html"><a href="em-algorithm.html#introduction"><i class="fa fa-check"></i><b>4.1</b> Introduction</a></li>
+<li class="chapter" data-level="4.2" data-path="em-algorithm.html"><a href="em-algorithm.html#em-algorithm-1"><i class="fa fa-check"></i><b>4.2</b> EM Algorithm</a></li>
+<li class="chapter" data-level="4.3" data-path="em-algorithm.html"><a href="em-algorithm.html#example-clustering-by-em"><i class="fa fa-check"></i><b>4.3</b> Example: Clustering by EM</a></li>
+<li class="chapter" data-level="4.4" data-path="em-algorithm.html"><a href="em-algorithm.html#variants-of-em"><i class="fa fa-check"></i><b>4.4</b> Variants of EM</a><ul>
+<li class="chapter" data-level="4.4.1" data-path="em-algorithm.html"><a href="em-algorithm.html#mcem"><i class="fa fa-check"></i><b>4.4.1</b> MCEM</a></li>
+<li class="chapter" data-level="4.4.2" data-path="em-algorithm.html"><a href="em-algorithm.html#ecm"><i class="fa fa-check"></i><b>4.4.2</b> ECM</a></li>
+</ul></li>
+<li class="chapter" data-level="4.5" data-path="em-algorithm.html"><a href="em-algorithm.html#standard-errors"><i class="fa fa-check"></i><b>4.5</b> Standard Errors</a><ul>
+<li class="chapter" data-level="4.5.1" data-path="em-algorithm.html"><a href="em-algorithm.html#supplemental-em-sem"><i class="fa fa-check"></i><b>4.5.1</b> Supplemental EM (SEM)</a></li>
+<li class="chapter" data-level="4.5.2" data-path="em-algorithm.html"><a href="em-algorithm.html#direct-calculation-of-the-information-matrix"><i class="fa fa-check"></i><b>4.5.2</b> Direct Calculation of the Information Matrix</a></li>
+</ul></li>
+<li class="chapter" data-level="4.6" data-path="em-algorithm.html"><a href="em-algorithm.html#acceleration"><i class="fa fa-check"></i><b>4.6</b> Acceleration</a></li>
+<li class="chapter" data-level="4.7" data-path="em-algorithm.html"><a href="em-algorithm.html#example-hidden-markov-model"><i class="fa fa-check"></i><b>4.7</b> Example: Hidden Markov Model</a></li>
+<li class="chapter" data-level="4.8" data-path="em-algorithm.html"><a href="em-algorithm.html#exercises-2"><i class="fa fa-check"></i><b>4.8</b> Exercises</a><ul>
+<li class="chapter" data-level="4.8.1" data-path="em-algorithm.html"><a href="em-algorithm.html#finite-mixture-regression"><i class="fa fa-check"></i><b>4.8.1</b> Finite mixture regression</a></li>
+<li class="chapter" data-level="4.8.2" data-path="em-algorithm.html"><a href="em-algorithm.html#acceleration-of-em-algorithm"><i class="fa fa-check"></i><b>4.8.2</b> Acceleration of EM algorithm</a></li>
+<li class="chapter" data-level="4.8.3" data-path="em-algorithm.html"><a href="em-algorithm.html#a-poisson-hmm-for-earthquake-data"><i class="fa fa-check"></i><b>4.8.3</b> A Poisson-HMM for earthquake data</a></li>
+</ul></li>
+</ul></li>
+<li class="chapter" data-level="5" data-path="random-number-generation.html"><a href="random-number-generation.html"><i class="fa fa-check"></i><b>5</b> Random Number Generation</a><ul>
+<li class="chapter" data-level="5.1" data-path="random-number-generation.html"><a href="random-number-generation.html#univariate-random-number-generation"><i class="fa fa-check"></i><b>5.1</b> Univariate Random Number Generation</a><ul>
+<li class="chapter" data-level="5.1.1" data-path="random-number-generation.html"><a href="random-number-generation.html#inverse-cdf"><i class="fa fa-check"></i><b>5.1.1</b> Inverse CDF</a></li>
+<li class="chapter" data-level="5.1.2" data-path="random-number-generation.html"><a href="random-number-generation.html#rejection-method"><i class="fa fa-check"></i><b>5.1.2</b> Rejection Method</a></li>
+<li class="chapter" data-level="5.1.3" data-path="random-number-generation.html"><a href="random-number-generation.html#sampling-importance-resampling"><i class="fa fa-check"></i><b>5.1.3</b> Sampling Importance Resampling</a></li>
+</ul></li>
+<li class="chapter" data-level="5.2" data-path="random-number-generation.html"><a href="random-number-generation.html#stochastic-processes"><i class="fa fa-check"></i><b>5.2</b> Stochastic Processes</a><ul>
+<li class="chapter" data-level="5.2.1" data-path="random-number-generation.html"><a href="random-number-generation.html#gaussian-markov-process"><i class="fa fa-check"></i><b>5.2.1</b> Gaussian Markov Process</a></li>
+<li class="chapter" data-level="5.2.2" data-path="random-number-generation.html"><a href="random-number-generation.html#counting-process"><i class="fa fa-check"></i><b>5.2.2</b> Counting Process</a></li>
+<li class="chapter" data-level="5.2.3" data-path="random-number-generation.html"><a href="random-number-generation.html#inhomogeneous-poisson-process"><i class="fa fa-check"></i><b>5.2.3</b> Inhomogeneous Poisson Process</a></li>
+<li class="chapter" data-level="5.2.4" data-path="random-number-generation.html"><a href="random-number-generation.html#jump-diffusion-process"><i class="fa fa-check"></i><b>5.2.4</b> Jump-Diffusion Process</a></li>
+</ul></li>
+<li class="chapter" data-level="5.3" data-path="random-number-generation.html"><a href="random-number-generation.html#exercises-3"><i class="fa fa-check"></i><b>5.3</b> Exercises</a><ul>
+<li class="chapter" data-level="5.3.1" data-path="random-number-generation.html"><a href="random-number-generation.html#rejection-sampling"><i class="fa fa-check"></i><b>5.3.1</b> Rejection sampling</a></li>
+<li class="chapter" data-level="5.3.2" data-path="random-number-generation.html"><a href="random-number-generation.html#mixture-proposal"><i class="fa fa-check"></i><b>5.3.2</b> Mixture Proposal</a></li>
+<li class="chapter" data-level="5.3.3" data-path="random-number-generation.html"><a href="random-number-generation.html#orsteinuhlenbeck-process"><i class="fa fa-check"></i><b>5.3.3</b> Orstein–Uhlenbeck Process</a></li>
+<li class="chapter" data-level="5.3.4" data-path="random-number-generation.html"><a href="random-number-generation.html#poisson-process"><i class="fa fa-check"></i><b>5.3.4</b> Poisson Process</a></li>
+</ul></li>
+</ul></li>
+<li class="chapter" data-level="6" data-path="markov-chain-monte-carlo.html"><a href="markov-chain-monte-carlo.html"><i class="fa fa-check"></i><b>6</b> Markov Chain Monte Carlo</a><ul>
+<li class="chapter" data-level="6.1" data-path="markov-chain-monte-carlo.html"><a href="markov-chain-monte-carlo.html#eample-normal-mixture"><i class="fa fa-check"></i><b>6.1</b> Eample: Normal mixture</a></li>
+<li class="chapter" data-level="6.2" data-path="markov-chain-monte-carlo.html"><a href="markov-chain-monte-carlo.html#general-purpose-gibbs-sampling-with-the-arms"><i class="fa fa-check"></i><b>6.2</b> General-Purpose Gibbs Sampling with the ARMS</a></li>
+<li class="chapter" data-level="6.3" data-path="markov-chain-monte-carlo.html"><a href="markov-chain-monte-carlo.html#exercises-4"><i class="fa fa-check"></i><b>6.3</b> Exercises</a><ul>
+<li class="chapter" data-level="6.3.1" data-path="markov-chain-monte-carlo.html"><a href="markov-chain-monte-carlo.html#normal-mixture-revisited"><i class="fa fa-check"></i><b>6.3.1</b> Normal mixture revisited</a></li>
+</ul></li>
+</ul></li>
+<li class="chapter" data-level="7" data-path="mcinteg.html"><a href="mcinteg.html"><i class="fa fa-check"></i><b>7</b> Monte Carlo Integration</a><ul>
+<li class="chapter" data-level="7.1" data-path="mcinteg.html"><a href="mcinteg.html#introduction-1"><i class="fa fa-check"></i><b>7.1</b> Introduction</a></li>
+<li class="chapter" data-level="7.2" data-path="mcinteg.html"><a href="mcinteg.html#option-pricing"><i class="fa fa-check"></i><b>7.2</b> Option Pricing</a></li>
+<li class="chapter" data-level="7.3" data-path="mcinteg.html"><a href="mcinteg.html#particle-filtering-for-state-space-models"><i class="fa fa-check"></i><b>7.3</b> Particle Filtering for State Space Models</a></li>
+<li class="chapter" data-level="7.4" data-path="mcinteg.html"><a href="mcinteg.html#variance-reduction"><i class="fa fa-check"></i><b>7.4</b> Variance Reduction</a><ul>
+<li class="chapter" data-level="7.4.1" data-path="mcinteg.html"><a href="mcinteg.html#importance-sampling"><i class="fa fa-check"></i><b>7.4.1</b> Importance Sampling</a></li>
+<li class="chapter" data-level="7.4.2" data-path="mcinteg.html"><a href="mcinteg.html#control-variates"><i class="fa fa-check"></i><b>7.4.2</b> Control Variates</a></li>
+<li class="chapter" data-level="7.4.3" data-path="mcinteg.html"><a href="mcinteg.html#antithetic-variates"><i class="fa fa-check"></i><b>7.4.3</b> Antithetic Variates</a></li>
+<li class="chapter" data-level="7.4.4" data-path="mcinteg.html"><a href="mcinteg.html#stratified-sampling"><i class="fa fa-check"></i><b>7.4.4</b> Stratified Sampling</a></li>
+</ul></li>
+<li class="chapter" data-level="7.5" data-path="mcinteg.html"><a href="mcinteg.html#exercises-5"><i class="fa fa-check"></i><b>7.5</b> Exercises</a></li>
+</ul></li>
+<li class="chapter" data-level="8" data-path="boot.html"><a href="boot.html"><i class="fa fa-check"></i><b>8</b> Bootstrap</a><ul>
+<li class="chapter" data-level="8.1" data-path="boot.html"><a href="boot.html#principles-of-bootstrap"><i class="fa fa-check"></i><b>8.1</b> Principles of Bootstrap</a></li>
+<li class="chapter" data-level="8.2" data-path="boot.html"><a href="boot.html#parametric-bootstrap"><i class="fa fa-check"></i><b>8.2</b> Parametric Bootstrap</a><ul>
+<li class="chapter" data-level="8.2.1" data-path="boot.html"><a href="boot.html#goodness-of-fit-test"><i class="fa fa-check"></i><b>8.2.1</b> Goodness-of-Fit Test</a></li>
+</ul></li>
+<li class="chapter" data-level="8.3" data-path="boot.html"><a href="boot.html#block-bootstrap"><i class="fa fa-check"></i><b>8.3</b> Block bootstrap</a></li>
+<li class="chapter" data-level="8.4" data-path="boot.html"><a href="boot.html#semiparametric-bootstrap"><i class="fa fa-check"></i><b>8.4</b> Semiparametric bootstrap</a></li>
+<li class="chapter" data-level="8.5" data-path="boot.html"><a href="boot.html#multiplier-bootstrap"><i class="fa fa-check"></i><b>8.5</b> Multiplier bootstrap</a><ul>
+<li class="chapter" data-level="8.5.1" data-path="boot.html"><a href="boot.html#multiplier-central-limit-theorem"><i class="fa fa-check"></i><b>8.5.1</b> Multiplier central limit theorem</a></li>
+</ul></li>
+<li class="chapter" data-level="8.6" data-path="boot.html"><a href="boot.html#exercises-6"><i class="fa fa-check"></i><b>8.6</b> Exercises</a></li>
+</ul></li>
+<li class="appendix"><span><b>Appendix</b></span></li>
+<li class="chapter" data-level="A" data-path="git-setup.html"><a href="git-setup.html"><i class="fa fa-check"></i><b>A</b> Git Setup</a><ul>
+<li class="chapter" data-level="A.1" data-path="git-setup.html"><a href="git-setup.html#git-windows"><i class="fa fa-check"></i><b>A.1</b> Git for Windows installer</a></li>
+</ul></li>
+<li class="chapter" data-level="B" data-path="git-lesson.html"><a href="git-lesson.html"><i class="fa fa-check"></i><b>B</b> Git Lesson</a><ul>
+<li class="chapter" data-level="B.1" data-path="git-lesson.html"><a href="git-lesson.html#automated-version-control"><i class="fa fa-check"></i><b>B.1</b> Automated Version Control</a></li>
+<li class="chapter" data-level="B.2" data-path="git-lesson.html"><a href="git-lesson.html#setup"><i class="fa fa-check"></i><b>B.2</b> Setup</a></li>
+<li class="chapter" data-level="B.3" data-path="git-lesson.html"><a href="git-lesson.html#creating-a-repository"><i class="fa fa-check"></i><b>B.3</b> Creating a Repository</a></li>
+<li class="chapter" data-level="B.4" data-path="git-lesson.html"><a href="git-lesson.html#setting-up-git-authorship"><i class="fa fa-check"></i><b>B.4</b> Setting up Git Authorship</a></li>
+<li class="chapter" data-level="B.5" data-path="git-lesson.html"><a href="git-lesson.html#tracking-changes"><i class="fa fa-check"></i><b>B.5</b> Tracking Changes</a></li>
+<li class="chapter" data-level="B.6" data-path="git-lesson.html"><a href="git-lesson.html#undo-changes"><i class="fa fa-check"></i><b>B.6</b> Undo Changes</a></li>
+<li class="chapter" data-level="B.7" data-path="git-lesson.html"><a href="git-lesson.html#explore-history"><i class="fa fa-check"></i><b>B.7</b> Explore History</a></li>
+<li class="chapter" data-level="B.8" data-path="git-lesson.html"><a href="git-lesson.html#next-steps"><i class="fa fa-check"></i><b>B.8</b> Next Steps</a></li>
+</ul></li>
+<li class="chapter" data-level="" data-path="references.html"><a href="references.html"><i class="fa fa-check"></i>References</a></li>
+</ul>
+
+      </nav>
+    </div>
+
+    <div class="book-body">
+      <div class="body-inner">
+        <div class="book-header" role="navigation">
+          <h1>
+            <i class="fa fa-circle-o-notch fa-spin"></i><a href="./">STAT 5361: Statistical Computing, Fall 2019</a>
+          </h1>
+        </div>
+
+        <div class="page-wrapper" tabindex="-1" role="main">
+          <div class="page-inner">
+
+            <section class="normal" id="section-">
+<div id="optim" class="section level1">
+<h1><span class="header-section-number">Chapter 3</span> Optimization</h1>
+<p>Recall the MLE example in Chapter <a href="index.html#prelim">1</a>. Consider a random sample <span class="math inline">\(X_1, \ldots, X_n\)</span> of size <span class="math inline">\(n\)</span> coming from a univariate distribution with density function <span class="math inline">\(f(x | \theta)\)</span>, where <span class="math inline">\(\theta\)</span> is a parameter vector. The MLE <span class="math inline">\(\hat\theta_n\)</span> of the unknown parameter <span class="math inline">\(\theta\)</span> is obtained by maximizing the loglikelihood function
+<span class="math display">\[
+l(\theta) = \sum_{i=1}^n \log f(X_i | \theta)
+\]</span>
+with respect to <span class="math inline">\(\theta\)</span>.
+Typically, <span class="math inline">\(\hat\theta\)</span> is obtained by solving the score equation
+<span class="math display">\[
+l&#39;(\theta) = \sum_{i=1}^n \frac{\partial}{\partial \theta}
+\log f(X_i; \theta) = 0,
+\]</span>
+i.e., the derivative of the loglikelihood function equated to zero.
+From mathematical statistics, it is known that, under certain regularity
+conditions,
+<span class="math display">\[\begin{align*}
+\mathbb{E}\frac{\partial}{\partial \theta} \log f(X; \theta) &amp;= 0,\\
+\mathbb{E}\frac{\partial}{\partial \theta} \log f(X; \theta)
+\left[\frac{\partial}{\partial \theta} \log f(X; \theta) \right]^{\top} 
+&amp;= - \mathbb{E}
+\frac{\partial^2}{\partial \theta \partial \theta^{\top}} \log f(X; \theta).
+\end{align*}\]</span>
+The expectation in the second equation is known as the Fisher information
+<span class="math inline">\(I(\theta)\)</span>, a nonnegative definite matrix. Large sample results state that,
+as <span class="math inline">\(n \to \infty\)</span>, <span class="math inline">\(\hat\theta_n\)</span> is consistent for <span class="math inline">\(\theta\)</span> and
+<span class="math inline">\(\sqrt{n} (\hat\theta_n - \theta)\)</span> converges in distribution to
+<span class="math inline">\(N(0, I^{-1}(\theta))\)</span>. The asymptotic variance of <span class="math inline">\(\hat\theta\)</span> can be estimated by inverting the observed Fisher information matrix <span class="math inline">\(l&#39;&#39;(\hat\theta_n)\)</span>.</p>
+<p>More generally in Statistics, M-estimators are a broad class of extremum estimators obtained by maximizing an data dependent objective function. Both non-linear least squares and maximum likelihood estimation are special cases of M-estimators. The definition of M-estimators was motivated by robust statistics, which contributed new types of M-estimators. When the objective function is smooth, the M-estimator can be obtained by solving the corresponding “score” equation. Clearly, optimization or root-finding are very important in Statistics.</p>
+<div id="univariate-optimizations" class="section level2">
+<h2><span class="header-section-number">3.1</span> Univariate Optimizations</h2>
+<p>Optimization and root finding are closely related. Consider maximization of a smooth and differentiable function <span class="math inline">\(g(x)\)</span>. A necessary condition at the maximum is <span class="math inline">\(f(x) = g&#39;(x) = 0\)</span>. Univariate illustrations help to gain insights about the ideas.</p>
+<div id="bisection-method" class="section level3">
+<h3><span class="header-section-number">3.1.1</span> Bisection Method</h3>
+<p>The bisection method repeatedly bisects an interval and then selects a subinterval in which a root must lie for further processing. It is a very simple and robust method, but relatively slow.</p>
+<p>The method is applicable for solving the equation <span class="math inline">\(f(x) = 0\)</span> for the real variable <span class="math inline">\(x\)</span>, where <span class="math inline">\(f\)</span> is a continuous function defined on an interval <span class="math inline">\([a, b]\)</span> and <span class="math inline">\(f(a)\)</span> and <span class="math inline">\(f(b)\)</span> have opposite signs. This method is illustrated with an animation using the package <strong>animation</strong> <span class="citation">(Xie <a href="#ref-R-animation">2018</a>)</span>.</p>
+<div class="sourceCode" id="cb66"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb66-1" data-line-number="1">animation<span class="op">::</span><span class="kw">bisection.method</span>()</a></code></pre></div>
+</div>
+<div id="newtons-method" class="section level3">
+<h3><span class="header-section-number">3.1.2</span> Newton’s Method</h3>
+<p>A fast approach to find roots of a differentiable function <span class="math inline">\(f(x)\)</span>. The methods starts from some initial value <span class="math inline">\(x_0\)</span>, and for <span class="math inline">\(t = 0, 1, \ldots\)</span>, compute
+<span class="math display">\[\begin{align*}
+  x_{t+1} = x_t  - \frac{f(x_t)}{f&#39;(x_t)}
+\end{align*}\]</span>
+until <span class="math inline">\(x_t\)</span> converges. The method is based on a linear expansion of <span class="math inline">\(f(x)\)</span>. The method is also known as Newton–Raphson iteration. It needs an initial value <span class="math inline">\(x_0\)</span>. If <span class="math inline">\(f(x) = 0\)</span> has multiple solutions, the end result depends on <span class="math inline">\(x_0\)</span>.</p>
+<p>Applied to optimization of <span class="math inline">\(g\)</span>, this method requires the Hessian <span class="math inline">\(g&#39;&#39;\)</span>,
+which can be difficult to obtain, especially for multivariate functions.
+Many variants of Newton’s method avoid the computation of the Hessian.</p>
+<p>For example, to obtain MLE with likelihood <span class="math inline">\(l(\theta)\)</span>, Fisher scoring replaces <span class="math inline">\(-l&#39;&#39;(\theta_t)\)</span> with <span class="math inline">\(I(\theta_t)\)</span>. Generally, one uses Fisher scoring in the beginning to make rapid improvements, and Newton’s method for refinement near the end.</p>
+<p>The secant method approximates <span class="math inline">\(f&#39;(x_t)\)</span> by
+<span class="math display">\[\begin{align*}
+  \frac{f(x_t) - f(x_{t-1})}{x_t - x_{t-1}}.
+\end{align*}\]</span>
+Given initial values <span class="math inline">\(x_0\)</span> and <span class="math inline">\(x_1\)</span>, the iteration is
+<span class="math display">\[\begin{align*}
+  x_{t+1} = x_t - \frac{f(x_t)(x_t- x_{t-1})}{f(x_t) - f(x_{t-1})}.
+\end{align*}\]</span></p>
+</div>
+<div id="fixed-point-iteration" class="section level3">
+<h3><span class="header-section-number">3.1.3</span> Fixed Point Iteration</h3>
+<p>A fixed point of a function is a point whose evaluation by that
+function equals to itself, i.e., <span class="math inline">\(x = G(x)\)</span>.</p>
+<p>Fixed point iteration: the natural way of hunting for a fixed point
+is to use <span class="math inline">\(x_{t+1} = G(x_t)\)</span>.</p>
+
+<div class="definition">
+<span id="def:contractive" class="definition"><strong>Definition 3.1  </strong></span>A function <span class="math inline">\(G\)</span> is contractive on <span class="math inline">\([a,b]\)</span> if
+<span class="math display">\[\begin{align*}
+  (1).\,\, &amp; G(x)\in [a,b] \mbox{ whenever } x\in [a,b],\\
+  (2).\,\, &amp; |G(x_1) - G(x_2)| \leq \lambda |x_1-x_2| \mbox{ for all } x_1,x_2\in [a,b] \mbox{ and some } \lambda\in [0,1).
+\end{align*}\]</span>
+</div>
+
+
+<div class="theorem">
+<span id="thm:fixedPoint" class="theorem"><strong>Theorem 3.1  </strong></span>If <span class="math inline">\(G\)</span> is contractive on <span class="math inline">\([a,b]\)</span>, then there is a unique fixed point <span class="math inline">\(x^*\in [a,b]\)</span>, and the fixed point iteration convergence to it when starting inside the interval.
+</div>
+
+<p>Convergence: <span class="math inline">\(|x_{t+1}-x_{t}|=|G(x_t)-G(x_{t-1})|\leq \lambda |x_t - x_{t-1}|\leq \lambda^{t}|x_1-x_0| \rightarrow 0\)</span>, as <span class="math inline">\(t\rightarrow \infty\)</span>. It follows that <span class="math inline">\(\{x_t\}\)</span> convergent to a limit <span class="math inline">\(x^*\)</span>.</p>
+<p>Application in root finding: for solving <span class="math inline">\(f(x)=0\)</span>, we can simply let <span class="math inline">\(G(x) = x + \alpha f(x)\)</span>, where <span class="math inline">\(\alpha \neq 0\)</span> is a constant.</p>
+<p>Required Lipschitz condition: <span class="math inline">\(|x - y + \alpha [f(x) - f(y)]| \le \lambda|x-y|\)</span>, for some <span class="math inline">\(\lambda \in [0,1)\)</span> and for all <span class="math inline">\(x,y\in [a,b]\)</span>. This holds if <span class="math inline">\(|G&#39;(x)|\leq \lambda\)</span> for some <span class="math inline">\(\lambda \in [0,1)\)</span> and for all <span class="math inline">\(x\in [a,b]\)</span>, i.e., <span class="math inline">\(|1+\alpha f&#39;(x)|\leq\lambda\)</span>. (use mean value theorem.)</p>
+<p>Newton’s methods: <span class="math inline">\(G(x) = x - f(x)/f&#39;(x)\)</span>. So it is as if <span class="math inline">\(\alpha_t\)</span> is chosen adaptively as <span class="math inline">\(\alpha_t=-1/f&#39;(x_t)\)</span>. This leads to a faster convergence order (quadratic).</p>
+</div>
+</div>
+<div id="multivariate-optimization" class="section level2">
+<h2><span class="header-section-number">3.2</span> Multivariate Optimization</h2>
+<p>Consider maximizing a real-valued objective function <span class="math inline">\(g(x)\)</span> of <span class="math inline">\(p\)</span>-dimensional vector <span class="math inline">\(x\)</span>.</p>
+<div id="newton-raphson-method" class="section level3">
+<h3><span class="header-section-number">3.2.1</span> Newton-Raphson Method</h3>
+<p>The Newton-Raphson method is a generalization of univariate Newton’s root finding algorithm to the multivariate case.</p>
+</div>
+<div id="variants-of-newton-raphson-method" class="section level3">
+<h3><span class="header-section-number">3.2.2</span> Variants of Newton-Raphson Method</h3>
+<p>The motivation is to avoid the calculation of the Hessian matrix in updatings with the form
+<span class="math display">\[
+x^{(t + 1)} = x^{(t)} - (M^{(t)})^{-1} g&#39;(x),
+\]</span>
+where <span class="math inline">\(g&#39;\)</span> is the gradient of <span class="math inline">\(g\)</span> and <span class="math inline">\(M\)</span> is a substitute of <span class="math inline">\(g&#39;&#39;(x)\)</span>.</p>
+<div id="fisher-scoring" class="section level4">
+<h4><span class="header-section-number">3.2.2.1</span> Fisher Scoring</h4>
+<p>Choose <span class="math inline">\(M\)</span> as the negative Fisher information matrix. For location-families, it can be shown that the information matrix is free of the location parameter.</p>
+</div>
+<div id="steepest-ascent" class="section level4">
+<h4><span class="header-section-number">3.2.2.2</span> Steepest Ascent</h4>
+<p>Choose <span class="math inline">\(M = \alpha^{(t)} I_p\)</span> for <span class="math inline">\(\alpha^{(t)} &gt; 0\)</span> so the updating in the direction of he steepest ascent.</p>
+</div>
+<div id="discrete-newton" class="section level4">
+<h4><span class="header-section-number">3.2.2.3</span> Discrete Newton</h4>
+<p>Approximate the Hessian matrix with finite-difference quotients.</p>
+</div>
+<div id="fixed-point-iteration-1" class="section level4">
+<h4><span class="header-section-number">3.2.2.4</span> Fixed-Point Iteration</h4>
+<p>Choose <span class="math inline">\(M^{(t)} = M\)</span> for all <span class="math inline">\(t\)</span>. An example is <span class="math inline">\(M = g&#39;&#39;(x_0)\)</span>.</p>
+</div>
+<div id="quasi-newton" class="section level4">
+<h4><span class="header-section-number">3.2.2.5</span> Quasi-Newton</h4>
+<p>Quasi-Newton methods avoids Hessian matrix by constructing approximations of
+the inverse Hessian. The inverse Hessian is built up from gradient information obtained at various points.</p>
+<p>Rank-two update. The celebrated BFGS is a rank-two update method. Box constraints can be allowed with L-BFGS-B.</p>
+</div>
+<div id="coordinate-descent" class="section level4">
+<h4><span class="header-section-number">3.2.2.6</span> Coordinate Descent</h4>
+<p>Coordinate descent algorithms optimize a objective function with
+respect to a single parameter or a block of parameters at a time,
+iteratively cycling through all parameters until convergence is reached.
+How to determine the blocks of parameters is problem-specific.
+The method is ideal for problems that have a simple closed form
+solution in a single/lower dimension but lack one in higher dimensions.
+% The method is also called backfitting or Gauss–Seidel iteration.
+It is very commonly used in fitting penalized regression.
+The concept also appears in many well-known estimation problems.
+The simple technique can be surprisingly efficient and scalable.</p>
+<p>Consider objective function
+<span class="math display">\[
+f(\beta) = g(\beta) + \sum_{j=1}^{p}h_j(\beta_j),
+\]</span>
+where <span class="math inline">\(g\)</span> is convex and differentiable and each <span class="math inline">\(h_i\)</span> is convex.
+The second part is usually non-smooth, but is separable.
+Coordinate descent start with some initial guess <span class="math inline">\(\beta^{(0)}\)</span>, repeat
+the following for <span class="math inline">\(k=1,2,3...\)</span>:
+<span class="math display">\[\begin{align*}
+  \beta_1^{(k)} &amp; = \arg\min_{\beta_1}f(\beta_1,\beta_2^{(k-1)},\ldots,\beta_p^{(k-1)}),\\
+  \beta_2^{(k)} &amp; = \arg\min_{\beta_2}f(\beta_1^{(k)},\beta_2, \beta_3^{(k-1)},\ldots,\beta_p^{(k-1)}),\\
+  &amp; \ldots\\
+  \beta_p^{(k)} &amp; = \arg\min_{\beta_p}f(\beta_1^{(k)},\ldots,\beta_{p-1}^{(k)},\beta_p).
+\end{align*}\]</span>
+It can be shown that if we are at a point <span class="math inline">\(\beta\)</span> such that <span class="math inline">\(f(\beta)\)</span>
+is minimized along each coordinate axis, we have found a global minimizer.</p>
+<p>Remarks:</p>
+<ul>
+<li>Order of cycle through coordinates is arbitrary.</li>
+<li>Can replace individual coordinates with blocks of coordinates.</li>
+<li>Same idea has been applied to many non-convex problems.</li>
+<li>As long as the objective function is monotone decreasing, the convergence is guaranteed.</li>
+</ul>
+</div>
+<div id="conjugate-gradient" class="section level4">
+<h4><span class="header-section-number">3.2.2.7</span> Conjugate Gradient</h4>
+</div>
+<div id="gauss-newton" class="section level4">
+<h4><span class="header-section-number">3.2.2.8</span> Gauss-Newton</h4>
+<p>Non-linear least squares.</p>
+</div>
+</div>
+<div id="nelder-mead-simplex-algorithm" class="section level3">
+<h3><span class="header-section-number">3.2.3</span> Nelder-Mead (Simplex) Algorithm</h3>
+<p>Not even the gradient is needed.
+Possible moves are: reflection; expansion; outer contraction; inner contraction; shrinkage.</p>
+<p>Consider minimizing this simple function.</p>
+<div class="sourceCode" id="cb67"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb67-1" data-line-number="1">f1 &lt;-<span class="st"> </span><span class="cf">function</span>(x) {</a>
+<a class="sourceLine" id="cb67-2" data-line-number="2">  x1 &lt;-<span class="st"> </span>x[<span class="dv">1</span>]</a>
+<a class="sourceLine" id="cb67-3" data-line-number="3">  x2 &lt;-<span class="st"> </span>x[<span class="dv">2</span>]</a>
+<a class="sourceLine" id="cb67-4" data-line-number="4">  x1<span class="op">^</span><span class="dv">2</span> <span class="op">+</span><span class="st"> </span><span class="dv">3</span><span class="op">*</span>x2<span class="op">^</span><span class="dv">2</span>  </a>
+<a class="sourceLine" id="cb67-5" data-line-number="5">}</a></code></pre></div>
+<p>Apparently the minimizer is <span class="math inline">\((0, 0)\)</span>. Let’s track all the points at which the function is evaluated in the Nelder-Mead algorithm.</p>
+<div class="sourceCode" id="cb68"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb68-1" data-line-number="1"><span class="kw">trace</span>(f1, <span class="dt">exit =</span> <span class="kw">quote</span>(<span class="kw">print</span>(<span class="kw">c</span>(<span class="kw">returnValue</span>(), x))))</a></code></pre></div>
+<pre><code>## [1] &quot;f1&quot;</code></pre>
+<div class="sourceCode" id="cb70"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb70-1" data-line-number="1"><span class="kw">optim</span>(<span class="kw">c</span>(<span class="dv">1</span>, <span class="dv">1</span>), f1, <span class="dt">control =</span> <span class="kw">list</span>(<span class="dt">trace =</span> <span class="ot">TRUE</span>))</a></code></pre></div>
+<pre><code>##   Nelder-Mead direct search function minimizer
+## Tracing fn(par, ...) on exit 
+## [1] 4 1 1
+## function value for initial parameters = 4.000000
+##   Scaled convergence tolerance is 5.96046e-08
+## Stepsize computed as 0.100000
+## Tracing fn(par, ...) on exit 
+## [1] 4.21 1.10 1.00
+## Tracing fn(par, ...) on exit 
+## [1] 4.63 1.00 1.10
+## BUILD              3 4.630000 4.000000
+## Tracing fn(par, ...) on exit 
+## [1] 3.64 1.10 0.90
+## Tracing fn(par, ...) on exit 
+## [1] 3.2425 1.1500 0.8000
+## EXTENSION          5 4.210000 3.242500
+## Tracing fn(par, ...) on exit 
+## [1] 3.0225 1.0500 0.8000
+## Tracing fn(par, ...) on exit 
+## [1] 2.520625 1.025000 0.700000
+## EXTENSION          7 4.000000 2.520625
+## Tracing fn(par, ...) on exit 
+## [1] 2.130625 1.175000 0.500000
+## Tracing fn(par, ...) on exit 
+## [1] 1.781406 1.262500 0.250000
+## EXTENSION          9 3.242500 1.781406
+## Tracing fn(par, ...) on exit 
+## [1] 1.361406 1.137500 0.150000
+## Tracing fn(par, ...) on exit 
+## [1]  1.371602  1.131250 -0.175000
+## REFLECTION        11 2.520625 1.361406
+## Tracing fn(par, ...) on exit 
+## [1]  2.160625  1.375000 -0.300000
+## Tracing fn(par, ...) on exit 
+## [1]  1.665156  1.287500 -0.050000
+## LO-REDUCTION      13 1.781406 1.361406
+## Tracing fn(par, ...) on exit 
+## [1]  1.418906  1.162500 -0.150000
+## Tracing fn(par, ...) on exit 
+## [1]  1.417656  1.187500 -0.050000
+## LO-REDUCTION      15 1.665156 1.361406
+## Tracing fn(par, ...) on exit 
+## [1] 1.143906 1.037500 0.150000
+## Tracing fn(par, ...) on exit 
+## [1] 1.020156 0.912500 0.250000
+## EXTENSION         17 1.417656 1.020156
+## Tracing fn(par, ...) on exit 
+## [1] 1.351406 0.862500 0.450000
+## Tracing fn(par, ...) on exit 
+## [1] 1.207539 0.943750 0.325000
+## LO-REDUCTION      19 1.361406 1.020156
+## Tracing fn(par, ...) on exit 
+## [1] 1.058477 0.718750 0.425000
+## Tracing fn(par, ...) on exit 
+## [1] 1.0587915 0.8234375 0.3562500
+## LO-REDUCTION      21 1.207539 1.020156
+## Tracing fn(par, ...) on exit 
+## [1] 0.8401563 0.6875000 0.3500000
+## Tracing fn(par, ...) on exit 
+## [1] 0.7071191 0.5593750 0.3625000
+## EXTENSION         23 1.058477 0.707119
+## Tracing fn(par, ...) on exit 
+## [1] 0.672666 0.753125 0.187500
+## Tracing fn(par, ...) on exit 
+## [1] 0.6075610 0.7703125 0.0687500
+## EXTENSION         25 1.020156 0.607561
+## Tracing fn(par, ...) on exit 
+## [1] 0.2726001 0.4171875 0.1812500
+## Tracing fn(par, ...) on exit 
+## [1] 0.09345764 0.16953125 0.14687500
+## EXTENSION         27 0.707119 0.093458
+## Tracing fn(par, ...) on exit 
+## [1]  0.2094733  0.3804688 -0.1468750
+## Tracing fn(par, ...) on exit 
+## [1]  0.18193546  0.42519531 -0.01953125
+## LO-REDUCTION      29 0.607561 0.093458
+## Tracing fn(par, ...) on exit 
+## [1]  0.04113010 -0.17558594  0.05859375
+## Tracing fn(par, ...) on exit 
+## [1]  0.42918962 -0.64853516  0.05351562
+## REFLECTION        31 0.181935 0.041130
+## Tracing fn(par, ...) on exit 
+## [1]  0.3378516 -0.4312500  0.2250000
+## Tracing fn(par, ...) on exit 
+## [1] 0.04974852 0.21108398 0.04160156
+## HI-REDUCTION      33 0.093458 0.041130
+## Tracing fn(par, ...) on exit 
+## [1]  0.02450188 -0.13403320 -0.04667969
+## Tracing fn(par, ...) on exit 
+## [1]  0.1434302 -0.2858154 -0.1434570
+## REFLECTION        35 0.049749 0.024502
+## Tracing fn(par, ...) on exit 
+## [1]  0.2737758 -0.5207031 -0.0296875
+## Tracing fn(par, ...) on exit 
+## [1] 0.002488067 0.028137207 0.023779297
+## HI-REDUCTION      37 0.041130 0.002488
+## Tracing fn(par, ...) on exit 
+## [1]  0.02478057  0.06968994 -0.08149414
+## Tracing fn(par, ...) on exit 
+## [1]  0.006549060  0.008370972 -0.046472168
+## LO-REDUCTION      39 0.024502 0.002488
+## Tracing fn(par, ...) on exit 
+## [1] 0.03081047 0.17054138 0.02398682
+## Tracing fn(par, ...) on exit 
+## [1]  0.005876474 -0.057889557 -0.029013062
+## HI-REDUCTION      41 0.006549 0.002488
+## Tracing fn(par, ...) on exit 
+## [1]  0.006555205 -0.038123322  0.041238403
+## Tracing fn(par, ...) on exit 
+## [1]  0.001817881 -0.003252602 -0.024544525
+## HI-REDUCTION      43 0.005876 0.001818
+## Tracing fn(par, ...) on exit 
+## [1] 0.009245382 0.082774162 0.028247833
+## Tracing fn(par, ...) on exit 
+## [1]  0.001164443 -0.022723627 -0.014697838
+## HI-REDUCTION      45 0.002488 0.001164
+## Tracing fn(par, ...) on exit 
+## [1]  0.01484345 -0.05411344 -0.06302166
+## Tracing fn(par, ...) on exit 
+## [1] 7.034119e-05 7.574546e-03 2.079058e-03
+## HI-REDUCTION      47 0.001818 0.000070
+## Tracing fn(par, ...) on exit 
+## [1]  0.0005681964 -0.0118964791  0.0119257450
+## Tracing fn(par, ...) on exit 
+## [1]  0.0001184377 -0.0097355098  0.0028081775
+## LO-REDUCTION      49 0.001164 0.000070
+## Tracing fn(par, ...) on exit 
+## [1] 0.001573548 0.020562664 0.019585073
+## Tracing fn(par, ...) on exit 
+## [1]  0.0002542833 -0.0119020544 -0.0061271101
+## HI-REDUCTION      51 0.000254 0.000070
+## Tracing fn(par, ...) on exit 
+## [1] 0.0004588363 0.0097410910 0.0110143453
+## Tracing fn(par, ...) on exit 
+## [1]  5.231265e-05 -6.491268e-03 -1.841746e-03
+## HI-REDUCTION      53 0.000118 0.000052
+## Tracing fn(par, ...) on exit 
+## [1]  0.0001368742  0.0108187880 -0.0025708660
+## Tracing fn(par, ...) on exit 
+## [1]  2.755658e-05 -4.596935e-03  1.463417e-03
+## HI-REDUCTION      55 0.000070 0.000028
+## Tracing fn(par, ...) on exit 
+## [1]  0.0003664145 -0.0186627497 -0.0024573874
+## Tracing fn(par, ...) on exit 
+## [1] 3.709448e-06 1.015222e-03 9.449464e-04
+## HI-REDUCTION      57 0.000052 0.000004
+## Tracing fn(par, ...) on exit 
+## [1] 0.0000626558 0.0029095551 0.0042501093
+## Tracing fn(par, ...) on exit 
+## [1]  1.745326e-05 -4.141062e-03 -3.187824e-04
+## HI-REDUCTION      59 0.000028 0.000004
+## Tracing fn(par, ...) on exit 
+## [1]  4.267097e-06  1.471095e-03 -8.372525e-04
+## Tracing fn(par, ...) on exit 
+## [1]  2.081740e-07 -4.591230e-05 -2.620853e-04
+## LO-REDUCTION      61 0.000017 0.000000
+## Tracing fn(par, ...) on exit 
+## [1] 2.912577e-05 5.110372e-03 1.001644e-03
+## Tracing fn(par, ...) on exit 
+## [1]  3.342713e-06 -1.828204e-03  1.132410e-05
+## HI-REDUCTION      63 0.000004 0.000000
+## Tracing fn(par, ...) on exit 
+## [1]  1.263743e-05 -2.889338e-03 -1.195708e-03
+## Tracing fn(par, ...) on exit 
+## [1] 5.052935e-07 3.908218e-05 4.097829e-04
+## HI-REDUCTION      65 0.000003 0.000000
+## Tracing fn(par, ...) on exit 
+## [1] 3.373195e-06 1.821374e-03 1.363736e-04
+## Tracing fn(par, ...) on exit 
+## [1]  8.441476e-07 -9.158093e-04  4.258647e-05
+## HI-REDUCTION      67 0.000001 0.000000
+## Tracing fn(par, ...) on exit 
+## [1] 8.593883e-07 9.089792e-04 1.051112e-04
+## Tracing fn(par, ...) on exit 
+## [1]  2.214113e-07 -4.596122e-04  5.821765e-05
+## HI-REDUCTION      69 0.000001 0.000000
+## Tracing fn(par, ...) on exit 
+## [1]  1.426297e-06 -5.446067e-04 -6.136505e-04
+## Tracing fn(par, ...) on exit 
+## [1]  8.249310e-08 -1.068400e-04  1.539246e-04
+## HI-REDUCTION      71 0.000000 0.000000
+## Tracing fn(par, ...) on exit 
+## [1]  1.772082e-07  3.068599e-04 -1.663784e-04
+## Tracing fn(par, ...) on exit 
+## [1]  4.973221e-08  1.152418e-04 -1.102294e-04
+## LO-REDUCTION      73 0.000000 0.000000
+## Tracing fn(par, ...) on exit 
+## [1] 2.834551e-07 5.431411e-05 3.057805e-04
+## Tracing fn(par, ...) on exit 
+## [1]  4.372056e-08 -2.085570e-05 -1.201188e-04
+## Exiting from Nelder Mead minimizer
+##     75 function evaluations used</code></pre>
+<pre><code>## $par
+## [1] -0.0000208557 -0.0001201188
+## 
+## $value
+## [1] 4.372056e-08
+## 
+## $counts
+## function gradient 
+##       75       NA 
+## 
+## $convergence
+## [1] 0
+## 
+## $message
+## NULL</code></pre>
+<div class="sourceCode" id="cb73"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb73-1" data-line-number="1"><span class="kw">untrace</span>(f1)</a></code></pre></div>
+<p>It is possible that the Nelder–Mead algorithm converges to points
+that are not local optima. See Example 2.9 in the GH book.</p>
+<p>Questions:
+1. How is the initial simplex constructed?
+2. How to set the stopping criteria?</p>
+<p>Advanced methods are available in R package .</p>
+</div>
+<div id="optimization-with-r" class="section level3">
+<h3><span class="header-section-number">3.2.4</span> Optimization with R</h3>
+<p>See <a href="https://www.ibm.com/developerworks/library/ba-optimR-john-nash/index.html">conversation with John Nash about r optim and r optimx</a>.</p>
+</div>
+</div>
+<div id="mm-algorithm" class="section level2">
+<h2><span class="header-section-number">3.3</span> MM Algorithm</h2>
+<p>The MM algorithm may be viewed as philosophy for optimization algorithms.
+The EM algorithm is a special case.
+An MM algorithm operates by creating a surrogate function
+that majorizes (minorizes) the objective function.
+When the surrogate function is optimized,
+the objective function is driven downhill (uphill).
+The MM can stand for majorization-minimization or
+minorization-maximization.
+The algorithm may avoid matrix inversion, linearize an optimization problem,
+conveniently deal with equality and inequality constraints, and solve
+a non-differentiable problem by iteratively solving smooth problems.</p>
+<p>A function <span class="math inline">\(g(\theta \mid \theta^s)\)</span> is said to majorize the
+function <span class="math inline">\(f(\theta)\)</span> at <span class="math inline">\(\theta^s\)</span> if
+<span class="math display">\[
+f(\theta^s) =  g(\theta^s \mid \theta^s),
+\]</span>
+and
+<span class="math display">\[
+f(\theta) \leq  g(\theta \mid \theta^s)
+\]</span>
+for all <span class="math inline">\(\theta\)</span>.</p>
+<p>The descent property of the MM algorithm is easy to see.
+Let
+<span class="math display">\[
+\theta^{s+1} = \arg\min_\theta g(\theta \mid \theta^s).
+\]</span>
+It follows that
+<span class="math display">\[\begin{align*}
+  f(\theta^{s+1}) \leq g(\theta^{s+1} \mid \theta^s) \leq g(\theta^{s} \mid \theta^s) = f(\theta^s).
+\end{align*}\]</span>
+The strict inequality holds unless <span class="math inline">\(g(\theta^{s+1} \mid \theta^s)=g(\theta^{s} \mid \theta^s)\)</span> and <span class="math inline">\(f(\theta^{s+1})= g(\theta^{s+1} \mid \theta^s)\)</span>.
+Therefore, by alternating between the majorization and the minimization
+steps, the objective function is monotonically decreasing and thus its
+convergence is guaranteed.</p>
+<div class="sourceCode" id="cb74"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb74-1" data-line-number="1"><span class="kw">par</span>(<span class="dt">mar=</span><span class="kw">c</span>(<span class="fl">2.5</span>, <span class="fl">2.5</span>, <span class="fl">0.1</span>, <span class="fl">0.1</span>), <span class="dt">mgp=</span><span class="kw">c</span>(<span class="fl">1.5</span>, <span class="fl">0.5</span>, <span class="dv">0</span>))</a>
+<a class="sourceLine" id="cb74-2" data-line-number="2">f &lt;-<span class="st"> </span><span class="cf">function</span>(x) <span class="kw">abs</span>(x <span class="op">-</span><span class="st"> </span><span class="dv">1</span>) <span class="op">+</span><span class="st"> </span><span class="kw">abs</span>(x <span class="op">-</span><span class="st"> </span><span class="dv">3</span>) <span class="op">+</span><span class="st"> </span><span class="kw">abs</span>(x <span class="op">-</span><span class="st"> </span><span class="dv">4</span>) <span class="op">+</span><span class="st"> </span><span class="kw">abs</span>(x <span class="op">-</span><span class="st"> </span><span class="dv">8</span>) <span class="op">+</span><span class="st"> </span><span class="kw">abs</span>(x <span class="op">-</span><span class="st"> </span><span class="dv">10</span>)</a>
+<a class="sourceLine" id="cb74-3" data-line-number="3"><span class="kw">curve</span>(<span class="kw">f</span>(x), <span class="dv">0</span>, <span class="dv">12</span>)</a>
+<a class="sourceLine" id="cb74-4" data-line-number="4">g &lt;-<span class="st"> </span><span class="cf">function</span>(x) (x <span class="op">-</span><span class="st"> </span><span class="fl">5.5</span>)<span class="op">^</span><span class="dv">2</span> <span class="op">+</span><span class="st"> </span><span class="fl">15.75</span></a>
+<a class="sourceLine" id="cb74-5" data-line-number="5"><span class="kw">curve</span>(<span class="kw">g</span>(x), <span class="dv">0</span>, <span class="dv">12</span>, <span class="dt">add =</span> <span class="ot">TRUE</span>, <span class="dt">col=</span><span class="st">&quot;blue&quot;</span>)</a></code></pre></div>
+<p><img src="02-optim_files/figure-html/unnamed-chunk-1-1.png" width="672" /></p>
+<p>Inequalities are used to devise MM algorithms.</p>
+<ul>
+<li>Jensen’s inequality: for a convex function <span class="math inline">\(f(x)\)</span>,
+<span class="math display">\[
+f(E(X)) \leq E(f(X)).
+\]</span></li>
+<li>Convexity inequality: for any <span class="math inline">\(\lambda \in [0,1]\)</span>,
+<span class="math display">\[
+f(\lambda x_1 + (1-\lambda)x_2) \leq \lambda f(x_1) + (1-\lambda)f(x_2).
+\]</span></li>
+<li>Cauchy-Schwarz inequality.</li>
+<li>Supporting hyperplanes.</li>
+<li>Arithmetic-Geometric Mean Inequality.</li>
+</ul>
+</div>
+<div id="an-example-lasso-with-coordinate-descent" class="section level2">
+<h2><span class="header-section-number">3.4</span> An Example: LASSO with Coordinate Descent</h2>
+<p>In a linear regression setting, where <span class="math inline">\(Y\)</span> is the response vector and <span class="math inline">\(X\)</span> is the design matrix. Minimize objective function
+<span class="math display">\[
+\min_{\beta \in R^p}\left\{\frac{1}{2n}\|Y - X \beta\|^2 + \sum_{j = 1}^p p_{\lambda}(|\beta_j|)\right\},
+\]</span>
+where <span class="math inline">\(\|\cdot\|\)</span> denotes the <span class="math inline">\(L_2\)</span>-norm, and
+<span class="math inline">\(p_{\lambda}(\cdot)\)</span> is a penalty function indexed by the
+regularization parameter <span class="math inline">\(\lambda \geq 0\)</span>.
+It is often assumed that the covariates are centered and standardized
+such that the coefficients become comparable.</p>
+<p>Common penalties:</p>
+<ul>
+<li><span class="math inline">\(L_0\)</span> penalty (subset selection) and <span class="math inline">\(L_2\)</span> penalty (ridge regression).</li>
+<li>Bridge or <span class="math inline">\(L_\gamma\)</span> penalty, <span class="math inline">\(\gamma &gt;0\)</span>
+<!-- %\citep{Frank1993}. --></li>
+<li><span class="math inline">\(L_1\)</span> penalty or Lasso
+<!-- %\citep{tib1996}. --></li>
+<li>SCAD penalty
+<!-- %\citep{fan2001}. --></li>
+<li>MCP penalty
+<!-- %\citep{zhang2010}. --></li>
+<li>Group penalties
+<!-- %\citep{yuan2006}  --></li>
+<li>Bilevel penalties
+<!-- %\citep{huang2009gb,huang2012}. --></li>
+</ul>
+<p>LASSO stands for ``least absolute shrinkage and selection operator’’.
+There are two equivalent definitions.</p>
+<ul>
+<li>minimize the residual sum of squares subject to the sum of the
+absolute value of the coefficients being less than a constant:
+<span class="math display">\[
+\hat{\beta}=\arg\min\left\{\frac{1}{2n}\|Y- X \beta\|^2\right\} \text{ subject to } \sum_{j}|\beta_j| \leq t.
+\]</span></li>
+<li>minimize the penalized sum of squares:
+<span class="math display">\[
+\hat{\beta}=\arg\min\left\{\frac{1}{2n}\|Y- X\beta\|^2 + \lambda\sum_{j}|\beta_j|\right\}.
+\]</span></li>
+</ul>
+<p>Because of the nature of <span class="math inline">\(L_1\)</span> penalty or constraint, Lasso can estimate
+some coefficients as exactly <span class="math inline">\(0\)</span> and hence performs variable selection.
+It enjoys some of the favorable properties of both subset selection and
+ridge regression, producing interpretable models and exhibiting the
+stability of ridge regression.</p>
+<p>A solution path for <span class="math inline">\(\lambda\in[\lambda_{\min},\lambda_{\max}]\)</span> is
+<span class="math display">\[
+\{\widehat{\beta}_{n}(\lambda): \lambda\in[\lambda_{\min},\lambda_{\max}]\}.
+\]</span></p>
+<p>For a given <span class="math inline">\(\lambda\)</span>, the coordinate descent algorithm minimize the
+objective function with respect to <span class="math inline">\(\beta_j\)</span> given current values of
+<span class="math inline">\(\tilde\beta_k\)</span>, <span class="math inline">\(k \ne j\)</span>.
+Define
+<span class="math display">\[
+L_j(\beta_j; \lambda) = \frac{1}{2n}\sum_{i=1}^n \left(y_i - \sum_{k\ne j} x_{ik}\tilde\beta_k - x_{ij} \beta_j\right)^2 + \lambda |\beta_j|.
+\]</span>
+Let
+<span class="math inline">\(\tilde y_{ij} = \sum_{k\ne j} x_{ik}\tilde\beta_k\)</span>,
+<span class="math inline">\(\tilde r_{ij} = y_i - \tilde y_{ij}\)</span>, and
+<span class="math inline">\(\tilde z_j = n^{-1} \sum_{i=1}^n x_{ij} \tilde r_{ij}\)</span>.
+Note that <span class="math inline">\(\tilde r_{ij}\)</span>’s are the partial residual with respect to
+the <span class="math inline">\(j\)</span>th covariate. Assuming that the covariates are centered and
+standardized such that
+<span class="math inline">\(\sum_{i=1}^{n}x_{ij}=0\)</span> and
+<span class="math inline">\(\sum_{i=1}^{n}x_{ij}^2=n\)</span> for all <span class="math inline">\(1\leq j \leq p\)</span>,
+the standardized covariates and completion of squares
+lead to</p>
+<p><span class="math display">\[
+L_j(\beta_j; \lambda) = \frac{1}{2}(\beta_j - \tilde z_j)^2 + \lambda |\beta_j| + \frac{1}{2n} \sum_{i=1}^n \tilde r_{ij}^2 - \frac{1}{2} \tilde z_j^2.
+\]</span>
+This is just a univariate quadratic programming problem.
+The solution is
+<span class="math display">\[
+\tilde \beta_j = S(\tilde z_{j}; \lambda)
+\]</span>
+where <span class="math inline">\(S(\cdot; \lambda)\)</span> is the soft-threshold operator
+<span class="math display">\[
+S(z; \lambda) = \mathrm{sgn}(z) (|z| - \lambda)_+
+= \begin{cases}
+z - \lambda, &amp; z &gt; \lambda,\\
+0,           &amp; |z| \le \lambda,\\
+z + \lambda, &amp; z &lt; -\lambda.\\
+\end{cases}
+\]</span></p>
+<p>The last question is, how do we choose <span class="math inline">\(\lambda\)</span>?
+Cross-validation or generalized cross-validation.</p>
+</div>
+<div id="exercises-1" class="section level2">
+<h2><span class="header-section-number">3.5</span> Exercises</h2>
+<div id="cauchy-with-unknown-location." class="section level3">
+<h3><span class="header-section-number">3.5.1</span> Cauchy with unknown location.</h3>
+<p>Consider estimating the location parameter of a Cauchy distribution with a known scale parameter. The density function is
+<span class="math display">\[\begin{align*}
+  f(x; \theta) = \frac{1}{\pi[1 + (x - \theta)^2]}, 
+  \quad x \in R, \quad \theta \in R.
+\end{align*}\]</span>
+Let <span class="math inline">\(X_1, \ldots, X_n\)</span> be a random sample of size <span class="math inline">\(n\)</span> and <span class="math inline">\(\ell(\theta)\)</span> the log-likelihood function of <span class="math inline">\(\theta\)</span> based on the sample.</p>
+<ol style="list-style-type: decimal">
+<li>Show that
+<span class="math display">\[\begin{align*}
+  \ell(\theta)
+  &amp;= -n\ln \pi - \sum_{i=1}^n \ln [1+(\theta-X_i)^2], \\
+  \ell&#39;(\theta)
+  &amp;= -2 \sum_{i=1}^n \frac{\theta-X_i}{1+(\theta-X_i)^2},  \\
+  \ell&#39;&#39;(\theta)
+  &amp;= -2 \sum_{i=1}^n \frac{1-(\theta-X_i)^2}{[1+(\theta-X_i)^2]^2},
+  \\
+  I_n(\theta) &amp;= \frac{4n}{\pi}
+  \int_{-\infty}^\infty \frac{x^2\,\mathrm{d}x}{(1+x^2)^3}
+  = n/2,
+  \end{align*}\]</span>
+where <span class="math inline">\(I_n\)</span> is the Fisher information of this sample.</li>
+<li>Set the random seed as <span class="math inline">\(909\)</span> and generate a random sample of size <span class="math inline">\(n = 10\)</span> with <span class="math inline">\(\theta = 5\)</span>. Implement a loglikelihood function and plot against <span class="math inline">\(\theta\)</span>.</li>
+<li>Find the MLE of <span class="math inline">\(\theta\)</span> using the Newton–Raphson method with initial values on a grid starting from <span class="math inline">\(-10\)</span> to <span class="math inline">\(30\)</span> with increment <span class="math inline">\(0.5\)</span>. Summarize the results.</li>
+<li>Improved the Newton–Raphson method by halving the steps if the likelihood is not improved.</li>
+<li>Apply fixed-point iterations using
+<span class="math inline">\(G(\theta)=\alpha \ell&#39;(\theta) + \theta\)</span>,
+with scaling choices of <span class="math inline">\(\alpha \in \{1, 0.64, 0.25\}\)</span> and the same initial values as above.</li>
+<li>First use Fisher scoring to find the MLE for <span class="math inline">\(\theta\)</span>, then refine the estimate by running Newton-Raphson method. Try the same starting points as above.</li>
+<li>Comment on the results from different methods (speed, stability, etc.).</li>
+</ol>
+</div>
+<div id="many-local-maxima" class="section level3">
+<h3><span class="header-section-number">3.5.2</span> Many local maxima</h3>
+<p>Consider the probability density function with parameter <span class="math inline">\(\theta\)</span>:
+<span class="math display">\[\begin{align*}
+  f(x; \theta) = \frac{1 - \cos(x - \theta)}{2\pi},   
+  \quad 0\le x\le 2\pi, \quad \theta \in (-\pi, \pi).
+\end{align*}\]</span>
+A random sample from the distribution is</p>
+<div class="sourceCode" id="cb75"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb75-1" data-line-number="1">x &lt;-<span class="st"> </span><span class="kw">c</span>(<span class="fl">3.91</span>, <span class="fl">4.85</span>, <span class="fl">2.28</span>, <span class="fl">4.06</span>, <span class="fl">3.70</span>, <span class="fl">4.04</span>, <span class="fl">5.46</span>, <span class="fl">3.53</span>, <span class="fl">2.28</span>, <span class="fl">1.96</span>,</a>
+<a class="sourceLine" id="cb75-2" data-line-number="2">       <span class="fl">2.53</span>, <span class="fl">3.88</span>, <span class="fl">2.22</span>, <span class="fl">3.47</span>, <span class="fl">4.82</span>, <span class="fl">2.46</span>, <span class="fl">2.99</span>, <span class="fl">2.54</span>, <span class="fl">0.52</span>)</a></code></pre></div>
+<ol style="list-style-type: decimal">
+<li>Find the the log-likelihood function of <span class="math inline">\(\theta\)</span> based on the sample and plot it between <span class="math inline">\(-\pi\)</span> and <span class="math inline">\(\pi\)</span>.</li>
+<li>Find the method-of-moments estimator of <span class="math inline">\(\theta\)</span>. That is, the estimator <span class="math inline">\(\tilde\theta_n\)</span> is value of <span class="math inline">\(\theta\)</span> with
+<span class="math display">\[\begin{align*}
+  \mathbb{E}(X \mid \theta) = \bar X_n,
+\end{align*}\]</span>
+where <span class="math inline">\(\bar X_n\)</span> is the sample mean. This means you have to first find the expression for <span class="math inline">\(\mathbb{E}(X \mid \theta)\)</span>.</li>
+<li>Find the MLE for <span class="math inline">\(\theta\)</span> using the Newton–Raphson method initial value <span class="math inline">\(\theta_0 = \tilde\theta_n\)</span>.</li>
+<li>What solutions do you find when you start at
+<span class="math inline">\(\theta_0 = -2.7\)</span> and <span class="math inline">\(\theta_0 = 2.7\)</span>?</li>
+<li>Repeat the above using 200 equally spaced starting values
+between <span class="math inline">\(-\pi\)</span> and <span class="math inline">\(\pi\)</span>. Partition the values into sets of attraction. That is, divide the set of starting values into separate groups, with each group corresponding to a separate unique outcome of the optimization.</li>
+</ol>
+</div>
+<div id="modeling-beetle-data" class="section level3">
+<h3><span class="header-section-number">3.5.3</span> Modeling beetle data</h3>
+<p>The counts of a floor beetle at various time points (in days) are given in a dataset.</p>
+<div class="sourceCode" id="cb76"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb76-1" data-line-number="1">beetles &lt;-<span class="st"> </span><span class="kw">data.frame</span>(</a>
+<a class="sourceLine" id="cb76-2" data-line-number="2">    <span class="dt">days    =</span> <span class="kw">c</span>(<span class="dv">0</span>,  <span class="dv">8</span>,  <span class="dv">28</span>,  <span class="dv">41</span>,  <span class="dv">63</span>,  <span class="dv">69</span>,   <span class="dv">97</span>, <span class="dv">117</span>,  <span class="dv">135</span>,  <span class="dv">154</span>),</a>
+<a class="sourceLine" id="cb76-3" data-line-number="3">    <span class="dt">beetles =</span> <span class="kw">c</span>(<span class="dv">2</span>, <span class="dv">47</span>, <span class="dv">192</span>, <span class="dv">256</span>, <span class="dv">768</span>, <span class="dv">896</span>, <span class="dv">1120</span>, <span class="dv">896</span>, <span class="dv">1184</span>, <span class="dv">1024</span>))</a></code></pre></div>
+<p>A simple model for population growth is the logistic model given by
+<span class="math display">\[
+\frac{\mathrm{d}N}{\mathrm{d}t} = r N(1 - \frac{N}{K}),
+\]</span>
+where <span class="math inline">\(N\)</span> is the population size, <span class="math inline">\(t\)</span> is time, <span class="math inline">\(r\)</span> is an unknown growth rate
+parameter, and <span class="math inline">\(K\)</span> is an unknown parameter that represents the population
+carrying capacity of the environment. The solution to the differential
+equation is given by
+<span class="math display">\[
+N_t = f(t) = \frac{K N_0}{N_0 + (K - N_0)\exp(-rt)},
+\]</span>
+where <span class="math inline">\(N_t\)</span> denotes the population size at time <span class="math inline">\(t\)</span>.</p>
+<ul>
+<li>Fit the population growth model to the beetles data using the Gauss-Newton approach, to minimize the sum of squared errors between model predictions and observed counts.</li>
+<li>Show the contour plot of the sum of squared errors.</li>
+<li>In many population modeling application, an assumption of lognormality is adopted. That is , we assume that <span class="math inline">\(\log N_t\)</span> are independent and normally distributed with mean <span class="math inline">\(\log f(t)\)</span> and variance <span class="math inline">\(\sigma^2\)</span>. Find the maximum likelihood estimators of <span class="math inline">\(\theta = (r, K, \sigma^2)\)</span> using any suitable method of your choice. Estimate the variance your parameter estimates.</li>
+</ul>
+</div>
+<div id="coordinate-descent-for-penalized-least-squares" class="section level3">
+<h3><span class="header-section-number">3.5.4</span> Coordinate descent for penalized least squares</h3>
+<p>Consider the penalized least squares problem with <span class="math inline">\(L_1\)</span> penalty (LASSO).</p>
+<ul>
+<li>Verify the soft-threshold solution.</li>
+<li>Find <span class="math inline">\(\lambda_{\max}\)</span> such that for any <span class="math inline">\(\lambda &gt; \lambda_\max\)</span>, the solution is <span class="math inline">\(\beta = 0\)</span>.</li>
+<li>Write a function to implement the soft-threshold solution for a given input <code>z</code> and <code>lambda</code>.</li>
+<li>Write a function <code>pen_ls</code> to implement the coordinate descent method for LASSO solution. The inputs of the function should include a response vector <code>y</code>, a model matrix <code>xmat</code> (with pre-standardized columns), and a penalty parameter <code>lambda</code>. The output is a vector of estimated <span class="math inline">\(\beta\)</span>.</li>
+<li>Test your <code>pen_ls</code> on a simulated dataset generated for a fixed <span class="math inline">\(\lambda\)</span>.</li>
+</ul>
+<div class="sourceCode" id="cb77"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb77-1" data-line-number="1">gen_data &lt;-<span class="st"> </span><span class="cf">function</span>(n, b, <span class="dt">sigma =</span> <span class="dv">1</span>) {</a>
+<a class="sourceLine" id="cb77-2" data-line-number="2">  p &lt;-<span class="st"> </span><span class="kw">length</span>(b)</a>
+<a class="sourceLine" id="cb77-3" data-line-number="3">  x &lt;-<span class="st"> </span><span class="kw">matrix</span>(<span class="kw">rnorm</span>(n <span class="op">*</span><span class="st"> </span>p), n, p)</a>
+<a class="sourceLine" id="cb77-4" data-line-number="4">  <span class="kw">colnames</span>(x) &lt;-<span class="st"> </span><span class="kw">paste0</span>(<span class="st">&quot;x&quot;</span>, <span class="dv">1</span><span class="op">:</span>p)</a>
+<a class="sourceLine" id="cb77-5" data-line-number="5">  y &lt;-<span class="st"> </span><span class="kw">c</span>(x <span class="op">%*%</span><span class="st"> </span>b) <span class="op">+</span><span class="st"> </span><span class="kw">rnorm</span>(n, <span class="dt">sd =</span> sigma)</a>
+<a class="sourceLine" id="cb77-6" data-line-number="6">  <span class="kw">return</span>(<span class="kw">data.frame</span>(y, x))</a>
+<a class="sourceLine" id="cb77-7" data-line-number="7">}</a>
+<a class="sourceLine" id="cb77-8" data-line-number="8"></a>
+<a class="sourceLine" id="cb77-9" data-line-number="9">n &lt;-<span class="st"> </span><span class="dv">200</span></a>
+<a class="sourceLine" id="cb77-10" data-line-number="10">b &lt;-<span class="st"> </span><span class="kw">c</span>(<span class="dv">1</span>, <span class="dv">-1</span>, <span class="dv">2</span>, <span class="kw">rep</span>(<span class="dv">0</span>, <span class="dv">7</span>))</a>
+<a class="sourceLine" id="cb77-11" data-line-number="11"><span class="kw">set.seed</span>(<span class="dv">920</span>)</a>
+<a class="sourceLine" id="cb77-12" data-line-number="12">dat &lt;-<span class="st"> </span><span class="kw">gen_data</span>(n, b)</a></code></pre></div>
+<ul>
+<li>Plot a solution path for a sequence of <span class="math inline">\(\lambda\)</span> values from <span class="math inline">\(\lambda_\max\)</span> to zero.</li>
+</ul>
+
+</div>
+</div>
+</div>
+<h3>References</h3>
+<div id="refs" class="references">
+<div id="ref-R-animation">
+<p>Xie, Yihui. 2018. <em>Animation: A Gallery of Animations in Statistics and Utilities to Create Animations</em>. <a href="https://yihui.name/animation" class="uri">https://yihui.name/animation</a>.</p>
+</div>
+</div>
+            </section>
+
+          </div>
+        </div>
+      </div>
+<a href="nla.html" class="navigation navigation-prev " aria-label="Previous page"><i class="fa fa-angle-left"></i></a>
+<a href="em-algorithm.html" class="navigation navigation-next " aria-label="Next page"><i class="fa fa-angle-right"></i></a>
+    </div>
+  </div>
+<script src="libs/gitbook-2.6.7/js/app.min.js"></script>
+<script src="libs/gitbook-2.6.7/js/lunr.js"></script>
+<script src="libs/gitbook-2.6.7/js/clipboard.min.js"></script>
+<script src="libs/gitbook-2.6.7/js/plugin-search.js"></script>
+<script src="libs/gitbook-2.6.7/js/plugin-sharing.js"></script>
+<script src="libs/gitbook-2.6.7/js/plugin-fontsettings.js"></script>
+<script src="libs/gitbook-2.6.7/js/plugin-bookdown.js"></script>
+<script src="libs/gitbook-2.6.7/js/jquery.highlight.js"></script>
+<script src="libs/gitbook-2.6.7/js/plugin-clipboard.js"></script>
+<script>
+gitbook.require(["gitbook"], function(gitbook) {
+gitbook.start({
+"sharing": {
+"github": false,
+"facebook": true,
+"twitter": true,
+"linkedin": false,
+"weibo": false,
+"instapaper": false,
+"vk": false,
+"all": ["facebook", "twitter", "linkedin", "weibo", "instapaper"]
+},
+"fontsettings": {
+"theme": "white",
+"family": "sans",
+"size": 2
+},
+"edit": {
+"link": null,
+"text": null
+},
+"history": {
+"link": null,
+"text": null
+},
+"view": {
+"link": null,
+"text": null
+},
+"download": null,
+"toc": {
+"collapse": "subsection"
+}
+});
+});
+</script>
+
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+  (function () {
+    var script = document.createElement("script");
+    script.type = "text/javascript";
+    var src = "true";
+    if (src === "" || src === "true") src = "https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-MML-AM_CHTML";
+    if (location.protocol !== "file:")
+      if (/^https?:/.test(src))
+        src = src.replace(/^https?:/, '');
+    script.src = src;
+    document.getElementsByTagName("head")[0].appendChild(script);
+  })();
+</script>
+</body>
+
+</html>
