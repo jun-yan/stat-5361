@@ -27,6 +27,8 @@ header-includes:
 
 # Prerequisites {#prelim}
 
+This is a test.
+
 We assume that students can use R/Rstudio comfortably. If you are new to R, an
 extra amount of hard work should be devoted to make it up. In addition to the
 official documentations from the R-project, the presentations at a [local SIAM
